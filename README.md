@@ -1,5 +1,7 @@
 # Product name (e.g. MediaLibrary)
 
+### Theme: "4. Events Management"
+
 > Project vision.
 
 ## Project Components
@@ -21,4 +23,4 @@
 * Xavier Outeiro, up202108895@fe.up.pt
 
 ***
-GROUP2354, 21/09/2023
+lbaw2354, 21/09/2023
