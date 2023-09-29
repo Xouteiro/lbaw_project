@@ -1,4 +1,4 @@
-# Product name (e.g. MediaLibrary)
+# Invents
 
 ### Theme: "4. Events Management"
 
