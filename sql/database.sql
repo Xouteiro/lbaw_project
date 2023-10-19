@@ -66,7 +66,6 @@ CREATE TABLE poll (
 CREATE TABLE option (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    id_user REFERENCES "user"(id),
     id_poll REFERENCES poll(id)
 );
 
