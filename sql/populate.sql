@@ -1,3 +1,4 @@
+SET search_path TO lbaw2354;
 
 INSERT INTO event (name, eventDate, description, creationDate, price, public, openToJoin, capacity, id_user, id_location)
 VALUES
