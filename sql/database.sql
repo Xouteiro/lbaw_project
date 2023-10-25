@@ -1,6 +1,18 @@
-DROP TABLE IF EXISTS joined, events_tags, user_option, 
-request_to_join, event_update, invite, event_notification, 
-option, poll, file, comment, tags, location, event, users CASCADE;
+DROP TABLE IF EXISTS joined CASCADE;
+DROP TABLE IF EXISTS events_tags CASCADE;
+DROP TABLE IF EXISTS user_option CASCADE;
+DROP TABLE IF EXISTS request_to_join CASCADE;
+DROP TABLE IF EXISTS event_update CASCADE;
+DROP TABLE IF EXISTS invite CASCADE;
+DROP TABLE IF EXISTS event_notification CASCADE; 
+DROP TABLE IF EXISTS option CASCADE;
+DROP TABLE IF EXISTS poll CASCADE;
+DROP TABLE IF EXISTS file CASCADE;
+DROP TABLE IF EXISTS comment CASCADE;
+DROP TABLE IF EXISTS tags CASCADE;
+DROP TABLE IF EXISTS location CASCADE;
+DROP TABLE IF EXISTS event CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
 
 
 CREATE TABLE users (
