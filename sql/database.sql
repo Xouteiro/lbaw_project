@@ -246,7 +246,7 @@ IF pollEventId IS NOT NULL THEN
         INSERT INTO event_notification (date, text, link, id_event, id_user)
         VALUES ($date, $text, $link, $id_event, $id_user);
     END LOOP;
-ENDF;
+END IF;
 END TRANSACTION;
 
 --02
