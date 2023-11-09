@@ -1,237 +1,483 @@
 openapi: 3.0.0
 
 info:
- version: '1.0'
- title: 'LBAW Invents Web API'
- description: 'Web Resources Specification (A7) for Invents'
+  version: "1.0"
+  title: "LBAW Invents Web API"
+  description: "Web Resources Specification (A7) for Invents"
 
 servers:
-- url: # meter aqui o url do server de produção
- description: Production server
+  url: http://lbaw2354.lbaw.fe.up.pt/
+  description: Production server
 
+# ver isto
 externalDocs:
- description: Find more info here.
- url: https://web.fe.up.pt/~ssn/wiki/teach/lbaw/medialib/a07
+  description: Find more info here.
+  url: https://web.fe.up.pt/~ssn/wiki/teach/lbaw/invents/a07
 
 tags:
- - name: 'M01: Authentication and Individual Profile'
- - name: 'M02: Works'
- - name: 'M03: Reviews and Wish list'
- - name: 'M04: Loans'
- - name: 'M05: User Administration and Static pages'
+  - name: "M01: Authentication and Individual Profile"
+  - name: "M02: Events"
+  - name: "M03: Comments and polls"
+  - name: "M04: Invite and join events"
+  - name: "M05: User Administration and Static pages"
 
 paths:
- /login:
-   get:
-     operationId: R101
-     summary: 'R101: Login Form'
-     description: 'Provide login form. Access: PUB'
-     tags:
-       - 'M01: Authentication and Individual Profile'
-     responses:
-       '200':
-         description: 'Ok. Show Log-in UI'
-   post:
-     operationId: R102
-     summary: 'R102: Login Action'
-     description: 'Processes the login form submission. Access: PUB'
-     tags:
-       - 'M01: Authentication and Individual Profile'
+  /login:
+    get:
+      operationId: R101
+      summary: "R101: Login Form"
+      description: "Provide login form. Access: PUB"
+      tags:
+        - "M01: Authentication and Individual Profile"
+      responses:
+        "200":
+          description: "Ok. Show Log-in UI"
+    post:
+      operationId: R102
+      summary: "R102: Login Action"
+      description: "Processes the login form submission. Access: PUB"
+      tags:
+        - "M01: Authentication and Individual Profile"
 
-     requestBody:
-       required: true
-       content:
-         application/x-www-form-urlencoded:
-           schema:
-             type: object
-             properties:
-               email:          # <!--- form field name
-                 type: string
-               password:    # <!--- form field name
-                 type: string
-             required:
-                  - email
-                  - password
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
 
-     responses:
-       '302':
-         description: 'Redirect after processing the login credentials.'
-         headers:
-           Location:
-             schema:
-               type: string
-             examples:
-               302Success:
-                 description: 'Successful authentication. Redirect to user profile.'
-                 value: '/users/{id}'
-               302Error:
-                 description: 'Failed authentication. Redirect to login form.'
-                 value: '/login'
+      responses:
+        "302":
+          description: "Redirect after processing the login credentials."
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Successful authentication. Redirect to home."
+                  value: "/"
+                302Error:
+                  description: "Failed authentication. Redirect to login form."
+                  value: "/login"
 
- /logout:
+  /logout:
+    post:
+      operationId: R103
+      summary: "R103: Logout Action"
+      description: "Logout the current authenticated user. Access: USR, ADM"
+      tags:
+        - "M01: Authentication and Individual Profile"
+      responses:
+        "302":
+          description: "Redirect after processing logout."
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Successful logout. Redirect to login form."
+                  value: "/login"
 
-   post:
-     operationId: R103
-     summary: 'R103: Logout Action'
-     description: 'Logout the current authenticated user. Access: USR, ADM'
-     tags:
-       - 'M01: Authentication and Individual Profile'
-     responses:
-       '302':
-         description: 'Redirect after processing logout.'
-         headers:
-           Location:
-             schema:
-               type: string
-             examples:
-               302Success:
-                 description: 'Successful logout. Redirect to login form.'
-                 value: '/login'
+  /register:
+    get:
+      operationId: R104
+      summary: "R104: Register Form"
+      description: "Provide new user registration form. Access: PUB"
+      tags:
+        - "M01: Authentication and Individual Profile"
+      responses:
+        "200":
+          description: "Ok. Show Sign-Up UI"
 
- /register:
-   get:
-     operationId: R104
-     summary: 'R104: Register Form'
-     description: 'Provide new user registration form. Access: PUB'
-     tags:
-       - 'M01: Authentication and Individual Profile'
-     responses:
-       '200':
-         description: 'Ok. Show Sign-Up UI'
+    post:
+      operationId: R105
+      summary: "R105: Register Action"
+      description: "Processes the new user registration form submission. Access: PUB"
+      tags:
+        - "M01: Authentication and Individual Profile"
 
-   post:
-     operationId: R105
-     summary: 'R105: Register Action'
-     description: 'Processes the new user registration form submission. Access: PUB'
-     tags:
-       - 'M01: Authentication and Individual Profile'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                confirmPassword:
+                  type: string
+                  format: password
+              required:
+                - name
+                - username
+                - email
+                - password
 
-     requestBody:
-       required: true
-       content:
-         application/x-www-form-urlencoded:
-           schema:
-             type: object
-             properties:
-               name:
-                 type: string
-               email:
-                 type: string
-               picture:
-                 type: string
-                 format: binary
-             required:
-                                    - email
-                                   - password
+      responses:
+        "302":
+          description: "Redirect after processing the new user information."
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Successful authentication. Redirect to home."
+                  value: "/"
+                302Failure:
+                  description: "Failed authentication. Redirect to login form."
+                  value: "/register"
 
-     responses:
-       '302':
-         description: 'Redirect after processing the new user information.'
-         headers:
-           Location:
-             schema:
-               type: string
-             examples:
-               302Success:
-                 description: 'Successful authentication. Redirect to user profile.'
-                 value: '/users/{id}'
-               302Failure:
-                 description: 'Failed authentication. Redirect to login form.'
-                 value: '/login'
+  /home:
+    get:
+      operationId: R106
+      summary: "R106: Home Page"
+      description: "Show the home page. Access: PUB"
+      tags:
+        - "M02: Events"
+      responses:
+        "200":
+          description: "Ok. Show Home UI"
 
- /users/{id}:
-   get:
-     operationId: R106
-     summary: 'R106: View user profile'
-     description: 'Show the individual user profile. Access: USR'
-     tags:
-       - 'M01: Authentication and Individual Profile'
+  /events:
+    get:
+      operationId: R201
+      summary: "R201: Events page"
+      description: "Shows the events page UI. Access: PUB."
+      tags:
+        - "M02: Events"
+      responses:
+        "200":
+          description: "Ok. Show Events UI"
 
-     parameters:
-       - in: path
-         name: id
-         schema:
-           type: integer
-         required: true
+  /events/createEvent:
+    get:
+      operationId: R202
+      summary: "R202: Create Event Page"
+      description: "Show the create event form. Access: USR."
+      tags:
+        - "M02: Events"
+      responses:
+        "200":
+          description: "Ok. Show Create Event UI"
+        "403":
+          description: "Forbidden. Login required."
 
-     responses:
-       '200':
-         description: 'Ok. Show User Profile UI'
- 
+    post:
+      operationId: R203
+      summary: "R203: Create Event Action"
+      description: "Processes the create event form submission. Access: USR."
+      tags:
+        - "M02: Events"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                eventTitle:
+                  type: string
+                eventDescription:
+                  type: string
+                eventDate:
+                  type: string
+                  format: date
+                eventLocation:
+                  type: string
+                eventTags:
+                  type: json
+                price:
+                  type: string
+                  format: number
+                eventCapacity:
+                  type: string
+                  format: number
+                openToJoin:
+                  type: boolean
+                public:
+                  type: boolean
 
- /api/works:
-   get:
-     operationId: R202
-     summary: 'R202: Search Works API'
-     description: 'Searches for works and returns the results as JSON. Access: PUB.'
+      responses:
+        "302":
+          description: "Redirect after processing the new event information."
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Successful creation of the event. Redirect to event page."
+                  value: "/events/{id}"
+                302Failure:
+                  description: "Failed creation of the event. Redirect to create event page."
+                  value: "/events/createEvent"
 
-     tags:
-       - 'M02: Works'
+  /events/{id}:
+    get:
+      operationId: R204
+      summary: "R204: View Event"
+      description: "Show individual event. Access: PUB USR OWN."
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: "Ok. Show Event UI"
+        "403":
+          description: "Forbidden. Private event. Login required."
+          value: "/events"
 
-     parameters:
-       - in: query
-         name: query
-         description: String to use for full-text search
-         schema:
-           type: string
-         required: false
-       - in: query
-         name: item
-         description: Category of the works
-         schema:
-           type: string
-         required: false
-       - in: query
-         name: loaned
-         description: Boolean with the loaned flag value
-         schema:
-           type: boolean
-         required: false
-       - in: query
-         name: owner
-         description: Boolean with the owner flag value
-         schema:
-           type: boolean
-         required: false
-       - in: query
-         name: classification
-         description: Integer corresponding to the work classification
-         schema:
-           type: integer
-         required: false
+    delete:
+      operationId: R205
+      summary: "R205: Delete Event"
+      description: "Delete event. Access: OWN."
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "202":
+          description: "Accepted. Event deleted."
+          value: "/events"
+        "401":
+          description: "Unauthorized. User not owner of event."
+          value: "/events/{id}"
 
-     responses:
-       '200':
-         description: Success
-         content:
-           application/json:
-             schema:
-               type: array
-               items:
-                 type: object
-                 properties:
-                   id:
-                     type: string
-                   title:
-                     type: string
-                   obs:
-                     type: string
-                   year:
-                     type: string
-                   owner:
-                     type: string
-                   type:
-                     type: string
-               example:
-                 - id: 1
-                   title: Rihanna - Unapologetic
-                   obs: Good pop music album.
-                   year: 2012
-                   owner: Joana Lima
-                   type: MP3
-                 - id: 15
-                   title: Mr. Bean
-                   obs: The best comedy movie.
-                   year: 1995
-                   owner: Manuel Teixeira
-                   type: DVD
+  /events/{id}/join:
+    post:
+      operationId: R206
+      summary: "R206: Join Event"
+      description: "Join event. Access: USR."
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "202":
+          description: "Accepted. Event joined."
+          value: "/events/{id}"
+        "400":
+          description: "Bad Request. "
+          value: "/events/{id}"
+
+  /events/{id}/askToJoin:
+    post:
+      operationId: R207
+      summary: "R207: Ask to Join Event"
+      description: "Ask to join event. Access: USR."
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: "OK. Request sent."
+          value: "/events/{id}"
+        "400":
+          description: "Bad Request. Not sent."
+          value: "/events/{id}"
+
+  /events/{id}/leave:
+    post:
+      operationId: R208
+      summary: "R208: Leave Event"
+      description: "Leave event. Access: USR."
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "202":
+          description: "Accepted. Event left."
+          value: "/events/{id}"
+        "400":
+          description: "Bad Request. Did not left event."
+          value: "/events/{id}"
+
+  /events/{id}/edit:
+    get:
+      operationId: R205
+      summary: "R205: Edit Event"
+      description: "Show the edit event form. Access: USR OWN."
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: "Ok. Show Edit Event UI"
+        "403":
+          description: "Forbidden. Private event. Login required."
+          value: "/events"
+
+    put:
+      operationId: R204
+      summary: "R204: Update Event"
+      description: "Processes the update event form submission. Access: OWN."
+      tags:
+        - "M02: Events"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                eventDescription:
+                  type: string
+                eventDate:
+                  type: string
+                  format: date
+                eventLocation:
+                  type: string
+                eventTags:
+                  type: json
+                price:
+                  type: string
+                  format: number
+                eventCapacity:
+                  type: string
+                  format: number
+                openToJoin:
+                  type: boolean
+                public:
+                  type: boolean
+
+      responses:
+        "200":
+          description: "Update successful. Redirect to event page."
+        "400":
+          description: "Bad request"
+
+  /users/{id}:
+    get:
+      operationId: R107
+      summary: "R107: View user profile"
+      description: "Show the individual user profile. Access: USR"
+      tags:
+        - "M01: Authentication and Individual Profile"
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        "200":
+          description: "Ok. Show User Profile UI"
+
+  /api/events:
+    get:
+      operationId: R202
+      summary: "R202: Search Events API"
+      description: "Searches for events and returns the results as JSON. Access: PUB."
+
+      tags:
+        - "M02: Events"
+
+      parameters:
+        - in: query
+          name: query
+          description: String to use for full-text search
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: names
+          description: Names of the events
+          schema:
+            type: string
+        - in: query
+          name: tags
+          description: Tags of the events
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: date
+          description: Dates for the events
+          schema:
+            type: boolean
+          required: false
+        - in: query
+          name: owner
+          description: Boolean with the owner flag value
+          schema:
+            type: boolean
+          required: false
+        - in: query
+          name: classification
+          description: Integer corresponding to the work classification
+          schema:
+            type: integer
+          required: false
+
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    obs:
+                      type: string
+                    year:
+                      type: string
+                    owner:
+                      type: string
+                    type:
+                      type: string
