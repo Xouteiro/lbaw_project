@@ -146,7 +146,7 @@ CREATE INDEX idx_event_owner ON event USING BTREE (id_user);
 
 ALTER TABLE event
 ADD COLUMN tsvectors TSVECTOR;
-CREATE FUNCTION events_search_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION events_search_update() RETURNS TRIGGER AS $$
 BEGIN
  IF TG_OP = 'INSERT' THEN
     NEW.tsvectors = (
