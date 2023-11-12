@@ -39,8 +39,8 @@ CREATE TABLE event (
     public BOOLEAN DEFAULT TRUE,
     openToJoin BOOLEAN DEFAULT TRUE,
     capacity INTEGER,
-    id_user REFERENCES users(id),
-    id_location REFERENCES location(id)
+    id_user INTEGER REFERENCES users(id),
+    id_location INTEGER REFERENCES location(id)
 );
 
 CREATE TABLE location (
@@ -59,30 +59,30 @@ CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
     date DATE CHECK (date > current_date),
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id)
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE file (
     id SERIAL PRIMARY KEY,
     type VARCHAR(255) NOT NULL,
     file VARCHAR(255) NOT NULL,
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id)
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE poll (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     creationDate DATE CHECK (creationDate > current_date),
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id)
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE option (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    id_poll REFERENCES poll(id)
+    id_poll INTEGER REFERENCES poll(id)
 );
 
 CREATE TABLE event_notification (
@@ -90,45 +90,45 @@ CREATE TABLE event_notification (
     date DATE CHECK (date > current_date),
     text TEXT NOT NULL,
     link VARCHAR(255) NOT NULL,
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id)
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE invite (
-    id_eventnotification REFERENCES event_notification(id),
-    id_user REFERENCES users(id),
+    id_eventnotification INTEGER REFERENCES event_notification(id),
+    id_user INTEGER REFERENCES users(id),
     PRIMARY KEY (id_eventnotification)
 );
 
 CREATE TABLE event_update (
-    id_eventnotification REFERENCES event_notification(id),
+    id_eventnotification INTEGER REFERENCES event_notification(id),
     PRIMARY KEY (id_eventnotification)
 );
 
 CREATE TABLE request_to_join (
-    id_eventnotification REFERENCES event_notification(id),
+    id_eventnotification INTEGER REFERENCES event_notification(id),
     response TEXT,
-    id_user REFERENCES users(id),
+    id_user INTEGER REFERENCES users(id),
     PRIMARY KEY (id_eventnotification, id_user)
 );
 
 CREATE TABLE joined (
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id),
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id),
     date DATE CHECK (date > current_date),
     ticket VARCHAR(255),
     PRIMARY KEY (id_event, id_user)
 );
 
 CREATE TABLE events_tags (
-    id_tag REFERENCES tags(id),
-    id_event REFERENCES event(id),
+    id_tag INTEGER REFERENCES tags(id),
+    id_event INTEGER REFERENCES event(id),
     PRIMARY KEY (id_tag, id_event)
 );
 
 CREATE TABLE user_option (
-    id_user REFERENCES users(id),
-    id_option REFERENCES option(id),
+    id_user INTEGER REFERENCES users(id),
+    id_option INTEGER REFERENCES option(id),
     PRIMARY KEY (id_user, id_option)
 );
 
