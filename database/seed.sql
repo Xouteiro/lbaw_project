@@ -1,4 +1,5 @@
-CREATE SCHEMA lbaw2354;
+create schema if not exists lbaw2354;
+
 SET search_path TO lbaw2354;
 
 DROP TABLE IF EXISTS joined CASCADE;
@@ -29,6 +30,13 @@ CREATE TABLE users (
     admin BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE location (
+    id SERIAL PRIMARY KEY,
+    address VARCHAR(255) NOT NULL,
+    coordinates VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE event (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -39,16 +47,11 @@ CREATE TABLE event (
     public BOOLEAN DEFAULT TRUE,
     openToJoin BOOLEAN DEFAULT TRUE,
     capacity INTEGER,
-    id_user REFERENCES users(id),
-    id_location REFERENCES location(id)
+    id_user INTEGER REFERENCES users(id),
+    id_location INTEGER REFERENCES location(id)
 );
 
-CREATE TABLE location (
-    id SERIAL PRIMARY KEY,
-    address VARCHAR(255) NOT NULL,
-    coordinates VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL
-);
+
 
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
@@ -59,30 +62,30 @@ CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
     date DATE CHECK (date > current_date),
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id)
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE file (
     id SERIAL PRIMARY KEY,
     type VARCHAR(255) NOT NULL,
     file VARCHAR(255) NOT NULL,
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id)
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE poll (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     creationDate DATE CHECK (creationDate > current_date),
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id)
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE option (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    id_poll REFERENCES poll(id)
+    id_poll INTEGER REFERENCES poll(id)
 );
 
 CREATE TABLE event_notification (
@@ -90,45 +93,45 @@ CREATE TABLE event_notification (
     date DATE CHECK (date > current_date),
     text TEXT NOT NULL,
     link VARCHAR(255) NOT NULL,
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id)
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id)
 );
 
 CREATE TABLE invite (
-    id_eventnotification REFERENCES event_notification(id),
-    id_user REFERENCES users(id),
+    id_eventnotification INTEGER  REFERENCES event_notification(id),
+    id_user INTEGER REFERENCES users(id),
     PRIMARY KEY (id_eventnotification)
 );
 
 CREATE TABLE event_update (
-    id_eventnotification REFERENCES event_notification(id),
+    id_eventnotification INTEGER REFERENCES event_notification(id),
     PRIMARY KEY (id_eventnotification)
 );
 
 CREATE TABLE request_to_join (
-    id_eventnotification REFERENCES event_notification(id),
+    id_eventnotification INTEGER REFERENCES event_notification(id),
     response TEXT,
-    id_user REFERENCES users(id),
+    id_user INTEGER REFERENCES users(id),
     PRIMARY KEY (id_eventnotification, id_user)
 );
 
 CREATE TABLE joined (
-    id_event REFERENCES event(id),
-    id_user REFERENCES users(id),
+    id_event INTEGER REFERENCES event(id),
+    id_user INTEGER REFERENCES users(id),
     date DATE CHECK (date > current_date),
     ticket VARCHAR(255),
     PRIMARY KEY (id_event, id_user)
 );
 
 CREATE TABLE events_tags (
-    id_tag REFERENCES tags(id),
-    id_event REFERENCES event(id),
+    id_tag INTEGER REFERENCES tags(id),
+    id_event INTEGER REFERENCES event(id),
     PRIMARY KEY (id_tag, id_event)
 );
 
 CREATE TABLE user_option (
-    id_user REFERENCES users(id),
-    id_option REFERENCES option(id),
+    id_user INTEGER REFERENCES users(id),
+    id_option INTEGER REFERENCES option(id),
     PRIMARY KEY (id_user, id_option)
 );
 
@@ -143,7 +146,7 @@ CREATE INDEX idx_event_owner ON event USING BTREE (id_user);
 
 ALTER TABLE event
 ADD COLUMN tsvectors TSVECTOR;
-CREATE FUNCTION events_search_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION events_search_update() RETURNS TRIGGER AS $$
 BEGIN
  IF TG_OP = 'INSERT' THEN
     NEW.tsvectors = (
@@ -174,9 +177,9 @@ CREATE INDEX search_idx ON event USING GIN (tsvectors);
 
 CREATE OR REPLACE FUNCTION check_event_capacity()
 RETURNS TRIGGER AS $$
-BEGIN
   DECLARE event_capacity INT;
   DECLARE event_participants INT;
+BEGIN
   SELECT capacity INTO event_capacity FROM Event WHERE id = NEW.id_event;
   SELECT COUNT(*) INTO event_participants FROM Joined WHERE id_event = NEW.id_event;
   IF event_participants >= event_capacity THEN
@@ -195,7 +198,7 @@ EXECUTE FUNCTION check_event_capacity();
 CREATE OR REPLACE FUNCTION delete_user_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
-  DELETE FROM User WHERE id = OLD.id;
+  DELETE FROM Users WHERE id = OLD.id;
   UPDATE Event SET id_User = NULL WHERE id_User = OLD.id;
   UPDATE Comment SET id_User = NULL WHERE id_User = OLD.id;
   UPDATE File SET id_User = NULL WHERE id_User = OLD.id;
@@ -211,7 +214,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER user_deletion_trigger
-BEFORE DELETE ON User
+BEFORE DELETE ON Users
 FOR EACH ROW
 EXECUTE FUNCTION delete_user_trigger();
 
@@ -219,8 +222,8 @@ EXECUTE FUNCTION delete_user_trigger();
 
 CREATE OR REPLACE FUNCTION check_event_happened()
 RETURNS TRIGGER AS $$
-BEGIN
   DECLARE event_date DATE;
+BEGIN
   SELECT eventDate INTO event_date FROM Event WHERE id = NEW.id_event;
   IF event_date < CURRENT_DATE THEN
     RAISE EXCEPTION 'This event has already happened. You cannot join it.';
@@ -231,164 +234,10 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER event_happened_check
 BEFORE INSERT ON Joined
 FOR EACH ROW
-EXECUTE FUNCTION check_event_happened()
+EXECUTE FUNCTION check_event_happened();
 
---Transactions
 
---01
-
-BEGIN TRANSACTION;
-DECLARE pollEventID INT;
-DECLARE userID INT;
-SELECT id INTO pollEventID FROM poll WHERE id_event = eventID LIMIT 1;
-IF pollEventId IS NOT NULL THEN
-    FOR userId IN (SELECT id_user FROM joined WHERE id_event = eventId) LOOP
-        INSERT INTO event_notification (date, text, link, id_event, id_user)
-        VALUES ($date, $text, $link, $id_event, $id_user);
-    END LOOP;
-END IF;
-END TRANSACTION;
-
---02
-
-BEGIN TRANSACTION;
-SET TRANSACTION ISOLATION LEVEL REPEATABLE READINSERT INTO poll (title, creationDate, id_Event, id_User)  VALUES ( $title , $creationDate , $id_Event, $id_User);
-INSERT INTO option (name, id_Poll)  VALUES (currval(‘id_poll_seq’), $name, $id_Poll);
-END TRANSACTION;
-
---03
-
-BEGIN TRANSACTION;
-DECLARE eventCapacity INT;
-DECLARE joinedUsersCount INT;
-DECLARE requestExists BOOLEAN;
-SELECT TRUE INTO requestExists
-FROM request_to_join
-WHERE id_eventnotification = eventId AND id_user = userId;
-SELECT capacity INTO eventCapacity FROM event WHERE id = eventId;
-IF requestExists AND (eventCapacity IS NULL OR eventCapacity > 0) THEN
-    INSERT INTO joined (id_event, id_user, date, ticket)
-    VALUES ($id_event, $id_user, $date, $ticket);
-    IF eventCapacity IS NOT NULL THEN
-        UPDATE event SET capacity = capacity - 1 WHERE id = eventId;
-    END IF;
-    DELETE FROM request_to_join WHERE id_eventnotification = eventId AND id_user = userId;
-    INSERT INTO event_notification (date, text, link, id_event, id_user)
-    VALUES ($date, $text, $link, $id_event, $id_user);
-ELSE
-    RAISE EXCEPTION 'Invalid request or event is full.';
-END IF;
-END TRANSACTION;
-
-SET search_path TO lbaw2354;
-
-INSERT INTO event (name, eventDate, description, creationDate, price, public, openToJoin, capacity, id_user, id_location)
-VALUES
-('Tech Expo', '2023-11-15', 'Explore the latest in technology and innovation.', '2023-10-15', 0.00, true, true, 500, 1, 1),
-('International Film Festival', '2023-12-01', 'Celebrate global cinema with a diverse selection of films.', '2023-10-16', 15.00, true, true, 300, 2, 2),
-('Gastronomy Tour', '2023-11-20', 'Embark on a culinary journey with local chefs and food artisans.', '2023-10-17', 25.00, true, false, 200, 3, 3),
-('Community Cleanup Day', '2023-11-25', 'Join hands for a cleaner and greener neighborhood.', '2023-10-18', 0.00, true, true, 400, 4, 4),
-('Music Marathon', '2023-11-10', 'A day-long music festival featuring diverse genres and local talent.', '2023-10-19', 10.00, true, false, 100, 5, 5),
-('Art and Craft Fair', '2023-11-30', 'Discover handmade artworks and crafts by local artisans.', '2023-10-20', 5.00, true, false, 150, 6, 6),
-('Fitness Challenge', '2023-12-05', 'Participate in a fitness challenge with various activities and competitions.', '2023-10-21', 8.00, true, true, 250, 7, 7),
-('Book Club Meeting', '2023-11-18', 'Join fellow book enthusiasts for a discussion on the latest bestseller.', '2023-10-22', 0.00, true, true, 300, 8, 8),
-('Science and Technology Symposium', '2023-11-22', 'Explore cutting-edge developments in science and technology.', '2023-10-23', 15.00, true, true, 200, 9, 9),
-('Fashion Show', '2023-12-10', 'Experience the latest trends and designs in the world of fashion.', '2023-10-24', 20.00, true, false, 350, 10, 10),
-('Charity Gala', '2023-11-17', 'Support local charities and causes at this elegant fundraising event.', '2023-10-25', 50.00, true, false, 120, 11, 11),
-('Film Making Workshop', '2023-11-29', 'Learn the art and techniques of film making from industry experts.', '2023-10-26', 30.00, true, false, 180, 12, 12),
-('Outdoor Yoga Retreat', '2023-12-08', 'Reconnect with nature and rejuvenate through yoga and meditation.', '2023-10-27', 40.00, true, true, 100, 13, 13),
-('Classic Car Show', '2023-11-19', 'Admire vintage and classic cars from different eras at this show.', '2023-10-28', 10.00, true, false, 250, 14, 14),
-('Digital Marketing Conference', '2023-11-28', 'Stay updated on the latest trends and strategies in digital marketing.', '2023-10-29', 25.00, true, true, 300, 15, 15),
-('Local Farmers Market', '2023-12-02', 'Support local farmers and vendors by shopping for fresh produce and goods.', '2023-10-30', 0.00, true, false, 400, 16, 16),
-('Photography Exhibition', '2023-11-21', 'View captivating photographs by local and international photographers.', '2023-11-01', 5.00, true, true, 200, 17, 17),
-('Startup Pitch Competition', '2023-12-07', 'Witness innovative startup pitches and ideas at this competition.', '2023-11-02', 15.00, true, false, 150, 18, 18),
-('Dance Performance Showcase', '2023-11-16', 'Enjoy mesmerizing dance performances by local and international troupes.', '2023-11-03', 12.00, true, true, 300, 19, 19),
-('Environmental Conservation Workshop', '2023-11-27', 'Learn about environmental conservation and sustainable practices.', '2023-11-04', 0.00, true, false, 200, 20, 20),
-('Mobile App Development Seminar', '2023-12-04', 'Get insights into the latest trends and tools in mobile app development.', '2023-11-05', 10.00, true, false, 250, 21, 21),
-('Community Orchestra Concert', '2023-11-23', 'Experience the harmonious melodies of a community orchestra.', '2023-11-06', 8.00, true, true, 180, 22, 22),
-('Historical Walking Tour', '2023-12-03', 'Explore the history of the city with a guided walking tour.', '2023-11-07', 5.00, true, false, 100, 23, 23),
-('Health and Wellness Expo', '2023-11-26', 'Discover products and practices for a healthier and happier lifestyle.', '2023-11-08', 0.00, true, false, 350, 24, 24),
-('Virtual Reality Gaming Tournament', '2023-12-09', 'Compete in a virtual reality gaming tournament with cutting-edge VR technology.', '2023-11-09', 20.00, true, true, 150, 25, 25),
-('Astronomy Night', '2023-11-24', 'Stargazing and astronomy presentations for enthusiasts and curious minds.', '2023-11-10', 0.00, true, false, 200, 26, 26),
-('Hiking Adventure', '2023-11-29', 'Embark on a scenic hiking adventure with fellow nature enthusiasts.', '2023-11-11', 0.00, true, false, 120, 27, 27),
-('Sustainable Living Workshop', '2023-12-06', 'Learn practical tips for sustainable living and eco-friendly practices.', '2023-11-12', 15.00, true, true, 250, 28, 28),
-('Live Comedy Show', '2023-11-18', 'Enjoy an evening of laughter with a live comedy performance.', '2023-11-13', 18.00, true, true, 180, 29, 29),
-('Craft Beer Festival', '2023-11-30', 'Sample a variety of craft beers from local and regional breweries.', '2023-11-14', 25.00, true, false, 300, 30, 30),
-('Coding Bootcamp', '2023-12-07', 'Intensive coding sessions and workshops for aspiring programmers.', '2023-11-15', 30.00, true, false, 200, 31, 31),
-('Pet Adoption Fair', '2023-11-22', 'Find your new furry friend at this pet adoption fair.', '2023-11-16', 0.00, true, true, 150, 32, 32),
-('Culinary Masterclass', '2023-12-08', 'Learn culinary skills from renowned chefs in an interactive masterclass.', '2023-11-17', 40.00, true, false, 250, 33, 33),
-('Board Game Night', '2023-11-25', 'Join a night of fun and strategy with a variety of board games.', '2023-11-18', 0.00, true, true, 100, 34, 34),
-('Robotics Workshop for Kids', '2023-12-05', 'Engaging and educational robotics workshop for young minds.', '2023-11-19', 10.00, true, false, 120, 35, 35),
-('Caribbean Music Festival', '2023-11-20', 'Groove to the beats of Caribbean music at this lively festival.', '2023-11-20', 12.00, true, true, 300, 36, 36),
-('Investment and Finance Seminar', '2023-12-02', 'Get insights into smart investing and financial planning.', '2023-11-21', 0.00, true, true, 200, 37, 37),
-('Interactive Art Workshop', '2023-11-17', 'Create your own art with guidance from experienced artists.', '2023-11-22', 18.00, true, false, 180, 38, 38),
-('Rock Climbing Challenge', '2023-12-09', 'Test your strength and skills in an exciting rock climbing challenge.', '2023-11-23', 15.00, true, true, 150, 39, 39),
-('Street Photography Walk', '2023-11-24', 'Capture the essence of the city streets through photography.', '2023-11-24', 0.00, true, false, 100, 40, 40),
-('Networking Mixer', '2023-12-06', 'Connect with professionals and expand your professional network.', '2023-11-25', 8.00, true, true, 250, 41, 41),
-('Mindfulness Meditation Session', '2023-11-29', 'Experience peace and relaxation through guided mindfulness meditation.', '2023-11-26', 0.00, true, true, 120, 42, 42),
-('Indie Film Premiere', '2023-12-03', 'Be among the first to watch a premiere of an independent film.', '2023-11-27', 12.00, true, true, 200, 43, 43),
-('Urban Gardening Workshop', '2023-11-18', 'Learn how to create and maintain a garden in an urban setting.', '2023-11-28', 10.00, true, true, 150, 44, 44),
-('Esports Tournament', '2023-12-01', 'Compete in a thrilling esports tournament with various gaming titles.', '2023-11-29', 20.00, true, false, 180, 45, 45),
-('Travel Photography Exhibition', '2023-11-23', 'Journey through stunning travel photographs from around the world.', '2023-11-30', 0.00, true, true, 300, 46, 46),
-('Aerial Yoga Workshop', '2023-12-05', 'Experience yoga in the air with an aerial yoga workshop.', '2023-12-01', 25.00, true, true, 100, 47, 47),
-('Classic Movie Marathon', '2023-11-28', 'Relive the golden age of cinema with a marathon of classic films.', '2023-12-02', 0.00, true, false, 250, 48, 48),
-('Community Choir Performance', '2023-12-07', 'Enjoy harmonious melodies from a community choir.', '2023-12-03', 5.00, true, false, 200, 49, 49),
-('Local Beer Tasting', '2023-11-21', 'Sip and savor a selection of local craft beers.', '2023-12-04', 8.00, true, true, 150, 50, 50);
-
-INSERT INTO location (address, coordinates, name)
-VALUES
-('123 Tech Street, Silicon Valley', '37.7749° N, 122.4194° W', 'Tech Hub Convention Center'),
-('456 Film Avenue, Hollywood', '34.0522° N, 118.2437° W', 'Starlight Studios'),
-('789 Art Lane, Bohemia', '40.7891° N, 73.1350° W', 'Bohemia Art Gallery'),
-('321 Food Plaza, Gourmet City', '41.8781° N, 87.6298° W', 'Gourmet Food Park'),
-('555 Fitness Road, Workoutville', '34.0522° N, 118.2437° W', 'FitLife Gym'),
-('999 Craft Street, Artisan District', '40.7128° N, 74.0060° W', 'Crafty Creations Center'),
-('777 Greenery Avenue, Eco Town', '34.0522° N, 118.2437° W', 'Green Paradise Park'),
-('111 Book Street, Literary City', '41.8781° N, 87.6298° W', 'Book Haven'),
-('234 Science Boulevard, Innovation City', '37.7749° N, 122.4194° W', 'Science Central'),
-('567 Fashion Lane, Trendsville', '34.0522° N, 118.2437° W', 'Fashion Plaza'),
-('987 Charity Circle, Philanthropy Heights', '40.7128° N, 74.0060° W', 'Generosity Hall'),
-('876 Film Workshop Lane, Cinematown', '34.0522° N, 118.2437° W', 'CineCraft Studios'),
-('345 Outdoor Yoga Street, Zen Valley', '41.8781° N, 87.6298° W', 'Nature Yoga Retreat'),
-('654 Classic Car Boulevard, Nostalgia City', '37.7749° N, 122.4194° W', 'Vintage Auto Showground'),
-('210 Digital Avenue, Cyber City', '34.0522° N, 118.2437° W', 'Digital Innovation Hub'),
-('777 Farmers Market Plaza, Freshville', '40.7128° N, 74.0060° W', 'Local Harvest Market'),
-('888 Photography Lane, Shutter City', '34.0522° N, 118.2437° W', 'Photo Gallery'),
-('456 Startup Street, Tech Town', '37.7749° N, 122.4194° W', 'Startup Central'),
-('123 Dance Boulevard, Rhythmtown', '34.0522° N, 118.2437° W', 'Dance Pavilion'),
-('789 Environment Street, Greenfield', '41.8781° N, 87.6298° W', 'EcoAware Center'),
-('321 Mobile App Lane, Code City', '37.7749° N, 122.4194° W', 'AppDev Institute'),
-('555 Orchestra Avenue, Melodyville', '34.0522° N, 118.2437° W', 'Symphony Hall'),
-('999 Historical Walk Street, Heritage City', '40.7128° N, 74.0060° W', 'History Trail'),
-('777 Health Plaza, Wellness Town', '34.0522° N, 118.2437° W', 'WellBeing Center'),
-('111 VR Gaming Street, Tech Oasis', '37.7749° N, 122.4194° W', 'VR Playground'),
-('234 Stargazing Lane, Celestial City', '34.0522° N, 118.2437° W', 'Stellar Observatory'),
-('567 Hiking Trail, Nature Valley', '41.8781° N, 87.6298° W', 'Serene Hikes Park'),
-('987 Sustainable Living Street, Greenberg', '37.7749° N, 122.4194° W', 'EcoLiving Hub'),
-('876 Comedy Corner, Laughter Land', '34.0522° N, 118.2437° W', 'Joke Junction'),
-('345 Craft Beer Street, Brewsville', '40.7128° N, 74.0060° W', 'CraftBrew Haven'),
-('654 Coding Lane, TechHub City', '37.7749° N, 122.4194° W', 'CodeCraft Academy'),
-('210 Pet Adoption Plaza, Furry Haven', '34.0522° N, 118.2437° W', 'Paw Palace'),
-('777 Culinary Avenue, Flavorville', '40.7128° N, 74.0060° W', 'Culinary Studio'),
-('111 Board Game Street, Playtown', '37.7749° N, 122.4194° W', 'BoardGame Café'),
-('234 Robotics Lane, Innovation Plaza', '34.0522° N, 118.2437° W', 'RoboTech Center'),
-('567 Caribbean Music Boulevard, Island Groove', '41.8781° N, 87.6298° W', 'Reggae Rhythms Stage'),
-('987 Investment Plaza, Finance District', '37.7749° N, 122.4194° W', 'Finance Forum'),
-('876 Art Workshop Street, Canvas City', '34.0522° N, 118.2437° W', 'Artistry Workshop'),
-('345 Rock Climbing Lane, Adventure Heights', '40.7128° N, 74.0060° W', 'RockPeak Challenge'),
-('654 Street Photography Boulevard, Snapshot City', '37.7749° N, 122.4194° W', 'UrbanSnap Studio'),
-('210 Networking Plaza, Connect City', '34.0522° N, 118.2437° W', 'BizConnect Lounge'),
-('777 Meditation Street, Zen Zenith', '40.7128° N, 74.0060° W', 'Mindful Oasis'),
-('111 Indie Film Avenue, Cinematic Center', '37.7749° N, 122.4194° W', 'IndieFlix Theater'),
-('234 Urban Gardening Lane, EcoMetropolis', '34.0522° N, 118.2437° W', 'GreenThumb Garden'),
-('567 Esports Arena, GameZone City', '41.8781° N, 87.6298° W', 'eSports Stadium'),
-('987 Travel Photography Street, Wanderlust Town', '37.7749° N, 122.4194° W', 'WanderLens Gallery'),
-('876 Aerial Yoga Plaza, Sky Sanctuary', '34.0522° N, 118.2437° W', 'AeroZen Studio'),
-('345 Classic Movie Lane, Retroville', '40.7128° N, 74.0060° W', 'RetroCinema Theater'),
-('654 Choir Avenue, Harmony Heights', '37.7749° N, 122.4194° W', 'Chorus Hall'),
-('210 Beer Tasting Boulevard, Hop Haven', '34.0522° N, 118.2437° W', 'HopHarbor Brewery');
-
-INSERT INTO users (email, username, name, description, password, blocked, admin)
+INSERT INTO users (email, username, name, description, password)
 VALUES
 ('john.doe@email.com', 'john_doe', 'John Doe', 'Software developer and technology enthusiast.', '$2a$12$2yH1/juufHeEMJ/5XqROg.zx8LwAZG4a5FEA22VoH3lW7H11I/Kn2'),
 ('jane.smith@email.com', 'jane_smith', 'Jane Smith', 'Marketing professional and content creator.', '$2a$12$9tAPiXldp0d9FRULhVG4FOsMycLPiZGiCN1a0YPXp./rSmjZ6LCRq'),
@@ -485,6 +334,116 @@ VALUES
 ('bella.phillips@email.com', 'bella_phillips', 'Bella Phillips', 'Tech geek and software engineer.', '$2a$12$tUpz6/6Rq0UBl6Wd6CSZ5OoZ.t2MQPMJ0qzhIh/0RouKHLHK/tEiq'),
 ('luca.jones@email.com', 'luca_jones', 'Luca Jones', 'Fashion designer and style influencer.', '$2a$12$kF0S1wGbJ9EN9eQY73ldMujqNNikd98ms2zTgOV2XGSmDMDh/ehaW'),
 ('isla.harrison@email.com', 'isla_harrison', 'Isla Harrison', 'Adventure seeker and travel enthusiast.', '$2a$12$dMeNxHvLhZ0b3fgQ5sEzleUz5A2P2W6bNEJ1cADRC5Y.uEzpSefSq');
+
+
+INSERT INTO location (address, coordinates, name)
+VALUES
+('123 Tech Street, Silicon Valley', '37.7749° N, 122.4194° W', 'Tech Hub Convention Center'),
+('456 Film Avenue, Hollywood', '34.0522° N, 118.2437° W', 'Starlight Studios'),
+('789 Art Lane, Bohemia', '40.7891° N, 73.1350° W', 'Bohemia Art Gallery'),
+('321 Food Plaza, Gourmet City', '41.8781° N, 87.6298° W', 'Gourmet Food Park'),
+('555 Fitness Road, Workoutville', '34.0522° N, 118.2437° W', 'FitLife Gym'),
+('999 Craft Street, Artisan District', '40.7128° N, 74.0060° W', 'Crafty Creations Center'),
+('777 Greenery Avenue, Eco Town', '34.0522° N, 118.2437° W', 'Green Paradise Park'),
+('111 Book Street, Literary City', '41.8781° N, 87.6298° W', 'Book Haven'),
+('234 Science Boulevard, Innovation City', '37.7749° N, 122.4194° W', 'Science Central'),
+('567 Fashion Lane, Trendsville', '34.0522° N, 118.2437° W', 'Fashion Plaza'),
+('987 Charity Circle, Philanthropy Heights', '40.7128° N, 74.0060° W', 'Generosity Hall'),
+('876 Film Workshop Lane, Cinematown', '34.0522° N, 118.2437° W', 'CineCraft Studios'),
+('345 Outdoor Yoga Street, Zen Valley', '41.8781° N, 87.6298° W', 'Nature Yoga Retreat'),
+('654 Classic Car Boulevard, Nostalgia City', '37.7749° N, 122.4194° W', 'Vintage Auto Showground'),
+('210 Digital Avenue, Cyber City', '34.0522° N, 118.2437° W', 'Digital Innovation Hub'),
+('777 Farmers Market Plaza, Freshville', '40.7128° N, 74.0060° W', 'Local Harvest Market'),
+('888 Photography Lane, Shutter City', '34.0522° N, 118.2437° W', 'Photo Gallery'),
+('456 Startup Street, Tech Town', '37.7749° N, 122.4194° W', 'Startup Central'),
+('123 Dance Boulevard, Rhythmtown', '34.0522° N, 118.2437° W', 'Dance Pavilion'),
+('789 Environment Street, Greenfield', '41.8781° N, 87.6298° W', 'EcoAware Center'),
+('321 Mobile App Lane, Code City', '37.7749° N, 122.4194° W', 'AppDev Institute'),
+('555 Orchestra Avenue, Melodyville', '34.0522° N, 118.2437° W', 'Symphony Hall'),
+('999 Historical Walk Street, Heritage City', '40.7128° N, 74.0060° W', 'History Trail'),
+('777 Health Plaza, Wellness Town', '34.0522° N, 118.2437° W', 'WellBeing Center'),
+('111 VR Gaming Street, Tech Oasis', '37.7749° N, 122.4194° W', 'VR Playground'),
+('234 Stargazing Lane, Celestial City', '34.0522° N, 118.2437° W', 'Stellar Observatory'),
+('567 Hiking Trail, Nature Valley', '41.8781° N, 87.6298° W', 'Serene Hikes Park'),
+('987 Sustainable Living Street, Greenberg', '37.7749° N, 122.4194° W', 'EcoLiving Hub'),
+('876 Comedy Corner, Laughter Land', '34.0522° N, 118.2437° W', 'Joke Junction'),
+('345 Craft Beer Street, Brewsville', '40.7128° N, 74.0060° W', 'CraftBrew Haven'),
+('654 Coding Lane, TechHub City', '37.7749° N, 122.4194° W', 'CodeCraft Academy'),
+('210 Pet Adoption Plaza, Furry Haven', '34.0522° N, 118.2437° W', 'Paw Palace'),
+('777 Culinary Avenue, Flavorville', '40.7128° N, 74.0060° W', 'Culinary Studio'),
+('111 Board Game Street, Playtown', '37.7749° N, 122.4194° W', 'BoardGame Café'),
+('234 Robotics Lane, Innovation Plaza', '34.0522° N, 118.2437° W', 'RoboTech Center'),
+('567 Caribbean Music Boulevard, Island Groove', '41.8781° N, 87.6298° W', 'Reggae Rhythms Stage'),
+('987 Investment Plaza, Finance District', '37.7749° N, 122.4194° W', 'Finance Forum'),
+('876 Art Workshop Street, Canvas City', '34.0522° N, 118.2437° W', 'Artistry Workshop'),
+('345 Rock Climbing Lane, Adventure Heights', '40.7128° N, 74.0060° W', 'RockPeak Challenge'),
+('654 Street Photography Boulevard, Snapshot City', '37.7749° N, 122.4194° W', 'UrbanSnap Studio'),
+('210 Networking Plaza, Connect City', '34.0522° N, 118.2437° W', 'BizConnect Lounge'),
+('777 Meditation Street, Zen Zenith', '40.7128° N, 74.0060° W', 'Mindful Oasis'),
+('111 Indie Film Avenue, Cinematic Center', '37.7749° N, 122.4194° W', 'IndieFlix Theater'),
+('234 Urban Gardening Lane, EcoMetropolis', '34.0522° N, 118.2437° W', 'GreenThumb Garden'),
+('567 Esports Arena, GameZone City', '41.8781° N, 87.6298° W', 'eSports Stadium'),
+('987 Travel Photography Street, Wanderlust Town', '37.7749° N, 122.4194° W', 'WanderLens Gallery'),
+('876 Aerial Yoga Plaza, Sky Sanctuary', '34.0522° N, 118.2437° W', 'AeroZen Studio'),
+('345 Classic Movie Lane, Retroville', '40.7128° N, 74.0060° W', 'RetroCinema Theater'),
+('654 Choir Avenue, Harmony Heights', '37.7749° N, 122.4194° W', 'Chorus Hall'),
+('210 Beer Tasting Boulevard, Hop Haven', '34.0522° N, 118.2437° W', 'HopHarbor Brewery');
+
+
+INSERT INTO event (name, eventDate, description, creationDate, price, public, openToJoin, capacity, id_user, id_location)
+VALUES
+('Tech Expo', '2024-11-15', 'Explore the latest in technology and innovation.', '2024-10-15', 0.00, true, true, 500, 1, 1),
+('International Film Festival', '2024-12-01', 'Celebrate global cinema with a diverse selection of films.', '2024-10-16', 15.00, true, true, 300, 2, 2),
+('Gastronomy Tour', '2024-11-20', 'Embark on a culinary journey with local chefs and food artisans.', '2024-10-17', 25.00, true, false, 200, 3, 3),
+('Community Cleanup Day', '2024-11-25', 'Join hands for a cleaner and greener neighborhood.', '2024-10-18', 0.00, true, true, 400, 4, 4),
+('Music Marathon', '2024-11-10', 'A day-long music festival featuring diverse genres and local talent.', '2024-10-19', 10.00, true, false, 100, 5, 5),
+('Art and Craft Fair', '2024-11-30', 'Discover handmade artworks and crafts by local artisans.', '2024-10-20', 5.00, true, false, 150, 6, 6),
+('Fitness Challenge', '2024-12-05', 'Participate in a fitness challenge with various activities and competitions.', '2024-10-21', 8.00, true, true, 250, 7, 7),
+('Book Club Meeting', '2024-11-18', 'Join fellow book enthusiasts for a discussion on the latest bestseller.', '2024-10-22', 0.00, true, true, 300, 8, 8),
+('Science and Technology Symposium', '2024-11-22', 'Explore cutting-edge developments in science and technology.', '2024-10-23', 15.00, true, true, 200, 9, 9),
+('Fashion Show', '2024-12-10', 'Experience the latest trends and designs in the world of fashion.', '2024-10-24', 20.00, true, false, 350, 10, 10),
+('Charity Gala', '2024-11-17', 'Support local charities and causes at this elegant fundraising event.', '2024-10-25', 50.00, true, false, 120, 11, 11),
+('Film Making Workshop', '2024-11-29', 'Learn the art and techniques of film making from industry experts.', '2024-10-26', 30.00, true, false, 180, 12, 12),
+('Outdoor Yoga Retreat', '2024-12-08', 'Reconnect with nature and rejuvenate through yoga and meditation.', '2024-10-27', 40.00, true, true, 100, 13, 13),
+('Classic Car Show', '2024-11-19', 'Admire vintage and classic cars from different eras at this show.', '2024-10-28', 10.00, true, false, 250, 14, 14),
+('Digital Marketing Conference', '2024-11-28', 'Stay updated on the latest trends and strategies in digital marketing.', '2024-10-29', 25.00, true, true, 300, 15, 15),
+('Local Farmers Market', '2024-12-02', 'Support local farmers and vendors by shopping for fresh produce and goods.', '2024-10-30', 0.00, true, false, 400, 16, 16),
+('Photography Exhibition', '2024-11-21', 'View captivating photographs by local and international photographers.', '2024-11-01', 5.00, true, true, 200, 17, 17),
+('Startup Pitch Competition', '2024-12-07', 'Witness innovative startup pitches and ideas at this competition.', '2024-11-02', 15.00, true, false, 150, 18, 18),
+('Dance Performance Showcase', '2024-11-16', 'Enjoy mesmerizing dance performances by local and international troupes.', '2024-11-03', 12.00, true, true, 300, 19, 19),
+('Environmental Conservation Workshop', '2024-11-27', 'Learn about environmental conservation and sustainable practices.', '2024-11-04', 0.00, true, false, 200, 20, 20),
+('Mobile App Development Seminar', '2024-12-04', 'Get insights into the latest trends and tools in mobile app development.', '2024-11-05', 10.00, true, false, 250, 21, 21),
+('Community Orchestra Concert', '2024-11-23', 'Experience the harmonious melodies of a community orchestra.', '2024-11-06', 8.00, true, true, 180, 22, 22),
+('Historical Walking Tour', '2024-12-03', 'Explore the history of the city with a guided walking tour.', '2024-11-07', 5.00, true, false, 100, 23, 23),
+('Health and Wellness Expo', '2024-11-26', 'Discover products and practices for a healthier and happier lifestyle.', '2024-11-08', 0.00, true, false, 350, 24, 24),
+('Virtual Reality Gaming Tournament', '2024-12-09', 'Compete in a virtual reality gaming tournament with cutting-edge VR technology.', '2024-11-09', 20.00, true, true, 150, 25, 25),
+('Astronomy Night', '2024-11-24', 'Stargazing and astronomy presentations for enthusiasts and curious minds.', '2024-11-10', 0.00, true, false, 200, 26, 26),
+('Hiking Adventure', '2024-11-29', 'Embark on a scenic hiking adventure with fellow nature enthusiasts.', '2024-11-11', 0.00, true, false, 120, 27, 27),
+('Sustainable Living Workshop', '2024-12-06', 'Learn practical tips for sustainable living and eco-friendly practices.', '2024-11-12', 15.00, true, true, 250, 28, 28),
+('Live Comedy Show', '2024-11-18', 'Enjoy an evening of laughter with a live comedy performance.', '2024-11-13', 18.00, true, true, 180, 29, 29),
+('Craft Beer Festival', '2024-11-30', 'Sample a variety of craft beers from local and regional breweries.', '2024-11-14', 25.00, true, false, 300, 30, 30),
+('Coding Bootcamp', '2024-12-07', 'Intensive coding sessions and workshops for aspiring programmers.', '2024-11-15', 30.00, true, false, 200, 31, 31),
+('Pet Adoption Fair', '2024-11-22', 'Find your new furry friend at this pet adoption fair.', '2024-11-16', 0.00, true, true, 150, 32, 32),
+('Culinary Masterclass', '2024-12-08', 'Learn culinary skills from renowned chefs in an interactive masterclass.', '2024-11-17', 40.00, true, false, 250, 33, 33),
+('Board Game Night', '2024-11-25', 'Join a night of fun and strategy with a variety of board games.', '2024-11-18', 0.00, true, true, 100, 34, 34),
+('Robotics Workshop for Kids', '2024-12-05', 'Engaging and educational robotics workshop for young minds.', '2024-11-19', 10.00, true, false, 120, 35, 35),
+('Caribbean Music Festival', '2024-11-20', 'Groove to the beats of Caribbean music at this lively festival.', '2024-11-20', 12.00, true, true, 300, 36, 36),
+('Investment and Finance Seminar', '2024-12-02', 'Get insights into smart investing and financial planning.', '2024-11-21', 0.00, true, true, 200, 37, 37),
+('Interactive Art Workshop', '2024-11-17', 'Create your own art with guidance from experienced artists.', '2024-11-22', 18.00, true, false, 180, 38, 38),
+('Rock Climbing Challenge', '2024-12-09', 'Test your strength and skills in an exciting rock climbing challenge.', '2024-11-23', 15.00, true, true, 150, 39, 39),
+('Street Photography Walk', '2024-11-24', 'Capture the essence of the city streets through photography.', '2024-11-24', 0.00, true, false, 100, 40, 40),
+('Networking Mixer', '2024-12-06', 'Connect with professionals and expand your professional network.', '2024-11-25', 8.00, true, true, 250, 41, 41),
+('Mindfulness Meditation Session', '2024-11-29', 'Experience peace and relaxation through guided mindfulness meditation.', '2024-11-26', 0.00, true, true, 120, 42, 42),
+('Indie Film Premiere', '2024-12-03', 'Be among the first to watch a premiere of an independent film.', '2024-11-27', 12.00, true, true, 200, 43, 43),
+('Urban Gardening Workshop', '2024-11-18', 'Learn how to create and maintain a garden in an urban setting.', '2024-11-28', 10.00, true, true, 150, 44, 44),
+('Esports Tournament', '2024-12-01', 'Compete in a thrilling esports tournament with various gaming titles.', '2024-11-29', 20.00, true, false, 180, 45, 45),
+('Travel Photography Exhibition', '2024-11-23', 'Journey through stunning travel photographs from around the world.', '2024-11-30', 0.00, true, true, 300, 46, 46),
+('Aerial Yoga Workshop', '2024-12-05', 'Experience yoga in the air with an aerial yoga workshop.', '2024-12-01', 25.00, true, true, 100, 47, 47),
+('Classic Movie Marathon', '2024-11-28', 'Relive the golden age of cinema with a marathon of classic films.', '2024-12-02', 0.00, true, false, 250, 48, 48),
+('Community Choir Performance', '2024-12-07', 'Enjoy harmonious melodies from a community choir.', '2024-12-03', 5.00, true, false, 200, 49, 49),
+('Local Beer Tasting', '2024-11-21', 'Sip and savor a selection of local craft beers.', '2024-12-04', 8.00, true, true, 150, 50, 50);
+
+
 
 INSERT INTO tags (name) VALUES
 ('Music'),
@@ -622,78 +581,78 @@ INSERT INTO events_tags (id_event, id_tag) VALUES (1, 3),
 
 
 INSERT INTO comment (text, date, id_event, id_user) VALUES
-  ('Great event!', '2023-11-15', 1, 1),
-  ('I enjoyed every moment!', '2023-11-16', 2, 2),
-  ('The food was amazing!', '2023-11-17', 3, 3),
-  ('Well organized event!', '2023-11-18', 4, 4),
-  ('Awesome music selection!', '2023-11-19', 5, 5),
-  ('Loved the art and crafts!', '2023-11-20', 6, 6),
-  ('Challenging but fun!', '2023-11-21', 7, 7),
-  ('Great book discussions!', '2023-11-22', 8, 8),
-  ('Incredible tech innovations!', '2023-11-23', 9, 9),
-  ('Fashion show was fantastic!', '2023-11-24', 10, 10),
-  ('Amazing charity work!', '2023-11-25', 11, 11),
-  ('Learned a lot about filmmaking!', '2023-11-26', 12, 12),
-  ('Relaxing yoga retreat!', '2023-11-27', 13, 13),
-  ('Vintage cars were a hit!', '2023-11-28', 14, 14),
-  ('Informative digital marketing talks!', '2023-11-29', 15, 15),
-  ('Fresh produce at the market!', '2023-11-30', 16, 16),
-  ('Stunning photography exhibit!', '2023-12-01', 17, 17),
-  ('Impressive startup pitches!', '2023-12-02', 18, 18),
-  ('Mesmerizing dance performances!', '2023-12-03', 19, 19),
-  ('Eco-friendly workshop!', '2023-12-04', 20, 20),
-  ('Insights into app development!', '2023-12-05', 21, 21),
-  ('Harmonious orchestra concert!', '2023-12-06', 22, 22),
-  ('Fascinating historical tour!', '2023-12-07', 23, 23),
-  ('Healthy living expo!', '2023-12-08', 24, 24),
-  ('Exciting VR gaming tournament!', '2023-12-09', 25, 25),
-  ('Starry night was magical!', '2023-12-10', 26, 26),
-  ('Scenic hike with great people!', '2023-11-11', 27, 27),
-  ('Practical sustainability tips!', '2023-11-12', 28, 28),
-  ('Comedy show had me in stitches!', '2023-11-13', 29, 29),
-  ('Craft beer variety was impressive!', '2023-11-14', 30, 30),
-  ('Coding bootcamp changed my life!', '2023-11-15', 31, 31),
-  ('Found my new pet at the fair!', '2023-11-16', 32, 32),
-  ('Mastering culinary skills!', '2023-11-17', 33, 33),
-  ('Board game night was a blast!', '2023-11-18', 34, 34),
-  ('Kids loved the robotics workshop!', '2023-11-19', 35, 35),
-  ('Caribbean music festival was lively!', '2023-11-20', 36, 36),
-  ('Insightful finance seminar!', '2023-11-21', 37, 37),
-  ('Art workshop unleashed creativity!', '2023-11-22', 38, 38),
-  ('Rock climbing was a challenge!', '2023-11-23', 39, 39),
-  ('Capturing city streets with photos!', '2023-11-24', 40, 40),
-  ('Networking event expanded contacts!', '2023-11-25', 41, 41),
-  ('Mindfulness meditation was calming!', '2023-11-26', 42, 42),
-  ('Indie film premiere was fantastic!', '2023-11-27', 43, 43),
-  ('Urban gardening in the city!', '2023-11-28', 44, 44),
-  ('Esports tournament was thrilling!', '2023-11-29', 45, 45),
-  ('Travel photography exhibition!', '2023-11-30', 46, 46),
-  ('Aerial yoga was an adventure!', '2023-12-01', 47, 47),
-  ('Classic movie marathon nostalgia!', '2023-12-02', 48, 48),
-  ('Community choir harmonies!', '2023-12-03', 49, 49),
-  ('Tasting local craft beers!', '2023-12-04', 50, 50);
+  ('Great event!', '2024-11-15', 1, 1),
+  ('I enjoyed every moment!', '2024-11-16', 2, 2),
+  ('The food was amazing!', '2024-11-17', 3, 3),
+  ('Well organized event!', '2024-11-18', 4, 4),
+  ('Awesome music selection!', '2024-11-19', 5, 5),
+  ('Loved the art and crafts!', '2024-11-20', 6, 6),
+  ('Challenging but fun!', '2024-11-21', 7, 7),
+  ('Great book discussions!', '2024-11-22', 8, 8),
+  ('Incredible tech innovations!', '2024-11-23', 9, 9),
+  ('Fashion show was fantastic!', '2024-11-24', 10, 10),
+  ('Amazing charity work!', '2024-11-25', 11, 11),
+  ('Learned a lot about filmmaking!', '2024-11-26', 12, 12),
+  ('Relaxing yoga retreat!', '2024-11-27', 13, 13),
+  ('Vintage cars were a hit!', '2024-11-28', 14, 14),
+  ('Informative digital marketing talks!', '2024-11-29', 15, 15),
+  ('Fresh produce at the market!', '2024-11-30', 16, 16),
+  ('Stunning photography exhibit!', '2024-12-01', 17, 17),
+  ('Impressive startup pitches!', '2024-12-02', 18, 18),
+  ('Mesmerizing dance performances!', '2024-12-03', 19, 19),
+  ('Eco-friendly workshop!', '2024-12-04', 20, 20),
+  ('Insights into app development!', '2024-12-05', 21, 21),
+  ('Harmonious orchestra concert!', '2024-12-06', 22, 22),
+  ('Fascinating historical tour!', '2024-12-07', 23, 23),
+  ('Healthy living expo!', '2024-12-08', 24, 24),
+  ('Exciting VR gaming tournament!', '2024-12-09', 25, 25),
+  ('Starry night was magical!', '2024-12-10', 26, 26),
+  ('Scenic hike with great people!', '2024-11-11', 27, 27),
+  ('Practical sustainability tips!', '2024-11-12', 28, 28),
+  ('Comedy show had me in stitches!', '2024-11-13', 29, 29),
+  ('Craft beer variety was impressive!', '2024-11-14', 30, 30),
+  ('Coding bootcamp changed my life!', '2024-11-15', 31, 31),
+  ('Found my new pet at the fair!', '2024-11-16', 32, 32),
+  ('Mastering culinary skills!', '2024-11-17', 33, 33),
+  ('Board game night was a blast!', '2024-11-18', 34, 34),
+  ('Kids loved the robotics workshop!', '2024-11-19', 35, 35),
+  ('Caribbean music festival was lively!', '2024-11-20', 36, 36),
+  ('Insightful finance seminar!', '2024-11-21', 37, 37),
+  ('Art workshop unleashed creativity!', '2024-11-22', 38, 38),
+  ('Rock climbing was a challenge!', '2024-11-23', 39, 39),
+  ('Capturing city streets with photos!', '2024-11-24', 40, 40),
+  ('Networking event expanded contacts!', '2024-11-25', 41, 41),
+  ('Mindfulness meditation was calming!', '2024-11-26', 42, 42),
+  ('Indie film premiere was fantastic!', '2024-11-27', 43, 43),
+  ('Urban gardening in the city!', '2024-11-28', 44, 44),
+  ('Esports tournament was thrilling!', '2024-11-29', 45, 45),
+  ('Travel photography exhibition!', '2024-11-30', 46, 46),
+  ('Aerial yoga was an adventure!', '2024-12-01', 47, 47),
+  ('Classic movie marathon nostalgia!', '2024-12-02', 48, 48),
+  ('Community choir harmonies!', '2024-12-03', 49, 49),
+  ('Tasting local craft beers!', '2024-12-04', 50, 50);
 
 INSERT INTO poll (title, creationDate, id_event, id_user) VALUES
-  ('Music Preferences for Tech Expo', '2023-11-15', 1, 1),
-  ('Film Favorites for Film Festival', '2023-11-16', 2, 2),
-  ('Favorite Cuisine for Gastronomy Tour', '2023-11-17', 3, 3),
-  ('Feedback for Community Cleanup Day', '2023-11-18', 4, 4),
-  ('Preferred Music for Music Marathon', '2023-11-19', 5, 5),
-  ('Favorite Art Forms for Art and Craft Fair', '2023-11-20', 6, 6),
-  ('Fitness Preferences for Fitness Challenge', '2023-11-21', 7, 7),
-  ('Book Choices for Book Club Meeting', '2023-11-22', 8, 8),
-  ('Tech Trends Poll for Tech Symposium', '2023-11-23', 9, 9),
-  ('Fashion Preferences for Fashion Show', '2023-11-24', 10, 10),
-  ('Favorite Movie Genre for Charity Gala', '2023-12-10', 11, 11),
-  ('Best Dessert in Town for Film Making Workshop', '2023-12-11', 12, 12),
-  ('Community Event Suggestions for Outdoor Yoga Retreat', '2023-12-12', 13, 13),
-  ('Technology in Daily Life for Classic Car Show', '2023-12-13', 14, 14),
-  ('Style and Fashion Trends for Digital Marketing Conference', '2023-12-14', 15, 15),
-  ('Fitness Routine Poll for Local Farmers Market', '2023-12-15', 16, 16),
-  ('Book Recommendations for Photography Exhibition', '2023-12-16', 17, 17),
-  ('Future of Tech for Startup Pitch Competition', '2023-12-17', 18, 18),
-  ('Favorite Fashion Designers for Dance Performance Showcase', '2023-12-18', 19, 19),
-  ('Cooking Techniques for Environmental Conservation Workshop', '2023-12-19', 20, 20);
+  ('Music Preferences for Tech Expo', '2024-11-15', 1, 1),
+  ('Film Favorites for Film Festival', '2024-11-16', 2, 2),
+  ('Favorite Cuisine for Gastronomy Tour', '2024-11-17', 3, 3),
+  ('Feedback for Community Cleanup Day', '2024-11-18', 4, 4),
+  ('Preferred Music for Music Marathon', '2024-11-19', 5, 5),
+  ('Favorite Art Forms for Art and Craft Fair', '2024-11-20', 6, 6),
+  ('Fitness Preferences for Fitness Challenge', '2024-11-21', 7, 7),
+  ('Book Choices for Book Club Meeting', '2024-11-22', 8, 8),
+  ('Tech Trends Poll for Tech Symposium', '2024-11-23', 9, 9),
+  ('Fashion Preferences for Fashion Show', '2024-11-24', 10, 10),
+  ('Favorite Movie Genre for Charity Gala', '2024-12-10', 11, 11),
+  ('Best Dessert in Town for Film Making Workshop', '2024-12-11', 12, 12),
+  ('Community Event Suggestions for Outdoor Yoga Retreat', '2024-12-12', 13, 13),
+  ('Technology in Daily Life for Classic Car Show', '2024-12-13', 14, 14),
+  ('Style and Fashion Trends for Digital Marketing Conference', '2024-12-14', 15, 15),
+  ('Fitness Routine Poll for Local Farmers Market', '2024-12-15', 16, 16),
+  ('Book Recommendations for Photography Exhibition', '2024-12-16', 17, 17),
+  ('Future of Tech for Startup Pitch Competition', '2024-12-17', 18, 18),
+  ('Favorite Fashion Designers for Dance Performance Showcase', '2024-12-18', 19, 19),
+  ('Cooking Techniques for Environmental Conservation Workshop', '2024-12-19', 20, 20);
 
 INSERT INTO option (name, id_poll) VALUES
   ('Electronic', 1),
@@ -778,67 +737,67 @@ INSERT INTO option (name, id_poll) VALUES
   ('Sous Vide', 20);
 
 INSERT INTO joined (id_event, id_user, date, ticket) VALUES
-  (1, 1, '2023-11-01', NULL),
-  (1, 2, '2023-11-02', NULL),
-  (1, 3, '2023-11-03', NULL),
-  (1, 4, '2023-11-04', NULL),
-  (2, 2, '2023-11-05', NULL),
-  (2, 3, '2023-11-06', NULL),
-  (2, 4, '2023-11-07', NULL),
-  (2, 5, '2023-11-08', NULL),
-  (3, 3, '2023-11-09', NULL),
-  (3, 4, '2023-11-10', NULL),
-  (3, 5, '2023-11-11', NULL),
-  (3, 6, '2023-11-12', NULL),
-  (4, 4, '2023-11-13', NULL),
-  (4, 5, '2023-11-14', NULL),
-  (4, 6, '2023-11-15', NULL),
-  (4, 7, '2023-11-16', NULL),
-  (5, 5, '2023-11-17', NULL),
-  (5, 6, '2023-11-18', NULL),
-  (5, 7, '2023-11-19', NULL),
-  (5, 8, '2023-11-20', NULL),
-  (6, 6, '2023-11-21', NULL),
-  (6, 7, '2023-11-22', NULL),
-  (6, 8, '2023-11-23', NULL),
-  (6, 9, '2023-11-24', NULL),
-  (7, 7, '2023-11-25', NULL),
-  (7, 8, '2023-11-26', NULL),
-  (7, 9, '2023-11-27', NULL),
-  (7, 10, '2023-11-28', NULL),
-  (8, 8, '2023-11-29', NULL),
-  (8, 9, '2023-11-30', NULL),
-  (8, 10, '2023-12-01', NULL),
-  (8, 11, '2023-12-02', NULL),
-  (9, 9, '2023-12-03', NULL),
-  (9, 10, '2023-12-04', NULL),
-  (9, 11, '2023-12-05', NULL),
-  (9, 12, '2023-12-06', NULL),
-  (10, 10, '2023-12-07', NULL),
-  (10, 11, '2023-12-08', NULL),
-  (10, 12, '2023-12-09', NULL),
-  (10, 13, '2023-12-10', NULL),
-  (11, 11, '2023-12-11', NULL),
-  (11, 12, '2023-12-12', NULL),
-  (11, 13, '2023-12-13', NULL),
-  (11, 14, '2023-12-14', NULL),
-  (12, 12, '2023-12-15', NULL),
-  (12, 13, '2023-12-16', NULL),
-  (12, 14, '2023-12-17', NULL),
-  (12, 15, '2023-12-18', NULL),
-  (13, 13, '2023-12-19', NULL),
-  (13, 14, '2023-12-20', NULL),
-  (13, 15, '2023-12-21', NULL),
-  (13, 16, '2023-12-22', NULL),
-  (14, 14, '2023-12-23', NULL),
-  (14, 15, '2023-12-24', NULL),
-  (14, 16, '2023-12-25', NULL),
-  (14, 17, '2023-12-26', NULL),
-  (15, 15, '2023-12-27', NULL),
-  (15, 16, '2023-12-28', NULL),
-  (15, 17, '2023-12-29', NULL),
-  (15, 18, '2023-12-30', NULL),
-  (16, 16, '2023-12-31', NULL),
+  (1, 1, '2024-11-01', NULL),
+  (1, 2, '2024-11-02', NULL),
+  (1, 3, '2024-11-03', NULL),
+  (1, 4, '2024-11-04', NULL),
+  (2, 2, '2024-11-05', NULL),
+  (2, 3, '2024-11-06', NULL),
+  (2, 4, '2024-11-07', NULL),
+  (2, 5, '2024-11-08', NULL),
+  (3, 3, '2024-11-09', NULL),
+  (3, 4, '2024-11-10', NULL),
+  (3, 5, '2024-11-11', NULL),
+  (3, 6, '2024-11-12', NULL),
+  (4, 4, '2024-11-13', NULL),
+  (4, 5, '2024-11-14', NULL),
+  (4, 6, '2024-11-15', NULL),
+  (4, 7, '2024-11-16', NULL),
+  (5, 5, '2024-11-17', NULL),
+  (5, 6, '2024-11-18', NULL),
+  (5, 7, '2024-11-19', NULL),
+  (5, 8, '2024-11-20', NULL),
+  (6, 6, '2024-11-21', NULL),
+  (6, 7, '2024-11-22', NULL),
+  (6, 8, '2024-11-23', NULL),
+  (6, 9, '2024-11-24', NULL),
+  (7, 7, '2024-11-25', NULL),
+  (7, 8, '2024-11-26', NULL),
+  (7, 9, '2024-11-27', NULL),
+  (7, 10, '2024-11-28', NULL),
+  (8, 8, '2024-11-29', NULL),
+  (8, 9, '2024-11-30', NULL),
+  (8, 10, '2024-12-01', NULL),
+  (8, 11, '2024-12-02', NULL),
+  (9, 9, '2024-12-03', NULL),
+  (9, 10, '2024-12-04', NULL),
+  (9, 11, '2024-12-05', NULL),
+  (9, 12, '2024-12-06', NULL),
+  (10, 10, '2024-12-07', NULL),
+  (10, 11, '2024-12-08', NULL),
+  (10, 12, '2024-12-09', NULL),
+  (10, 13, '2024-12-10', NULL),
+  (11, 11, '2024-12-11', NULL),
+  (11, 12, '2024-12-12', NULL),
+  (11, 13, '2024-12-13', NULL),
+  (11, 14, '2024-12-14', NULL),
+  (12, 12, '2024-12-15', NULL),
+  (12, 13, '2024-12-16', NULL),
+  (12, 14, '2024-12-17', NULL),
+  (12, 15, '2024-12-18', NULL),
+  (13, 13, '2024-12-19', NULL),
+  (13, 14, '2024-12-20', NULL),
+  (13, 15, '2024-12-21', NULL),
+  (13, 16, '2024-12-22', NULL),
+  (14, 14, '2024-12-23', NULL),
+  (14, 15, '2024-12-24', NULL),
+  (14, 16, '2024-12-25', NULL),
+  (14, 17, '2024-12-26', NULL),
+  (15, 15, '2024-12-27', NULL),
+  (15, 16, '2024-12-28', NULL),
+  (15, 17, '2024-12-29', NULL),
+  (15, 18, '2024-12-30', NULL),
+  (16, 16, '2024-12-31', NULL),
   (16, 17, '2024-01-01', NULL),
   (16, 18, '2024-01-02', NULL),
   (16, 19, '2024-01-03', NULL),
@@ -858,7 +817,7 @@ INSERT INTO joined (id_event, id_user, date, ticket) VALUES
   (20, 21, '2024-01-17', NULL),
   (20, 22, '2024-01-18', NULL),
   (20, 23, '2024-01-19', NULL);
-
+/*
 INSERT INTO invite (id_eventnotification, id_user)
 VALUES
   (1, 1),
@@ -871,6 +830,7 @@ VALUES
   (8, 8),
   (9, 9),
   (10, 10);
+  */
 
 INSERT INTO user_option (id_user, id_option) VALUES
   (1, 1),
