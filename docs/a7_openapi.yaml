@@ -145,12 +145,145 @@ paths:
                   value: "/"
                 302Failure:
                   description: "Failed authentication. Redirect to login form."
-                  value: "/register"
+                  value: "/login"
+
+  /users/{id}:
+    get:
+      operationId: R106
+      summary: "R106: View user profile"
+      description: "Show the individual user profile. Access: USR."
+      tags:
+        - "M01: Authentication and Individual Profile"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: "Ok. Show User Profile UI"
+
+  /users/{id}/edit:
+    get:
+      operationId: R107
+      summary: "R107: Edit user profile page"
+      description: "Show the edit user form. Access: USR"
+      tags:
+        - "M01: Authentication and Individual Profile"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: "Ok. Show Edit User UI"
+        "403":
+          description: "Forbidden. Login required."
+          value: "/login"
+    put:
+      operationId: R108
+      summary: "R108: Update User"
+      description: "Processes the update user form submission. Access: USR." //TODO USR ou OWN?
+      tags:
+        - "M01: Authentication and Individual Profile"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                password:
+                  type: string
+                blocked:
+                  type: boolean
+                admin:
+                  type: boolean
+      responses:
+        "200":
+          description: "Update successful. Redirect to user page."
+        "400":
+          description: "Bad request"
+  api/users/{id}/owned-events:
+    get:
+      operationId: R109
+      summary: "R109: Search Owned Events API"
+      description: "Search for events owned by the user and returns the results as JSON. Access: USR"
+      tags:
+        - "M01: Authentication and Individual Profile"
+      parameters:
+        //TODO Não estudei direito essa parte ainda
+      responses:
+        "200"
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    obs:
+                      type: string
+                    year:
+                      type: string
+                    owner:
+                      type: string
+                    type:
+                      type: string
+
+
+    api/users/{id}/joined-events:
+    get:
+      operationId: R110
+      summary: "R110: Search for Joined Events API"
+      description: "Search for events joined by the user and returns the results as JSON. Access: USR"
+      tags:
+        - "M01: Authentication and Individual Profile"
+      parameters:
+        TODO Não estudei direito essa parte ainda
+      responses:
+        "200"
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    obs:
+                      type: string
+                    year:
+                      type: string
+                    owner:
+                      type: string
+                    type:
+                      type: string
 
   /home:
     get:
-      operationId: R106
-      summary: "R106: Home Page"
+      operationId: R201
+      summary: "R201: Home Page"
       description: "Show the home page. Access: PUB"
       tags:
         - "M02: Events"
@@ -160,8 +293,8 @@ paths:
 
   /events:
     get:
-      operationId: R201
-      summary: "R201: Events page"
+      operationId: R202
+      summary: "R202: Events page"
       description: "Shows the events page UI. Access: PUB."
       tags:
         - "M02: Events"
@@ -171,8 +304,8 @@ paths:
 
   /events/createEvent:
     get:
-      operationId: R202
-      summary: "R202: Create Event Page"
+      operationId: R203
+      summary: "R203: Create Event Page"
       description: "Show the create event form. Access: USR."
       tags:
         - "M02: Events"
@@ -183,8 +316,8 @@ paths:
           description: "Forbidden. Login required."
 
     post:
-      operationId: R203
-      summary: "R203: Create Event Action"
+      operationId: R204
+      summary: "R204: Create Event Action"
       description: "Processes the create event form submission. Access: USR."
       tags:
         - "M02: Events"
@@ -234,8 +367,8 @@ paths:
 
   /events/{id}:
     get:
-      operationId: R204
-      summary: "R204: View Event"
+      operationId: R205
+      summary: "R205: View Event"
       description: "Show individual event. Access: PUB USR OWN."
       tags:
         - "M02: Events"
@@ -253,8 +386,8 @@ paths:
           value: "/events"
 
     delete:
-      operationId: R205
-      summary: "R205: Delete Event"
+      operationId: R206
+      summary: "R206: Delete Event"
       description: "Delete event. Access: OWN."
       tags:
         - "M02: Events"
@@ -274,8 +407,8 @@ paths:
 
   /events/{id}/join:
     post:
-      operationId: R206
-      summary: "R206: Join Event"
+      operationId: R207
+      summary: "R207: Join Event"
       description: "Join event. Access: USR."
       tags:
         - "M02: Events"
@@ -295,8 +428,8 @@ paths:
 
   /events/{id}/askToJoin:
     post:
-      operationId: R207
-      summary: "R207: Ask to Join Event"
+      operationId: R208
+      summary: "R208: Ask to Join Event"
       description: "Ask to join event. Access: USR."
       tags:
         - "M02: Events"
@@ -316,8 +449,8 @@ paths:
 
   /events/{id}/leave:
     post:
-      operationId: R208
-      summary: "R208: Leave Event"
+      operationId: R209
+      summary: "R209: Leave Event"
       description: "Leave event. Access: USR."
       tags:
         - "M02: Events"
@@ -337,8 +470,8 @@ paths:
 
   /events/{id}/edit:
     get:
-      operationId: R205
-      summary: "R205: Edit Event"
+      operationId: R210
+      summary: "R210: Edit Event"
       description: "Show the edit event form. Access: USR OWN."
       tags:
         - "M02: Events"
@@ -356,8 +489,8 @@ paths:
           value: "/events"
 
     put:
-      operationId: R204
-      summary: "R204: Update Event"
+      operationId: R211
+      summary: "R211: Update Event"
       description: "Processes the update event form submission. Access: OWN."
       tags:
         - "M02: Events"
@@ -394,34 +527,54 @@ paths:
         "400":
           description: "Bad request"
 
-  /users/{id}:
+  events/{id}/participants:
     get:
-      operationId: R107
-      summary: "R107: View user profile"
-      description: "Show the individual user profile. Access: USR"
+      operationId: R212
+      summary: "R212: View event participants"
+      description: "Show all users that joined the event. Access: OWN."
       tags:
-        - "M01: Authentication and Individual Profile"
-
+        - "M02: Events"
       parameters:
         - in: path
           name: id
           schema:
             type: integer
           required: true
-
       responses:
         "200":
-          description: "Ok. Show User Profile UI"
+          description: "Ok. Show Event Participants UI"
+        "403":
+          description: "Forbidden. Login as owner required."
+          value: "/events"
+    post: //TODO POST ou DELETE?
+      operationId: R213
+      summary: "R213: Remove User from Event"
+      description: "Remove user from event. Access: OWN."
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "202":
+          description: "Accepted. User removed from event deleted."
+          value: "/events/{id}/participants"
+        "401":
+          description: "Unauthorized. User not owner of event."
+          value: "/events/{id}"
+
+
 
   /api/events:
     get:
-      operationId: R202
-      summary: "R202: Search Events API"
+      operationId: R214
+      summary: "R214: Search Events API"
       description: "Searches for events and returns the results as JSON. Access: PUB."
-
       tags:
         - "M02: Events"
-
       parameters:
         - in: query
           name: query
@@ -458,7 +611,6 @@ paths:
           schema:
             type: integer
           required: false
-
       responses:
         "200":
           description: Success
@@ -481,3 +633,22 @@ paths:
                       type: string
                     type:
                       type: string
+        
+  /events/{id}/invite-user:
+    post:
+      operationId: R401
+      summary: "R401: Invite User to Public Event"
+      description: "Invite a user to a public event. Access: USR"
+      tags:
+        - "M04: Invite and join events"
+      requestBody:
+        required: true
+        content:
+         application/x-www-form-urlencoded:
+           schema:
+             type: object
+             properties:
+               email:
+                 type: string
+             required:
+                  - email
