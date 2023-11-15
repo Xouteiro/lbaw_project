@@ -15,4 +15,14 @@ class Option extends Model
     protected $fillables = [
         'name'
     ];
+
+    public function poll()
+    {
+        return $this->belongsTo(Poll::class, 'id_poll');
+    }
+
+    public function voters()
+    {
+        return $this->belongsToMany(User::class, 'user_option', 'id_option', 'id_user');
+    }
 }

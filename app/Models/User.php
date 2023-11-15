@@ -22,6 +22,12 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+    protected $hidden = [
+        'password'
+    ];
+    protected $casts = [
+        'password' => 'hashed'
+    ];
 
     public function events()
     {
@@ -34,24 +40,8 @@ class User extends Authenticatable
         return $this->hasMany(Event::class);
     }
     
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password'
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
-
+    public function pollOptions()
+    {
+        return $this->belongsToMany(Option::class, 'user_option', 'id_user', 'id_option');
+    }
 }
