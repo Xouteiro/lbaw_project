@@ -11,5 +11,25 @@ class Event extends Model
 
     public $timestamps = false;
     protected $table = 'event';
-    
+    protected $fillables = [
+        'name',
+        'eventdate',
+        'description',
+        'price',
+        'public',
+        'opentojoin',
+        'capacity',
+        'id_user',
+        'id_location'
+    ];
+
+    public function participants()
+    {
+        return $this->belongsToMany(User::class, 'joined', 'id_event', 'id_user');
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }
