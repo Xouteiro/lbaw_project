@@ -16,18 +16,24 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     // Don't add create and update timestamps in database.
-    public $timestamps  = false;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    public $timestamps = false;
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'joined', 'id_user', 'id_event')
+        ->withPivot('date', 'ticket');
+    }
+
+    public function ownedEvents()
+    {
+        return $this->hasMany(Event::class);
+    }
+    
 
     /**
      * The attributes that should be hidden for serialization.
@@ -35,8 +41,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password'
     ];
 
     /**
@@ -49,11 +54,4 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    /**
-     * Get the cards for a user.
-     */
-    public function cards(): HasMany
-    {
-        return $this->hasMany(Card::class);
-    }
 }

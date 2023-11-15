@@ -9,6 +9,7 @@ class Event extends Model
 {
     use HasFactory;
 
+    // Don't add create and update timestamps in database.
     public $timestamps = false;
     protected $table = 'event';
     protected $fillables = [
@@ -25,7 +26,8 @@ class Event extends Model
 
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'joined', 'id_event', 'id_user');
+        return $this->belongsToMany(User::class, 'joined', 'id_event', 'id_user')
+        ->withPivot('date', 'ticket');
     }
 
     public function owner()
