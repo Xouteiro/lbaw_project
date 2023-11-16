@@ -13,7 +13,7 @@ class Comment extends Model
     public $timestamps = false;
     protected $table = 'comment';
     protected $fillables = [
-        'text' // se decidirmos não editar os comentários, podemos remover isto
+        'text'
     ];
 
     public function user()

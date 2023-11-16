@@ -13,7 +13,6 @@ class EventUpdate extends Model
     public $timestamps = false;
     protected $table = 'event_update';
 
-    // verificar se é assim que é suposto referenciar a classe abstrata
     public function notification()
     {
         return $this->belongsTo(Notification::class, 'id_eventnotification');

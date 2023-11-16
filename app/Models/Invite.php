@@ -13,7 +13,6 @@ class Invite extends Notification
     public $timestamps = false;
     protected $table = 'invite';
 
-    // verificar se é assim que é suposto referenciar a classe abstrata
     public function notification()
     {
         return $this->belongsTo(Notification::class, 'id_eventnotification');
