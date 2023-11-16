@@ -16,44 +16,64 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     // Don't add create and update timestamps in database.
-    public $timestamps  = false;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    public $timestamps = false;
     protected $fillable = [
         'name',
+        'username',
+        'description',
         'email',
         'password',
     ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password'
     ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'password' => 'hashed'
     ];
 
-    /**
-     * Get the cards for a user.
-     */
-    public function cards(): HasMany
+    public function events()
     {
-        return $this->hasMany(Card::class);
+        return $this->belongsToMany(Event::class, 'joined', 'id_user', 'id_event')
+        ->withPivot('date', 'ticket');
+    }
+
+    public function ownedEvents()
+    {
+        return $this->hasMany(Event::class);
+    }
+    
+    public function pollOptions()
+    {
+        return $this->belongsToMany(Option::class, 'user_option', 'id_user', 'id_option');
+    }
+
+    public function createdPolls()
+    {
+        return $this->hasMany(Poll::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function pendingInvites()
+    {
+        return $this->hasMany(Invite::class);
+    }
+
+    public function joinRequests()
+    {
+        return $this->hasMany(RequestToJoin::class);
     }
 }
