@@ -154,12 +154,6 @@ paths:
       description: "Show the individual user profile. Access: USR."
       tags:
         - "M01: Authentication and Individual Profile"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         "200":
           description: "Ok. Show User Profile UI"
@@ -171,12 +165,6 @@ paths:
       description: "Show the edit user form. Access: USR"
       tags:
         - "M01: Authentication and Individual Profile"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         "200":
           description: "Ok. Show Edit User UI"
@@ -186,7 +174,7 @@ paths:
     put:
       operationId: R108
       summary: "R108: Update User"
-      description: "Processes the update user form submission. Access: USR." //TODO USR ou OWN?
+      description: "Processes the update user form submission. Access: USR."
       tags:
         - "M01: Authentication and Individual Profile"
       requestBody:
@@ -222,8 +210,6 @@ paths:
       description: "Search for events owned by the user and returns the results as JSON. Access: USR"
       tags:
         - "M01: Authentication and Individual Profile"
-      parameters:
-        //TODO Não estudei direito essa parte ainda
       responses:
         "200"
           description: "Success"
@@ -247,7 +233,6 @@ paths:
                     type:
                       type: string
 
-
     api/users/{id}/joined-events:
     get:
       operationId: R110
@@ -255,8 +240,6 @@ paths:
       description: "Search for events joined by the user and returns the results as JSON. Access: USR"
       tags:
         - "M01: Authentication and Individual Profile"
-      parameters:
-        TODO Não estudei direito essa parte ainda
       responses:
         "200"
           description: "Success"
@@ -372,12 +355,6 @@ paths:
       description: "Show individual event. Access: PUB USR OWN."
       tags:
         - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         "200":
           description: "Ok. Show Event UI"
@@ -391,12 +368,6 @@ paths:
       description: "Delete event. Access: OWN."
       tags:
         - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         "202":
           description: "Accepted. Event deleted."
@@ -412,12 +383,15 @@ paths:
       description: "Join event. Access: USR."
       tags:
         - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                idUser:
+                  type: int
       responses:
         "202":
           description: "Accepted. Event joined."
@@ -433,12 +407,15 @@ paths:
       description: "Ask to join event. Access: USR."
       tags:
         - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                idUser:
+                  type: int
       responses:
         "200":
           description: "OK. Request sent."
@@ -454,12 +431,15 @@ paths:
       description: "Leave event. Access: USR."
       tags:
         - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                idUser:
+                  type: int
       responses:
         "202":
           description: "Accepted. Event left."
@@ -475,19 +455,12 @@ paths:
       description: "Show the edit event form. Access: USR OWN."
       tags:
         - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         "200":
           description: "Ok. Show Edit Event UI"
         "403":
           description: "Forbidden. Private event. Login required."
           value: "/events"
-
     put:
       operationId: R211
       summary: "R211: Update Event"
@@ -520,7 +493,6 @@ paths:
                   type: boolean
                 public:
                   type: boolean
-
       responses:
         "200":
           description: "Update successful. Redirect to event page."
@@ -534,30 +506,18 @@ paths:
       description: "Show all users that joined the event. Access: OWN."
       tags:
         - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         "200":
           description: "Ok. Show Event Participants UI"
         "403":
           description: "Forbidden. Login as owner required."
           value: "/events"
-    post: //TODO POST ou DELETE?
+    delete: 
       operationId: R213
       summary: "R213: Remove User from Event"
       description: "Remove user from event. Access: OWN."
       tags:
         - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         "202":
           description: "Accepted. User removed from event deleted."
@@ -565,13 +525,30 @@ paths:
         "401":
           description: "Unauthorized. User not owner of event."
           value: "/events/{id}"
-
-
+    post:
+      operationId: R214
+      summary: "R214: Add user to event"
+      description: "Add user to event. Access: OWN."
+      tags:
+        - "M02: Events"
+      requestBody:
+        required: true
+        content:
+         application/x-www-form-urlencoded:
+           schema:
+             type: object
+             properties:
+                userId:
+                 type: int
+                accepted:
+                  type: boolean
+             required:
+                  - userId
 
   /api/events:
     get:
-      operationId: R214
-      summary: "R214: Search Events API"
+      operationId: R215
+      summary: "R215: Search Events API"
       description: "Searches for events and returns the results as JSON. Access: PUB."
       tags:
         - "M02: Events"
@@ -605,12 +582,6 @@ paths:
           schema:
             type: boolean
           required: false
-        - in: query
-          name: classification
-          description: Integer corresponding to the work classification
-          schema:
-            type: integer
-          required: false
       responses:
         "200":
           description: Success
@@ -623,16 +594,26 @@ paths:
                   properties:
                     id:
                       type: string
-                    title:
+                    name:
                       type: string
-                    obs:
+                    eventDate:
                       type: string
-                    year:
-                      type: string
+                      format: date
                     owner:
+                      type: int
+                    creationDate:
                       type: string
-                    type:
-                      type: string
+                      format: date
+                    price:
+                      type: float
+                    public:
+                      type: boolean
+                    openToJoin:
+                      type: boolean
+                    capacity:
+                      type: int
+                    location:
+                      type: int
         
   /events/{id}/invite-user:
     post:
