@@ -44,4 +44,34 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Option::class, 'user_option', 'id_user', 'id_option');
     }
+
+    public function createdPolls()
+    {
+        return $this->hasMany(Poll::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function pendingInvites()
+    {
+        return $this->hasMany(Invite::class);
+    }
+
+    public function joinRequests()
+    {
+        return $this->hasMany(RequestToJoin::class);
+    }
 }
