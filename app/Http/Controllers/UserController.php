@@ -27,6 +27,7 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
+        //dd($user->id);
         $this->authorize('edit', $user);
 
         return view('pages.user_edit', [
@@ -40,6 +41,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
         $user = User::findOrFail($id);
         $this->authorize('update', $user);
     

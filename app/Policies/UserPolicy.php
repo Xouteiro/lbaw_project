@@ -3,29 +3,22 @@
 namespace App\Policies;
 
 use App\Models\User;
-
-use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Auth;
 
 class UserPolicy
 {
-    use HandlesAuthorization;
-    
     public function show(User $user)
     {
-      return (Auth::user()->id == $user->id) && ($user->blocked == FALSE);
+      return ($user->blocked == FALSE) && (Auth::check());
     }
 
-    public function edit(User $user)
+    public function edit(User $auth, User $user)
     {
-      return $user->id == Auth::user()->id;
+      return $auth->id == $user->id;
     }
 
-    public function update(User $user)
+    public function update(User $auth, User $user)
     {
-      return $user->id == Auth::user()->id;
-    }
-    public function delete(User $user) {
-      return Auth::check() && (Auth::user()->id == $user->id || Auth::user()->isAdmin());
+        return $auth->id == $user->id;
     }
 }
