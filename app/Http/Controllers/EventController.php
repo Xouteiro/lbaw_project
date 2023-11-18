@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\User;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -43,15 +46,15 @@ class EventController extends Controller
         'eventTags' => 'json' //TODO tenho que fazer algo com isso?
         ]);
         $event = new Event();
-        $event->name = request->input('name');
-        $event->eventDate = request->input('eventDate');
-        $event->description = request->input('description');
-        $event->price = request->input('price');
-        $event->public = request->input('public');
-        $event->opentojoin = request->input('opentojoin');
-        $event->capacity = request->input('capacity');
-        $event->id_user = request->input('id_user');
-        $event->id_location = request->input('id_location');
+        $event->name = $request->input('name');
+        $event->eventDate = $request->input('eventDate');
+        $event->description = $request->input('description');
+        $event->price = $request->input('price');
+        $event->public = $request->input('public');
+        $event->opentojoin = $request->input('opentojoin');
+        $event->capacity = $request->input('capacity');
+        $event->id_user = $request->input('id_user');
+        $event->id_location = $request->input('id_location');
         $event->save();
         return response()->json($event);
     }
@@ -72,7 +75,7 @@ class EventController extends Controller
     public function edit(Event $event)
     {
         $this->authorize('update', Auth::user(), $event);
-        return view('pages.');
+        return view('pages.event');
     }
 
     /**
@@ -81,9 +84,29 @@ class EventController extends Controller
     public function update(Request $request, $id)
     {
         $event = Event::find($id);
+        $validatedData = $request->validate([
+        'name' => 'required|string',
+        'eventDate' => 'required|date',
+        'description' => 'required|string',
+        'price' => 'required|numeric',
+        'public' => 'required|boolean',
+        'opentoJoin' => 'required|boolean',
+        'capacity' => 'required|numeric',
+        'id_location' => 'required|string',
+        'eventTags' => 'json' //TODO tenho que fazer algo com isso?
+        ]);
         $this->authorize('update',Auth::user(),$event);
+        $event->name = $request->input('name');
+        $event->eventDate = $request->input('eventDate');
+        $event->description = $request->input('description');
+        $event->price = $request->input('price');
+        $event->public = $request->input('public');
+        $event->opentojoin = $request->input('opentojoin');
+        $event->capacity = $request->input('capacity');
+        $event->id_user = $request->input('id_user');
+        $event->id_location = $request->input('id_location');
         $event->save();
-        return response->json($event);
+        return response()->json($event);
     }
 
     /**
