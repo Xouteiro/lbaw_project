@@ -8,14 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
-use Illuminate\View\View;
-
 class LoginController extends Controller
 {
-
-    /**
-     * Display a login form.
-     */
     public function showLoginForm()
     {
         if (Auth::check()) {
@@ -25,9 +19,6 @@ class LoginController extends Controller
         }
     }
 
-    /**
-     * Handle an authentication attempt.
-     */
     public function authenticate(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
@@ -46,9 +37,6 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
-    /**
-     * Log out the user from application.
-     */
     public function logout(Request $request)
     {
         Auth::logout();
