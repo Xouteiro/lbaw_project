@@ -13,7 +13,6 @@ class RequestToJoin extends Model
     public $timestamps = false;
     protected $table = 'request_to_join';
 
-    // verificar se é assim que é suposto referenciar a classe abstrata
     public function notification()
     {
         return $this->belongsTo(Notification::class, 'id_eventnotification');

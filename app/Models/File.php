@@ -12,9 +12,6 @@ class File extends Model
     // Don't add create and update timestamps in database.
     public $timestamps = false;
     protected $table = 'file';
-    protected $fillables = [
-        // em principio nada, verificar
-    ];
 
     public function event()
     {
