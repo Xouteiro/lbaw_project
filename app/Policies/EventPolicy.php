@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\Response;
 class EventPolicy
 {
     public function create(): bool{
-        return (Auth::check())
+        return (Auth::check());
     }
 
     /**
