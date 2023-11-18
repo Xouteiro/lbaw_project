@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ItemController;
 
@@ -21,6 +22,20 @@ use App\Http\Controllers\Auth\RegisterController;
 
 // Home
 Route::redirect('/', '/login');
+
+Route::controller(HomeController::class)->group(function () {
+    Route::get('/home', 'index')->name('home');
+});
+
+
+// User
+Route::controller(UserController::class)->group(function () {
+    Route::get('/user/{id}', 'show')->name('user.show');
+    Route::get('/user/{id}/edit', 'edit')->name('user.edit');
+    Route::post('/user/{id}/edit', 'update');
+});
+
+
 
 // Cards
 Route::controller(CardController::class)->group(function () {
