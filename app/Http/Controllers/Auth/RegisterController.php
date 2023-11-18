@@ -28,21 +28,23 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:250',
             'email' => 'required|email|max:250|unique:users',
+            'username' => 'required|string|max:250',
+            'name' => 'required|string|max:250',
             'password' => 'required|min:8|confirmed'
         ]);
 
         User::create([
-            'name' => $request->name,
             'email' => $request->email,
+            'username' => $request->username,
+            'name' => $request->name,
             'password' => Hash::make($request->password)
         ]);
 
         $credentials = $request->only('email', 'password');
         Auth::attempt($credentials);
         $request->session()->regenerate();
-        return redirect()->route('cards')
+        return redirect()->route('home') //talvez mudar 
             ->withSuccess('You have successfully registered & logged in!');
     }
 }
