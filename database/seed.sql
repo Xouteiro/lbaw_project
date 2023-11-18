@@ -27,7 +27,8 @@ CREATE TABLE users (
     description TEXT,
     password VARCHAR(255) NOT NULL,
     blocked BOOLEAN DEFAULT FALSE,
-    admin BOOLEAN DEFAULT FALSE
+    admin BOOLEAN DEFAULT FALSE,
+    remember_me VARCHAR(100)
 );
 
 CREATE TABLE location (
