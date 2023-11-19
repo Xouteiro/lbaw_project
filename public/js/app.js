@@ -176,6 +176,65 @@ function addEventListeners() {
   
     return new_item;
   }
+
+//infinit scroll
+let page = 1;
+
+function loadMoreEvents() {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                const events = response.events.data;
+
+                // Append the new events to your container
+                const eventsContainer = document.getElementById('eventsContainer');
+                events.forEach(event => {
+                    const eventCard = document.createElement('div');
+                    eventCard.classList.add('event-card');
+
+                    // Customize this based on your event structure
+                    eventCard.innerHTML = `
+                        <h3>${event.name}</h3>
+                        <p>${event.description}</p>
+                    `;
+                    eventsContainer.appendChild(eventCard);
+                });
+
+                // Update the page number for the next request
+                page++;
+
+                // If there are more pages, continue to listen for scroll events
+                if (response.events.next_page_url) {
+                    window.addEventListener('scroll', scrollHandler);
+                }
+            } else {
+                console.error('Error fetching events:', xhr.status, xhr.statusText);
+            }
+        }
+    };
+
+    const url = `/api/events-ajax?page=${page}`;
+    xhr.open('GET', url, true);
+    xhr.send();
+}
+
+function scrollHandler() {
+    const threshold = 200;
+
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - threshold) {
+        window.removeEventListener('scroll', scrollHandler);
+        loadMoreEvents();
+    }
+}
+
+// Initial load
+window.addEventListener('load', function () {
+    // Load events from the API on page load
+    loadMoreEvents();
+});
+
   
   addEventListeners();
   

@@ -10,9 +10,17 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
-    public function index(){
-        $events = Event::all();
+    public function index()
+    {
+        $events = Event::paginate(10);
         return view('pages.events.index', ['events' => $events]);
+    }
+
+
+    public function indexAjax()
+    {
+        $events = Event::paginate(10);
+        return response()->json(['events' => $events]);
     }
 
     public function create(Request $request)
@@ -27,19 +35,19 @@ class EventController extends Controller
         $user = Auth::user();
         //$this->authorize('create');
         $request->validate([
-        'name' => 'required',
-        'date' => 'required',
-        'time' => 'required',
-        'description' => 'required',
-        'price' => 'required',
-        'public' => 'required',
-        'opentojoin' => 'required',
-        'capacity' => 'required',
-        'id_location' => 'required'
+            'name' => 'required',
+            'date' => 'required',
+            'time' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'public' => 'required',
+            'opentojoin' => 'required',
+            'capacity' => 'required',
+            'id_location' => 'required'
         ]);
 
-        $eventdate = $request->input('date') . ' ' . $request->input('time'). ':00';
-        
+        $eventdate = $request->input('date') . ' ' . $request->input('time') . ':00';
+
         Event::create([
             'name' => $request->input('name'),
             'eventdate' => $eventdate,
@@ -74,15 +82,15 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $request->validate([
-        'name' => 'required|string',
-        'eventDate' => 'required|date',
-        'description' => 'required|string',
-        'price' => 'required|numeric',
-        'public' => 'required|boolean',
-        'opentoJoin' => 'required|boolean',
-        'capacity' => 'required|numeric',
-        'id_location' => 'required|string',
-        //'eventTags' => 'json' //TODO tenho que fazer algo com isso?
+            'name' => 'required|string',
+            'eventDate' => 'required|date',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'public' => 'required|boolean',
+            'opentoJoin' => 'required|boolean',
+            'capacity' => 'required|numeric',
+            'id_location' => 'required|string',
+            //'eventTags' => 'json' //TODO tenho que fazer algo com isso?
         ]);
         $this->authorize('update', Auth::user(), $event);
         $event->name = $request->input('name');
@@ -106,10 +114,13 @@ class EventController extends Controller
         return redirect()->route('event.index')
             ->withSuccess('You have successfully deleted your comment!');
     }
-
     public function eventsSearch(Request $request)
     {
-        $events = Event::where('name', 'like', '%' . $request->input('search') . '%')->get();
+        $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
+        $events = Event::select()
+            ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
+            ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input])
+            ->get();
         return view('pages.events.search', ['events' => $events]);
     }
 }
