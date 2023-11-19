@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
+    public function index(){
+        $events = Event::all();
+        return view('pages.events.index', ['events' => $events]);
+    }
+
     public function create(Request $request)
     {
         $this->authorize('create');
