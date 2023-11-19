@@ -177,8 +177,8 @@ function addEventListeners() {
     return new_item;
   }
 
-
-  let page = 1;
+//infinit scroll
+let page = 1;
 
 function loadMoreEvents() {
     const xhr = new XMLHttpRequest();
@@ -193,11 +193,11 @@ function loadMoreEvents() {
                 events.forEach(event => {
                     const eventCard = document.createElement('div');
                     eventCard.classList.add('event-card');
+
                     // Customize this based on your event structure
                     eventCard.innerHTML = `
                         <h3>${event.name}</h3>
                         <p>${event.description}</p>
-                        <!-- Add more event details as needed -->
                     `;
                     eventsContainer.appendChild(eventCard);
                 });
