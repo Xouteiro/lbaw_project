@@ -19,7 +19,7 @@ class EventController extends Controller
     {
         $user = Auth::user();
         //$this->authorize('create', $user);
-        return view('pages.event_create');
+        return view('pages.events.create');
     }
 
     public function store(Request $request)
