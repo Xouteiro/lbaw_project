@@ -13,7 +13,8 @@ class Notification extends Model
     public $timestamps = false;
     protected $table = 'event_notification';
     protected $fillable= [
-        'name'
+        'text',
+        'link'
     ];
 
     public function event()
