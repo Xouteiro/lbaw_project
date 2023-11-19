@@ -26,16 +26,32 @@
             </div>
 
             <div class="form-group">
+                <label for="public">Public:</label>
+                <input type="checkbox" name="public" value="1" {{ $event->public ? 'checked' : '' }}>
+            </div>
+
+            <div class="form-group">
+                <label for="opentojoin">Open to Join:</label>
+                <input type="checkbox" name="opentojoin" value="1" {{ $event->opentojoin ? 'checked' : '' }}>
+            </div>
+
+            <div class="form-group">
                 <label for="capacity">Capacity</label>
                 <input type="number" class="form-control" id="capacity" name="capacity" value="{{ $event->capacity }}" required>
             </div>
 
             <div class="form-group">
                 <label for="id_location">Location</label>
-                <input type="text" class="form-control" id="id_location" name="id_location" value="{{ $event->id_location }}" required>
+                <select name="id_location" required>
+                    <?php $locations = DB::table('location')->get(); ?>
+                    @foreach ($locations as $location)
+                        <option value="{{ $location->id }}" {{ $location->id == $event->id_location ? 'selected' : '' }}>{{ $location->name }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <button type="submit" class="btn btn-primary">Update Event</button>
         </form>
     </div>
 @endsection
+
