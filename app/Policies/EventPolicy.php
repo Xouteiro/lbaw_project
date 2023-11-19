@@ -5,11 +5,13 @@ namespace App\Policies;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Auth;
+
 
 class EventPolicy
 {
-    public function create(): bool{
-        return (Auth::check());
+    public function create(User $auth, User $user ): bool{
+        return ($user->id == $auth->id);
     }
 
     /**

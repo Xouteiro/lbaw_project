@@ -21,11 +21,11 @@ class EventController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create()
     {
-        $this->authorize('create');
-        $user = User::findOrFail(Auth::id());
-        return view('pages.event.create');
+        $user = Auth::user();
+        //$this->authorize('create', $user);
+        return view('pages.event_create');
     }
 
     /**
@@ -33,8 +33,9 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create');
-        $validatedData = $request->validate([
+        $user = Auth::user();
+        //$this->authorize('create');
+        $request->validate([
         'name' => 'required|string',
         'eventDate' => 'required|date',
         'description' => 'required|string',
@@ -42,21 +43,23 @@ class EventController extends Controller
         'public' => 'required|boolean',
         'opentoJoin' => 'required|boolean',
         'capacity' => 'required|numeric',
-        'id_location' => 'required|string',
-        'eventTags' => 'json' //TODO tenho que fazer algo com isso?
+        'id_location' => 'required|string'
         ]);
-        $event = new Event();
-        $event->name = $request->input('name');
-        $event->eventDate = $request->input('eventDate');
-        $event->description = $request->input('description');
-        $event->price = $request->input('price');
-        $event->public = $request->input('public');
-        $event->opentojoin = $request->input('opentojoin');
-        $event->capacity = $request->input('capacity');
-        $event->id_user = $request->input('id_user');
-        $event->id_location = $request->input('id_location');
-        $event->save();
-        return response()->json($event);
+        Event::create([
+            'name' => $request->input('name'),
+            'eventDate' => $request->input('eventDate'),
+            'description' => $request->input('description'),
+            'price' => $request->input('price'),
+            'public' => $request->input('public'),
+            'opentojoin' => $request->input('opentojoin'),
+            'capacity' => $request->input('capacity'),
+            'id_user' => $user->id,
+            'id_location' => $request->input('id_location')
+        ]);
+
+
+        return redirect()->route('user.show', ['id' => $user->id])
+            ->withSuccess('You have successfully created your event!');
     }
 
     /**
@@ -84,7 +87,7 @@ class EventController extends Controller
     public function update(Request $request, $id)
     {
         $event = Event::find($id);
-        $validatedData = $request->validate([
+        $request->validate([
         'name' => 'required|string',
         'eventDate' => 'required|date',
         'description' => 'required|string',
@@ -93,7 +96,7 @@ class EventController extends Controller
         'opentoJoin' => 'required|boolean',
         'capacity' => 'required|numeric',
         'id_location' => 'required|string',
-        'eventTags' => 'json' //TODO tenho que fazer algo com isso?
+        //'eventTags' => 'json' //TODO tenho que fazer algo com isso?
         ]);
         $this->authorize('update',Auth::user(),$event);
         $event->name = $request->input('name');

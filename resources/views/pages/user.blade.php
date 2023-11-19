@@ -9,4 +9,6 @@
         @endif
         <p>{{ $user->description }}</p>
     </div>
+    <a class="button" href="{{ url('/event/create') }}">Create Event</a>
+    
 @endsection
