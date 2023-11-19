@@ -10,27 +10,13 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(Request $request)
     {
         $user = Auth::user();
         //$this->authorize('create', $user);
         return view('pages.event_create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $user = Auth::user();
@@ -66,28 +52,19 @@ class EventController extends Controller
             ->withSuccess('You have successfully created your event!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $event = Event::findOrFail($id);
-        $this->authorize('view', Auth::user(),$event);
+        $this->authorize('view', Auth::user(), $event);
         return view('pages.event', ['event' => $event]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Event $event)
     {
         $this->authorize('update', Auth::user(), $event);
         return view('pages.event');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $event = Event::find($id);
@@ -102,7 +79,7 @@ class EventController extends Controller
         'id_location' => 'required|string',
         //'eventTags' => 'json' //TODO tenho que fazer algo com isso?
         ]);
-        $this->authorize('update',Auth::user(),$event);
+        $this->authorize('update', Auth::user(), $event);
         $event->name = $request->input('name');
         $event->eventDate = $request->input('eventDate');
         $event->description = $request->input('description');
@@ -116,13 +93,10 @@ class EventController extends Controller
         return response()->json($event);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function delete($id)
     {
         $event = Event::find($id);
-        $this->authorize('delete',Auth::user(), $event);
+        $this->authorize('delete', Auth::user(), $event);
         $event->delete();
         return redirect()->route('event.index')
             ->withSuccess('You have successfully deleted your comment!');

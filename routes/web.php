@@ -22,13 +22,11 @@ use App\Http\Controllers\Auth\RegisterController;
 
 // Home
 Route::redirect('/', '/login');
-
 Route::controller(HomeController::class)->group(function () {
     Route::get('/home', 'index')->name('home');
 });
 
-
-// User 
+// User
 Route::controller(UserController::class)->group(function () {
     Route::get('/user/{id}', 'show')->name('user.show');
     Route::get('/user/{id}/edit', 'edit')->name('user.edit');
