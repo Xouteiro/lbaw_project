@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use App\Models\User;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,18 +36,22 @@ class EventController extends Controller
         $user = Auth::user();
         //$this->authorize('create');
         $request->validate([
-        'name' => 'required|string',
-        'eventDate' => 'required|date',
-        'description' => 'required|string',
-        'price' => 'required|numeric',
-        'public' => 'required|boolean',
-        'opentoJoin' => 'required|boolean',
-        'capacity' => 'required|numeric',
-        'id_location' => 'required|string'
+        'name' => 'required',
+        'date' => 'required',
+        'time' => 'required',
+        'description' => 'required',
+        'price' => 'required',
+        'public' => 'required',
+        'opentojoin' => 'required',
+        'capacity' => 'required',
+        'id_location' => 'required'
         ]);
+
+        $eventdate = $request->input('date') . ' ' . $request->input('time'). ':00';
+        
         Event::create([
             'name' => $request->input('name'),
-            'eventDate' => $request->input('eventDate'),
+            'eventdate' => $eventdate,
             'description' => $request->input('description'),
             'price' => $request->input('price'),
             'public' => $request->input('public'),

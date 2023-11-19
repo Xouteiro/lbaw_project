@@ -15,6 +15,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
+        $events = $user->ownedEvents();
         $this->authorize('show', $user);
         return view('pages.user', [
             'user' => $user

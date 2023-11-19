@@ -11,7 +11,7 @@ class Tag extends Model
 
     // Don't add create and update timestamps in database.
     public $timestamps = false;
-    protected $fillables = [
+    protected $fillable = [
         'name'
     ];
 

@@ -12,7 +12,7 @@ class Option extends Model
     // Don't add create and update timestamps in database.
     public $timestamps = false;
     protected $table = 'option';
-    protected $fillables = [
+    protected $fillable = [
         'name'
     ];
 
