@@ -61,13 +61,13 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
         $this->authorize('view', Auth::user(), $event);
-        return view('pages.event', ['event' => $event]);
+        return view('pages.events.show', ['event' => $event]);
     }
 
     public function edit(Event $event)
     {
         $this->authorize('update', Auth::user(), $event);
-        return view('pages.event');
+        return view('pages.events.edit', ['event' => $event]);
     }
 
     public function update(Request $request, $id)

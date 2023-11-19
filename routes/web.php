@@ -31,6 +31,7 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/user/{id}', 'show')->name('user.show');
     Route::get('/user/{id}/edit', 'edit')->name('user.edit');
     Route::post('/user/{id}/edit', 'update')->name('user.update');
+    Route::post('/event/{id}', 'show')->name('event.show');
 });
 
 // Event

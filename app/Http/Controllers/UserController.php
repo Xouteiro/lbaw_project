@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Event;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function show(string $id)
     {
         $user = User::findOrFail($id);
-        
+
         $this->authorize('show', $user);
-        
+
         return view('pages.user', [
             'user' => $user
         ]);
@@ -33,7 +36,7 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
-        
+
         $this->authorize('update', $user);
 
         $request->validate([
@@ -68,5 +71,16 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('home')
             ->withSuccess('You have successfully deleted your profile!');
+    }
+
+    public function joinEvent(string $id)
+    {
+        $event = Event::findOrFail($id);
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::id());
+            if ($event->openToJoin || true) { //TODO Verificar se user foi convidado
+                //TODO Adcionar user ao evento
+            }
+        }
     }
 }
