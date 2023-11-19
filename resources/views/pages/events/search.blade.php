@@ -2,10 +2,7 @@
 
 @section('content')
     <div class="container">
-        <form id="searchForm" action="{{ url('/events/search') }}" method="GET">
-            <input name="search" value="" placeholder="Search event" class="search-event"/>
-            <button type="button" id="searchButton">Search</button>
-        </form>
+        <h1>Search Results:</h1>
         <div class="events">
         <?php foreach ($events as $event) { 
             if($event->public) { ?>

@@ -26,6 +26,72 @@ main>header span {
   justify-self: center;
 }
 
+#content label {
+  font-weight: normal;
+}
+
+#content>form {
+  margin: 0 auto;
+  padding: 1em;
+  max-width: 20em;
+  border: 1px solid #d2afe7;
+}
+
+#content>form .error {
+  font-weight: bold;
+  color: #ff3333;
+}
+
+#content>form .success {
+  font-weight: bold;
+  color: #106af1;
+}
+
+#content>form input {
+  background-color: white;
+}
+
+@media (max-width: 70em) {
+  #cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  main>header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  main>header h1 {
+    grid-row-end: span 2;
+  }
+}
+
+@media (max-width: 40em) {
+  #cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 25em) {
+  body {
+    margin: 0;
+  }
+
+  main>header {
+    margin: 0;
+    padding: 0.5em;
+  }
+
+  main>header span {
+    margin: 0;
+  }
+
+  #content form {
+    margin: 0;
+    max-width: 25em;
+  }
+}
+
 /**
    * Override milligram colors
    * Some styles might be missing
@@ -60,4 +126,15 @@ input[type=password]:focus {
   border-radius: 4px;
   padding: 10px;
   margin-bottom: 10px;
+}
+
+.event-search {
+  font-size: .8em;
+  font-weight: lighter;
+  width: 50%;
+  padding: .6em 1.2em;
+  border-style: none;
+  border-radius: 4px;
+  background-color: white;
+  margin-left: 2em;
 }
