@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
+    public function index(){
+        $events = Event::all();
+        return view('pages.events.index', ['events' => $events]);
+    }
+
     public function create(Request $request)
     {
         $user = Auth::user();
@@ -100,5 +105,11 @@ class EventController extends Controller
         $event->delete();
         return redirect()->route('event.index')
             ->withSuccess('You have successfully deleted your comment!');
+    }
+
+    public function eventsSearch(Request $request)
+    {
+        $events = Event::where('name', 'like', '%' . $request->input('search') . '%')->get();
+        return view('pages.events.search', ['events' => $events]);
     }
 }

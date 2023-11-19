@@ -8,6 +8,7 @@ use App\Http\Controllers\EventController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\EventController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,4 +51,11 @@ Route::controller(LoginController::class)->group(function () {
 Route::controller(RegisterController::class)->group(function () {
     Route::get('/register', 'showRegistrationForm')->name('register');
     Route::post('/register', 'register');
+});
+
+// Event
+Route::controller(EventController::class)->group(function () {
+    Route::get('/events', 'index')->name('events');
+    Route::get('/event/{id}', 'show')->name('event.show');
+    Route::get('/events/search', 'eventsSearch')->name('events.search');
 });
