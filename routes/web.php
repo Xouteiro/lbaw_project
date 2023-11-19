@@ -57,4 +57,7 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/events', 'index')->name('events');
     Route::get('/event/{id}', 'show')->name('event.show');
     Route::get('/events/search', 'eventsSearch')->name('events.search');
+    Route::get('/api/events-ajax', 'indexAjax');
 });
+
+
