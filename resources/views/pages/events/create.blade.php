@@ -21,10 +21,10 @@
         <input type="number" name="price" required>
 
         <label for="public">Public:</label>
-        <input type="checkbox" name="public" required>
+        <input type="checkbox" name="public" >
 
         <label for="opentojoin">Open to Join:</label>
-        <input type="checkbox" name="opentojoin" required>
+        <input type="checkbox" name="opentojoin" >
 
         <label for="capacity">Capacity:</label>
         <input type="number" name="capacity" required>
