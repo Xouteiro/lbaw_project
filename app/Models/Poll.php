@@ -12,7 +12,7 @@ class Poll extends Model
     // Don't add create and update timestamps in database.
     public $timestamps = false;
     protected $table = 'poll';
-    protected $fillables = [
+    protected $fillable = [
         'title'
     ];
 

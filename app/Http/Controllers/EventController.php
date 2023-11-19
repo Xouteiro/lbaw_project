@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use App\Models\User;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,37 +12,44 @@ class EventController extends Controller
 {
     public function create(Request $request)
     {
-        $this->authorize('create');
-        $user = User::findOrFail(Auth::id());
-        return view('pages.event.create');
+        $user = Auth::user();
+        //$this->authorize('create', $user);
+        return view('pages.event_create');
     }
 
     public function store(Request $request)
     {
-        $this->authorize('create');
-        $validatedData = $request->validate([
-            'name' => 'required|string',
-            'eventDate' => 'required|date',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'public' => 'required|boolean',
-            'opentoJoin' => 'required|boolean',
-            'capacity' => 'required|numeric',
-            'id_location' => 'required|string',
-            'eventTags' => 'json' //TODO tenho que fazer algo com isso?
+        $user = Auth::user();
+        //$this->authorize('create');
+        $request->validate([
+        'name' => 'required',
+        'date' => 'required',
+        'time' => 'required',
+        'description' => 'required',
+        'price' => 'required',
+        'public' => 'required',
+        'opentojoin' => 'required',
+        'capacity' => 'required',
+        'id_location' => 'required'
         ]);
-        $event = new Event();
-        $event->name = $request->input('name');
-        $event->eventDate = $request->input('eventDate');
-        $event->description = $request->input('description');
-        $event->price = $request->input('price');
-        $event->public = $request->input('public');
-        $event->opentojoin = $request->input('opentojoin');
-        $event->capacity = $request->input('capacity');
-        $event->id_user = $request->input('id_user');
-        $event->id_location = $request->input('id_location');
-        $event->save();
-        return response()->json($event);
+
+        $eventdate = $request->input('date') . ' ' . $request->input('time'). ':00';
+        
+        Event::create([
+            'name' => $request->input('name'),
+            'eventdate' => $eventdate,
+            'description' => $request->input('description'),
+            'price' => $request->input('price'),
+            'public' => $request->input('public'),
+            'opentojoin' => $request->input('opentojoin'),
+            'capacity' => $request->input('capacity'),
+            'id_user' => $user->id,
+            'id_location' => $request->input('id_location')
+        ]);
+
+
+        return redirect()->route('user.show', ['id' => $user->id])
+            ->withSuccess('You have successfully created your event!');
     }
 
     public function show(string $id)
@@ -61,16 +68,16 @@ class EventController extends Controller
     public function update(Request $request, $id)
     {
         $event = Event::find($id);
-        $validatedData = $request->validate([
-            'name' => 'required|string',
-            'eventDate' => 'required|date',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'public' => 'required|boolean',
-            'opentoJoin' => 'required|boolean',
-            'capacity' => 'required|numeric',
-            'id_location' => 'required|string',
-            'eventTags' => 'json' //TODO tenho que fazer algo com isso?
+        $request->validate([
+        'name' => 'required|string',
+        'eventDate' => 'required|date',
+        'description' => 'required|string',
+        'price' => 'required|numeric',
+        'public' => 'required|boolean',
+        'opentoJoin' => 'required|boolean',
+        'capacity' => 'required|numeric',
+        'id_location' => 'required|string',
+        //'eventTags' => 'json' //TODO tenho que fazer algo com isso?
         ]);
         $this->authorize('update', Auth::user(), $event);
         $event->name = $request->input('name');

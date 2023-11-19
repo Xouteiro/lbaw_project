@@ -12,10 +12,11 @@ class Event extends Model
     // Don't add create and update timestamps in database.
     public $timestamps = false;
     protected $table = 'event';
-    protected $fillables = [
+    protected $fillable = [
         'name',
         'eventdate',
         'description',
+        'creationdate',
         'price',
         'public',
         'opentojoin',
@@ -23,6 +24,16 @@ class Event extends Model
         'id_user',
         'id_location'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($event) {
+            $event->creationdate = now();
+        });
+    }
+
 
     public function participants()
     {

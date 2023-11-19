@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EventController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -31,6 +32,13 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/user/{id}/edit', 'edit')->name('user.edit');
     Route::post('/user/{id}/edit', 'update')->name('user.update');
 });
+
+// Event
+Route::controller(EventController::class)->group(function () {
+    Route::get('/event/create', 'create')->name('event.create');
+    Route::post('/event/create', 'store')->name('event.store');
+});
+
 
 // Authentication
 Route::controller(LoginController::class)->group(function () {
