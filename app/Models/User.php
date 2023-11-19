@@ -32,18 +32,18 @@ class User extends Authenticatable
 
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'joined', 'id_user', 'id_event')
+        return $this->belongsToMany(Event::class, 'joined', 'id_owner', 'id_event')
         ->withPivot('date', 'ticket');
     }
 
     public function ownedEvents()
     {
-        return $this->hasMany(Event::class, 'id_user');
+        return $this->hasMany(Event::class, 'id_owner');
     }
     
     public function pollOptions()
     {
-        return $this->belongsToMany(Option::class, 'user_option', 'id_user', 'id_option');
+        return $this->belongsToMany(Option::class, 'user_option', 'id_owner', 'id_option');
     }
 
     public function createdPolls()

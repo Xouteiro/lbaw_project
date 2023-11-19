@@ -3,45 +3,40 @@
 @section('content')
     <div class="container">
         <h1>{{ $event->name }}</h1>
-        @if (Auth::check() && Auth::user()->id == $event->id_user)
-            <a href="{{ url('/event' . $event->id) . '/edit' }}">Edit Event</a>
-        @endif
-        <p>Owner id: {{ $event->id_user }}</p>
+        <p>Event Creator: <a href="{{ url('/user/' . $event->owner->id) }}"> {{ $event->owner->name }}</a></p>
         <p>Event date: {{ $event->eventdate }}</p>
-        <p>Price: {{ $event->price }}</p>
+        @if ($event->price == 0)
+            <p>Free Event</p>
+        @else
+        <p>Price: {{ $event->price }} €</p>
+        @endif
         <p>Description: {{ $event->description }}</p>
-        <p>Location id:{{ $event->id_location }}</p>
-        @if ($event->public)
-            <p>PUBLIC</p>
+        <p>Location: {{ $event->location->address }}</p>
+        @if ($event->opentojoin)
             <form action="" method="POST">
-                <button class="join_button" type="submit">
-                    <p> Joint Event</p>
+                <button class="button" type="submit">
+                    Join Event
                 </button>
             </form>
         @else
-            <p>PRIVATE</p>
+            <form action="" method="POST">
+                <button class="button" type="submit">
+                    Request to join
+                </button>
+            </form>
         @endif
-        @if ($event->opentojoin)
-            <p>Open to join</p>
-        @else
-            <p>Only Invited people can join</p>
+        @if (Auth::check() && Auth::user()->id == $event->id_owner)
+            <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
+                Edit Event
+            </a>
         @endif
-        <div class="tags">
-            @foreach ($event->tags() as $tag)
-                <p>{{ $tag->name }}</p>
-            @endforeach
-        </div>
-        <div class="polls">
-            <ul>
-                @each('partials.poll', $event->polls(), 'poll')
-            </ul>
-        </div>
+        
         <div class="comments">
             <ul>
-                @foreach ($event->comments() as $comment)
+                @foreach ($event->comments as $comment)
                     <li>
-                        <h3>{{ $comment->user()->username }}</h3>
-                        @if (Auth::check() && Auth::id() === $comment->user()->id)
+                        <h3>{{ $comment->user->username }}</h3>
+                        @if (Auth::check() && Auth::id() === $comment->user->id)
                             <form action="" method="POST">
                                 <button class="delete_comment_button" type="submit">
                                     <p> Delete comment</p>
@@ -59,3 +54,4 @@
             </ul>
         </div>
     </div>
+@endsection
