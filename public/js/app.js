@@ -196,8 +196,10 @@ function loadMoreEvents() {
 
                     // Customize this based on your event structure
                     eventCard.innerHTML = `
+                    <a href= "event/${event.id}">
                         <h3>${event.name}</h3>
                         <p>${event.description}</p>
+                    </a>
                     `;
                     eventsContainer.appendChild(eventCard);
                 });

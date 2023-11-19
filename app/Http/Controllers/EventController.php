@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-
-
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,16 +22,15 @@ class EventController extends Controller
         return response()->json(['events' => $events]);
     }
 
-    public function create(Request $request)
+    public function create(): View
     {
-        $user = Auth::user();
-        //$this->authorize('create', $user);
         return view('pages.events.create');
     }
 
     public function store(Request $request)
     {
-        $user = Auth::user();
+
+        $id = Auth::user()->id; 
         //$this->authorize('create');
         $request->validate([
             'name' => 'required',
@@ -40,14 +38,11 @@ class EventController extends Controller
             'time' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'public' => 'required',
-            'opentojoin' => 'required',
             'capacity' => 'required',
             'id_location' => 'required'
         ]);
 
         $eventdate = $request->input('date') . ' ' . $request->input('time') . ':00';
-
         Event::create([
             'name' => $request->input('name'),
             'eventdate' => $eventdate,
@@ -56,54 +51,53 @@ class EventController extends Controller
             'public' => $request->input('public'),
             'opentojoin' => $request->input('opentojoin'),
             'capacity' => $request->input('capacity'),
-            'id_user' => $user->id,
+            'id_owner' => $id,
             'id_location' => $request->input('id_location')
         ]);
 
 
-        return redirect()->route('user.show', ['id' => $user->id])
+        return redirect()->route('user.show', ['id' => $id])
             ->withSuccess('You have successfully created your event!');
     }
 
     public function show(string $id)
     {
         $event = Event::findOrFail($id);
-        $this->authorize('view', Auth::user(), $event);
-        return view('pages.event', ['event' => $event]);
+        //$this->authorize('view', Auth::user(), $event);
+        return view('pages.events.show', ['event' => $event]);
     }
 
-    public function edit(Event $event)
-    {
-        $this->authorize('update', Auth::user(), $event);
-        return view('pages.event');
+    public function edit(string $id)
+    {   
+        $event = Event::findOrFail($id);
+        //$this->authorize('update', Auth::user(), $event);
+        return view('pages.events.edit', ['event' => $event]);
     }
 
     public function update(Request $request, $id)
     {
         $event = Event::find($id);
         $request->validate([
-            'name' => 'required|string',
-            'eventDate' => 'required|date',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'public' => 'required|boolean',
-            'opentoJoin' => 'required|boolean',
-            'capacity' => 'required|numeric',
-            'id_location' => 'required|string',
-            //'eventTags' => 'json' //TODO tenho que fazer algo com isso?
+            'name' => 'required',
+            'eventdate' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'capacity' => 'required',
+            'id_location' => 'required',
         ]);
-        $this->authorize('update', Auth::user(), $event);
+        //$this->authorize('update', Auth::user(), $event);
         $event->name = $request->input('name');
-        $event->eventDate = $request->input('eventDate');
+        $event->eventdate = $request->input('eventdate');
         $event->description = $request->input('description');
         $event->price = $request->input('price');
         $event->public = $request->input('public');
         $event->opentojoin = $request->input('opentojoin');
         $event->capacity = $request->input('capacity');
-        $event->id_user = $request->input('id_user');
+        $event->id_owner = $event->id_owner;
         $event->id_location = $request->input('id_location');
         $event->save();
-        return response()->json($event);
+        return redirect()->route('event.show', ['id' => $event->id])
+            ->withSuccess('You have successfully edited your profile!');
     }
 
     public function delete($id)
