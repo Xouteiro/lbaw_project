@@ -75,4 +75,5 @@ class Event extends Model
     {
         return $this->hasMany(Notification::class);
     }
+    
 }

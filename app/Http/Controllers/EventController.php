@@ -13,6 +13,7 @@ class EventController extends Controller
     public function index(){
         $events = Event::all();
         return view('pages.events.index', ['events' => $events]);
+        
     }
 
     public function create(Request $request)
@@ -106,10 +107,14 @@ class EventController extends Controller
         return redirect()->route('event.index')
             ->withSuccess('You have successfully deleted your comment!');
     }
-
     public function eventsSearch(Request $request)
     {
-        $events = Event::where('name', 'like', '%' . $request->input('search') . '%')->get();
+        $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
+        $events = Event::select()
+                    ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
+                    ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input])
+                    ->get();
         return view('pages.events.search', ['events' => $events]);
     }
+    
 }
