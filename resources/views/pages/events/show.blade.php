@@ -5,6 +5,7 @@
         <h1>{{ $event->name }}</h1>
         <p>Event Creator: <a href="{{ route('user.show', ['id' => $event->owner->id]) }}"> {{ $event->owner->name }}</a></p>
         <p>Event date: {{ $event->eventdate }}</p>
+        <p>Capacity: {{$event->participants->count()}}/{{$event->capacity}}</p>
         @if ($event->price == 0)
             <p>Free Event</p>
         @else
