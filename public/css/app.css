@@ -212,5 +212,5 @@ input[type=password]:focus {
 
 .profile-events-title-div > h2.active {
   background-color: #f2e8f8;
-  border-bottom: 20px #9b4dca; /* Não funciona ??? */
+  border-bottom: 2px #9b4dca; /* Não funciona ??? */
 }
