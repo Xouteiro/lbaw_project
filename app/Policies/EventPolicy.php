@@ -8,29 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class EventPolicy
 {
-    public function create(User $auth, User $user ): bool{
-        return ($user->id == $auth->id);
-    }
 
-    public function viewAny(User $user): bool
+    public function create(): bool
     {
-        return true;
+        if(Auth::check()) return true;
+        return false;
     }
 
-    public function view(User $user, Event $event): bool
-    {
-        if($event->public) return true;
-        else{
-            if($user){
-                if($event->owner() === $user->id) return true;
-                else{
-                    //TODO CHECK IF USER WAS INVITED
-                }
-            }
-            return false;
-        }
-    }
-
+    
     public function update(User $user, Event $event): bool
     {
         if($user){

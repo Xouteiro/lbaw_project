@@ -24,22 +24,21 @@ class EventController extends Controller
 
     public function create(): View
     {
+        $this->authorize('create');
         return view('pages.events.create');
     }
 
     public function store(Request $request)
     {
-
         $id = Auth::user()->id; 
-        //$this->authorize('create');
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'date' => 'required',
             'time' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'capacity' => 'required',
-            'id_location' => 'required'
+            'description' => 'required|string|max:5000',
+            'price' => 'required|numeric',
+            'capacity' => 'required|numeric',
+            'id_location' => 'required|numeric'
         ]);
 
         $eventdate = $request->input('date') . ' ' . $request->input('time') . ':00';
