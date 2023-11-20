@@ -37,6 +37,12 @@
             @endforeach
         </select>
 
+        <a href="{{ url('/user/' . Auth::user()->id) }}">
+            <button type="button">Cancel</button>
+        </a>
+
         <button type="submit">Create Event</button>
+
+        
     </form>
 @endsection

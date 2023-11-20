@@ -50,6 +50,10 @@
                 </select>
             </div>
 
+            <a href="{{ route('event.show', ['id' => $event->id]) }}">
+                <button type="button">Cancel</button>
+            </a>
+
             <button type="submit" class="btn btn-primary">Update Event</button>
         </form>
     </div>
