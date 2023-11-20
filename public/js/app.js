@@ -129,7 +129,7 @@ function openOptions() {
             else {
               option.parentElement.firstElementChild.firstElementChild.remove();
             }
-            sendAjaxRequest('POST', `/api/user/manage-event/${id_event}`, {actionName: 'pin', pinAction: pinAction}, function(){});
+            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'pin', pinAction: pinAction}, function(){});
           });
 
           const hideButton = document.createElement("button");
@@ -152,7 +152,7 @@ function openOptions() {
             else {
               option.parentElement.firstElementChild.firstElementChild.remove();
             }
-            sendAjaxRequest('POST', `/api/user/manage-event/${id_event}`, {actionName: 'hide', hideAction: hideAction}, function(){});
+            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'hide', hideAction: hideAction}, function(){});
           });
 
           optionsDiv.appendChild(pinButton);

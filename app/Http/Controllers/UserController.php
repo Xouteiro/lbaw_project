@@ -94,7 +94,6 @@ class UserController extends Controller
             ]);
         }
 
-        return redirect()->route('user.show', ['id' => $user->id])
-        ->with('success', 'Event updated successfully');
+        return response()->json(['message' => 'Update successful'], 200);
     }
 }
