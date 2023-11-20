@@ -191,3 +191,9 @@ input[type=password]:focus {
 .ui.pagination.menu .icon.item.disabled {
   opacity: 0.5;
 }
+
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

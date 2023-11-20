@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <h1>{{ $event->name }}</h1>
-        <p>Event Creator: <a href="{{ url('/user/' . $event->owner->id) }}"> {{ $event->owner->name }}</a></p>
+        <p>Event Creator: <a href="{{ route('user.show', ['id' => $event->owner->id]) }}"> {{ $event->owner->name }}</a></p>
         <p>Event date: {{ $event->eventdate }}</p>
         @if ($event->price == 0)
             <p>Free Event</p>
@@ -12,14 +12,16 @@
         @endif
         <p>Description: {{ $event->description }}</p>
         <p>Location: {{ $event->location->address }}</p>
-        @if ($event->opentojoin)
-            <form action="" method="POST">
+        @if ($event->opentojoin && Auth::check() && Auth::user()->id != $event->id_owner && !Auth::user()->events->contains($event))
+            <form action="{{ route('event.join', ['id' => $event->id]) }}" method="POST">
+                @csrf
                 <button class="button" type="submit">
                     Join Event
                 </button>
             </form>
-        @else
+        @elseif(!$event->opentojoin && Auth::check() && Auth::user()->id != $event->id_owner && !Auth::user()->events->contains($event))
             <form action="" method="POST">
+                @csrf
                 <button class="button" type="submit">
                     Request to join
                 </button>
@@ -32,25 +34,9 @@
         @endif
         
         <div class="comments">
-            <ul>
-                @foreach ($event->comments as $comment)
-                    <li>
-                        <h3>{{ $comment->user->username }}</h3>
-                        @if (Auth::check() && Auth::id() === $comment->user->id)
-                            <form action="" method="POST">
-                                <button class="delete_comment_button" type="submit">
-                                    <p> Delete comment</p>
-                                </button>
-                            </form>
-                            <form action="" method="POST">
-                                <button class="edit_comment_button" type="submit">
-                                    <p> Edit comment</p>
-                                </button>
-                            </form>
-                        @endif
-                        <p>{{ $comment->text }}</p>
-                    </li>
-                @endforeach
+            <h3>Comments</h3>
+            <ul class="comment-list">
+                @each('partials.comment', $event->comments, 'comment')
             </ul>
         </div>
     </div>
