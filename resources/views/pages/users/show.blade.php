@@ -9,6 +9,8 @@
         <p>{{ $user->description }}</p>
         <a class="button" href="{{ route('event.create') }}">Create Event</a>
         <h2>Created Events</h2>
+        <div class="events-container">
         @each('partials.event_card', $user->ownedEvents, 'event')
+        </div>
     </div>
 @endsection
