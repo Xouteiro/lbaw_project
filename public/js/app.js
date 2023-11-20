@@ -35,18 +35,20 @@ function loadMoreEvents() {
 
         // Append the new events to the container
         const eventsContainer = document.getElementById('eventsContainer');
-        if(eventsContainer){
+        if (eventsContainer) {
           events.forEach(event => {
-            const eventCard = document.createElement('div');
-            eventCard.classList.add('event-card');
-            
-            eventCard.innerHTML = `
-                          <a href="/event/${event.id}">
-                            <h3>${event.name}</h3>
-                            <p>${event.description}</p>
-                          </a>
-                      `;
-            eventsContainer.appendChild(eventCard);
+            if (!event.hide_owner) {
+              const eventCard = document.createElement('div');
+              eventCard.classList.add('event-card');
+
+              eventCard.innerHTML = `
+                            <a href="/event/${event.id}">
+                              <h3>${event.name}</h3>
+                              <p>${event.description}</p>
+                            </a>
+                        `;
+              eventsContainer.appendChild(eventCard);
+            }
           });
 
           // Update the page number for the next request
@@ -90,6 +92,17 @@ function openOptions() {
           let hideButtonText = "Hide";
           let pinAction = true;
           let hideAction = true;
+          let selectedEvents;
+          let events;
+
+          if (option.parentElement.parentElement.classList.contains("created-events-container")) {
+            selectedEvents = ".created-events-container";
+            events = 'created';
+          }
+          else {
+            selectedEvents = ".joined-events-container";
+            events = 'joined';
+          }
 
           const isEventPinned = option.parentElement.firstElementChild.firstElementChild.classList.contains("event-pin");
           const isEventHidden = option.parentElement.firstElementChild.firstElementChild.classList.contains("event-hidden");
@@ -113,8 +126,8 @@ function openOptions() {
           pinButton.textContent = pinButtonText;
           pinButton.addEventListener("click", () => {
             topElement = option.parentElement;
-            if(pinAction) {
-              if(isEventHidden){
+            if (pinAction) {
+              if (isEventHidden) {
                 option.parentElement.firstElementChild.firstElementChild.remove();
               }
 
@@ -124,19 +137,19 @@ function openOptions() {
               pin.classList.add("event-pin");
               option.parentElement.firstElementChild.prepend(pin);
               option.parentElement.remove();
-              document.querySelector(".events-container").prepend(topElement);
+              document.querySelector(selectedEvents).prepend(topElement);
             }
             else {
               option.parentElement.firstElementChild.firstElementChild.remove();
               const findFirstHidden = document.querySelector(".event-hide");
-              if(findFirstHidden){
+              if (findFirstHidden) {
                 findFirstHidden.parentNode.insertBefore(topElement, findFirstHidden.nextSibling);
               }
-              else{
-                document.querySelector(".events-container").appendChild(topElement);
+              else {
+                document.querySelector(selectedEvents).appendChild(topElement);
               }
             }
-            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'pin', pinAction: pinAction}, function(){});
+            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, { events: events, actionName: 'pin', pinAction: pinAction }, function () { });
           });
 
           const hideButton = document.createElement("button");
@@ -144,8 +157,8 @@ function openOptions() {
           hideButton.textContent = hideButtonText;
           hideButton.addEventListener("click", () => {
             topElement = option.parentElement;
-            if(hideAction) {
-              if(isEventPinned){
+            if (hideAction) {
+              if (isEventPinned) {
                 option.parentElement.firstElementChild.firstElementChild.remove();
               }
 
@@ -154,19 +167,19 @@ function openOptions() {
               hide.classList.add("event-hidden");
               option.parentElement.firstElementChild.prepend(hide);
               option.parentElement.remove();
-              document.querySelector(".events-container").appendChild(topElement);
+              document.querySelector(selectedEvents).appendChild(topElement);
             }
             else {
               option.parentElement.firstElementChild.firstElementChild.remove();
               const findLastPinned = document.querySelectorAll(".event-pin")[document.querySelectorAll(".event-pin").length - 1];
-              if(findLastPinned){
+              if (findLastPinned) {
                 findLastPinned.parentNode.insertBefore(topElement, findLastPinned.nextSibling);
               }
-              else{
-                document.querySelector(".events-container").prepend(topElement);
+              else {
+                document.querySelector(selectedEvents).prepend(topElement);
               }
             }
-            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'hide', hideAction: hideAction}, function(){});
+            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, { events: events, actionName: 'hide', hideAction: hideAction }, function () { });
           });
 
           optionsDiv.appendChild(pinButton);
@@ -192,6 +205,31 @@ function closeOptions() {
   });
 }
 
+function switchEvents() {
+  const createdEvents = document.querySelector(".created-events-container");
+  const joinedEvents = document.querySelector(".joined-events-container");
+  const createdEventsButton = document.querySelector(".created-events-title");
+  const joinedEventsButton = document.querySelector(".joined-events-title");
+
+  if (createdEvents && joinedEvents && createdEventsButton && joinedEventsButton) {
+    createdEventsButton.addEventListener("click", () => {
+      createdEvents.style.display = "block";
+      joinedEvents.style.display = "none";
+      createdEventsButton.classList.add("active");
+      joinedEventsButton.classList.remove("active");
+    });
+
+    joinedEventsButton.addEventListener("click", () => {
+      createdEvents.style.display = "none";
+      joinedEvents.style.display = "block";
+      createdEventsButton.classList.remove("active");
+      joinedEventsButton.classList.add("active");
+    });
+  }
+
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
+switchEvents();
