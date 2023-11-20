@@ -22,7 +22,9 @@ class Event extends Model
         'opentojoin',
         'capacity',
         'id_user',
-        'id_location'
+        'id_location',
+        'highlight_owner',
+        'hide_owner'
     ];
 
     protected static function boot()

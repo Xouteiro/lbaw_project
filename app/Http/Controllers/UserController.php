@@ -83,15 +83,18 @@ class UserController extends Controller
             $pinAction = filter_var($request->input('pinAction'), FILTER_VALIDATE_BOOLEAN);
             $event->update([
                 'highlight_owner' => $pinAction,
+                'hide_owner' => false
             ]);
         }
         else if($request->actionName == 'hide'){
             $hideAction = filter_var($request->input('hideAction'), FILTER_VALIDATE_BOOLEAN);
             $event->update([
+                'highlight_owner' => false,
                 'hide_owner' => $hideAction,
             ]);
         }
 
-        return response()->json($event);
+        return redirect()->route('user.show', ['id' => $user->id])
+        ->with('success', 'Event updated successfully');
     }
 }

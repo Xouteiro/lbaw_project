@@ -92,7 +92,7 @@ function openOptions() {
           let hideAction = true;
 
           const isEventPinned = option.parentElement.firstElementChild.firstElementChild.classList.contains("event-pin");
-          const isEventHidden = option.parentElement.firstElementChild.lastElementChild.classList.contains("event-hidden");
+          const isEventHidden = option.parentElement.firstElementChild.firstElementChild.classList.contains("event-hidden");
 
           if (isEventPinned) {
             pinButtonText = "Unpin";
@@ -112,14 +112,14 @@ function openOptions() {
           pinButton.type = "button";
           pinButton.textContent = pinButtonText;
           pinButton.addEventListener("click", () => {
-            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'pin', pinAction: pinAction}, function(){});
+            sendAjaxRequest('POST', `/api/user/manage-event/${id_event}`, {actionName: 'pin', pinAction: pinAction}, function(){window.location.reload();});
           });
 
           const hideButton = document.createElement("button");
           hideButton.type = "button";
           hideButton.textContent = hideButtonText;
           hideButton.addEventListener("click", () => {
-            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'hide', hideAction: hideAction}, function(){});
+            sendAjaxRequest('POST', `/api/user/manage-event/${id_event}`, {actionName: 'hide', hideAction: hideAction}, function(){ window.location.reload();});
           });
 
           optionsDiv.appendChild(pinButton);

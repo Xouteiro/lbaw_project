@@ -39,8 +39,7 @@ class User extends Authenticatable
     public function ownedEvents()
     {
         return $this->hasMany(Event::class, 'id_owner')
-        ->orderByDesc('highlight_owner')
-        ->orderBy('hide_owner');
+        ->orderByDesc('highlight_owner');
     }
     
     public function pollOptions()
