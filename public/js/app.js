@@ -37,16 +37,18 @@ function loadMoreEvents() {
         const eventsContainer = document.getElementById('eventsContainer');
         if(eventsContainer){
           events.forEach(event => {
-            const eventCard = document.createElement('div');
-            eventCard.classList.add('event-card');
-            
-            eventCard.innerHTML = `
-                          <a href="/event/${event.id}">
-                            <h3>${event.name}</h3>
-                            <p>${event.description}</p>
-                          </a>
-                      `;
-            eventsContainer.appendChild(eventCard);
+            if(!event.hide_owner){
+              const eventCard = document.createElement('div');
+              eventCard.classList.add('event-card');
+              
+              eventCard.innerHTML = `
+                            <a href="/event/${event.id}">
+                              <h3>${event.name}</h3>
+                              <p>${event.description}</p>
+                            </a>
+                        `;
+              eventsContainer.appendChild(eventCard);
+            }
           });
 
           // Update the page number for the next request
