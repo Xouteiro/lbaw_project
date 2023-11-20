@@ -10,8 +10,8 @@
             @endif
         </div>
     @endif
-@elseif (url()->current() == route('user.show', ['id' => Auth::user()->id]))
-    @if ($event->public) <!-- Make private events visible for authenticated users -->
+@elseif (url()->current() == route('user.show', ['id' => request()->route('id')]))
+    @if ($event->public || Auth::check()) <!-- Make private events visible for authenticated users -->
         <div id="event-{{ $event->id }}" class="event-card">
             <a href="{{ route('event.show', ['id' => $event->id]) }}">
                 @if ($event->highlight_owner)
