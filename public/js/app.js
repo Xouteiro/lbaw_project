@@ -112,6 +112,7 @@ function openOptions() {
           pinButton.type = "button";
           pinButton.textContent = pinButtonText;
           pinButton.addEventListener("click", () => {
+            topElement = option.parentElement;
             if(pinAction) {
               if(isEventHidden){
                 option.parentElement.firstElementChild.firstElementChild.remove();
@@ -122,12 +123,18 @@ function openOptions() {
               pin.alt = "Pin Icon";
               pin.classList.add("event-pin");
               option.parentElement.firstElementChild.prepend(pin);
-              topElement = option.parentElement;
               option.parentElement.remove();
               document.querySelector(".events-container").prepend(topElement);
             }
             else {
               option.parentElement.firstElementChild.firstElementChild.remove();
+              const findFirstHidden = document.querySelector(".event-hide");
+              if(findFirstHidden){
+                findFirstHidden.parentNode.insertBefore(topElement, findFirstHidden.nextSibling);
+              }
+              else{
+                document.querySelector(".events-container").appendChild(topElement);
+              }
             }
             sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'pin', pinAction: pinAction}, function(){});
           });
@@ -136,6 +143,7 @@ function openOptions() {
           hideButton.type = "button";
           hideButton.textContent = hideButtonText;
           hideButton.addEventListener("click", () => {
+            topElement = option.parentElement;
             if(hideAction) {
               if(isEventPinned){
                 option.parentElement.firstElementChild.firstElementChild.remove();
@@ -145,12 +153,18 @@ function openOptions() {
               hide.textContent = "Hidden";
               hide.classList.add("event-hidden");
               option.parentElement.firstElementChild.prepend(hide);
-              topElement = option.parentElement;
               option.parentElement.remove();
               document.querySelector(".events-container").appendChild(topElement);
             }
             else {
               option.parentElement.firstElementChild.firstElementChild.remove();
+              const findLastPinned = document.querySelectorAll(".event-pin")[document.querySelectorAll(".event-pin").length - 1];
+              if(findLastPinned){
+                findLastPinned.parentNode.insertBefore(topElement, findLastPinned.nextSibling);
+              }
+              else{
+                document.querySelector(".events-container").prepend(topElement);
+              }
             }
             sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'hide', hideAction: hideAction}, function(){});
           });
