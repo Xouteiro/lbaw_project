@@ -36,10 +36,9 @@ class Event extends Model
         });
     }
 
-
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'joined', 'id_event', 'id_owner')
+        return $this->belongsToMany(User::class, 'joined', 'id_event', 'id_user')
         ->withPivot('date', 'ticket', 'highlighted', 'hidden');
     }
 

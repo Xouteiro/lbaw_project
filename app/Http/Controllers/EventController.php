@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -116,5 +117,18 @@ class EventController extends Controller
             ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input])
             ->get();
         return view('pages.events.search', ['events' => $events]);
+    }
+
+    public function joinEvent(string $id)
+    {
+        $user = User::find(Auth::user()->id);
+        $event = Event::findOrFail($id);
+
+        // $this->authorize('join', $event);
+
+        $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
+
+        return redirect()->route('event.show', ['id' => $event->id])
+            ->withSuccess('You have successfully joined the event!');
     }
 }
