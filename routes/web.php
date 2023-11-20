@@ -38,6 +38,9 @@ Route::controller(UserController::class)->group(function () {
 Route::controller(EventController::class)->group(function () {
     Route::get('/event/create', 'create')->name('event.create');
     Route::post('/event/create', 'store')->name('event.store');
+    Route::get('/event/{id}', 'show')->name('event.show');
+    Route::get('/event/{id}/edit', 'edit')->name('event.edit');
+    Route::post('/event/{id}/edit', 'update')->name('event.update');
 });
 
 // Authentication
@@ -55,7 +58,6 @@ Route::controller(RegisterController::class)->group(function () {
 // Event
 Route::controller(EventController::class)->group(function () {
     Route::get('/events', 'index')->name('events');
-    Route::get('/event/{id}', 'show')->name('event.show');
     Route::get('/events/search', 'eventsSearch')->name('events.search');
     Route::get('/api/events-ajax', 'indexAjax');
 });

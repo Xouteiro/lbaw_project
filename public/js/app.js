@@ -41,7 +41,7 @@ function loadMoreEvents() {
             eventCard.classList.add('event-card');
             
             eventCard.innerHTML = `
-                          <a href="/events/${event.id}">
+                          <a href="/event/${event.id}">
                             <h3>${event.name}</h3>
                             <p>${event.description}</p>
                           </a>

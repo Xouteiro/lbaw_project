@@ -12,7 +12,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
-        
+
         $this->authorize('show', $user);
         
         return view('pages.users.show', [
@@ -35,7 +35,7 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
-        
+
         $this->authorize('update', $user);
 
         $request->validate([
