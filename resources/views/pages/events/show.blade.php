@@ -6,6 +6,12 @@
         @if (Auth::check() && Auth::user()->id == $event->id_user)
             <a href="{{ url('/event' . $event->id) . '/edit' }}">Edit Event</a>
         @endif
+        <form id="invitationForm">
+            @csrf
+            <input type="text" name="email" placeholder="Enter user's email">
+            <input type="hidden" name="eventId" value="{{ $event->id }}">
+            <button type="button" onclick="sendInvitation()">Send Invitation</button>
+        </form>
         <p>Owner id: {{ $event->id_user }}</p>
         <p>Event date: {{ $event->eventdate }}</p>
         <p>Price: {{ $event->price }}</p>
