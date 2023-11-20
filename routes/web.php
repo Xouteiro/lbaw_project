@@ -31,6 +31,7 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/user/{id}', 'show')->name('user.show');
     Route::get('/user/{id}/edit', 'edit')->name('user.edit');
     Route::post('/user/{id}/edit', 'update')->name('user.update');
+    Route::put('/api/user/manage-event/{id_event}', 'manageEvent')->name('user.manage-event');
 });
 
 // Event
@@ -38,7 +39,6 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/event/create', 'create')->name('event.create');
     Route::post('/event/create', 'store')->name('event.store');
 });
-
 
 // Authentication
 Route::controller(LoginController::class)->group(function () {

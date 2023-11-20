@@ -48,8 +48,10 @@ CREATE TABLE event (
     public BOOLEAN DEFAULT TRUE,
     openToJoin BOOLEAN DEFAULT TRUE,  
     capacity INTEGER,
-    id_user INTEGER REFERENCES users(id),
-    id_location INTEGER REFERENCES location(id)
+    id_owner INTEGER REFERENCES users(id),
+    id_location INTEGER REFERENCES location(id),
+    highlight_owner BOOLEAN DEFAULT FALSE,
+    hide_owner BOOLEAN DEFAULT FALSE
 );
 
 
@@ -121,6 +123,8 @@ CREATE TABLE joined (
     id_user INTEGER REFERENCES users(id),
     date DATE CHECK (date > current_date),
     ticket VARCHAR(255),
+    highlighted BOOLEAN DEFAULT false,
+    hidden BOOLEAN DEFAULT false,
     PRIMARY KEY (id_event, id_user)
 );
 

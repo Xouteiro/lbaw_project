@@ -9,10 +9,5 @@
         <div class="events" id="eventsContainer">
             @each('partials.event_card', $events, 'event')
         </div>
-        
     </div>
-
-   
 @endsection
-
-

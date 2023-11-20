@@ -4,12 +4,11 @@
     <div class="container">
         <h1>{{ $user->username }}</h1>
         @if (Auth::check() && Auth::user()->id == $user->id)
-            <a href="{{ url('/user' . Auth::user()->id) .'/edit'}}">Edit Profile</a>
+            <a href="{{ route('user.edit', ['id' => $user->id]) }}">Edit Profile</a>
         @endif
         <p>{{ $user->description }}</p>
         <a class="button" href="{{ route('event.create') }}">Create Event</a>
-        <h2>Events</h2>
+        <h2>Created Events</h2>
         @each('partials.event_card', $user->ownedEvents, 'event')
     </div>
-    
 @endsection

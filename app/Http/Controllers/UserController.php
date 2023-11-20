@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -13,7 +15,7 @@ class UserController extends Controller
         
         $this->authorize('show', $user);
         
-        return view('pages.user', [
+        return view('pages.users.show', [
             'user' => $user
         ]);
     }
@@ -24,7 +26,7 @@ class UserController extends Controller
 
         $this->authorize('edit', $user);
 
-        return view('pages.user_edit', [
+        return view('pages.users.edit', [
             'user' => $user
         ]);
     }
@@ -68,5 +70,28 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('home')
             ->withSuccess('You have successfully deleted your profile!');
+    }
+
+    public function manageEvent(Request $request, string $id_event)
+    {
+        $user = Auth::user();
+        $event = Event::findOrFail($id_event);
+
+        // $this->authorize('manageEvent', $user, $event);
+
+        if($request->actionName == 'pin'){
+            $pinAction = filter_var($request->input('pinAction'), FILTER_VALIDATE_BOOLEAN);
+            $event->update([
+                'highlight_owner' => $pinAction,
+            ]);
+        }
+        else if($request->actionName == 'hide'){
+            $hideAction = filter_var($request->input('hideAction'), FILTER_VALIDATE_BOOLEAN);
+            $event->update([
+                'hide_owner' => $hideAction,
+            ]);
+        }
+
+        return response()->json($event);
     }
 }

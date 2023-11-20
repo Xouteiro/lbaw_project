@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +13,6 @@ class EventController extends Controller
         $events = Event::paginate(10);
         return view('pages.events.index', ['events' => $events]);
     }
-
 
     public function indexAjax()
     {
@@ -114,6 +111,7 @@ class EventController extends Controller
         return redirect()->route('event.index')
             ->withSuccess('You have successfully deleted your comment!');
     }
+
     public function eventsSearch(Request $request)
     {
         $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
