@@ -12,14 +12,26 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::paginate(10);
-        return view('pages.events.index', ['events' => $events]);
+        if(Auth::check()){
+            $events = Event::where('hide_owner','=', false)->paginate(10);
+            return view('pages.events.index', ['events' => $events]);
+        }
+        else{
+            $events = Event::where('public', '=' , true)->paginate(10); 
+            return view('pages.events.index', ['events' => $events]);
+        }
     }
 
     public function indexAjax()
     {
-        $events = Event::paginate(10);
-        return response()->json(['events' => $events]);
+        if(Auth::check()){
+            $events = Event::where('hide_owner','=', false)->paginate(10);
+            return response()->json(['events' => $events]);
+        }
+        else{
+            $events = Event::where('public', '=' , true)->where('hide_owner','=', false)->paginate(10); 
+            return response()->json(['events' => $events]);
+        }
     }
 
     public function create(): View
@@ -69,7 +81,7 @@ class EventController extends Controller
     public function edit(string $id)
     {   
         $event = Event::findOrFail($id);
-        //$this->authorize('update', Auth::user(), $event);
+        $this->authorize('edit', $event);
         return view('pages.events.edit', ['event' => $event]);
     }
 
