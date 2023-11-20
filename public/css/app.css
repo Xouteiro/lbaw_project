@@ -139,6 +139,16 @@ input[type=password]:focus {
   margin-left: 2em;
 }
 
+.event-pin {
+  width: 10px;
+  margin: 0.1em;
+}
+
+.event-manage {
+  width: 25px;
+  margin: 0.1em;
+}
+
 /* Add these styles to your existing CSS file or create a new one */
 
 .ui.pagination.menu {

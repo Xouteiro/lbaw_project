@@ -15,7 +15,6 @@ class EventController extends Controller
         return view('pages.events.index', ['events' => $events]);
     }
 
-
     public function indexAjax()
     {
         $events = Event::paginate(10);
@@ -108,6 +107,7 @@ class EventController extends Controller
         return redirect()->route('event.index')
             ->withSuccess('You have successfully deleted your comment!');
     }
+
     public function eventsSearch(Request $request)
     {
         $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";

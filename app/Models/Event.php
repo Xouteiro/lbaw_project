@@ -22,7 +22,9 @@ class Event extends Model
         'opentojoin',
         'capacity',
         'id_owner',
-        'id_location'
+        'id_location',
+        'highlight_owner',
+        'hide_owner'
     ];
 
     protected static function boot()
@@ -38,7 +40,7 @@ class Event extends Model
     public function participants()
     {
         return $this->belongsToMany(User::class, 'joined', 'id_event', 'id_owner')
-        ->withPivot('date', 'ticket');
+        ->withPivot('date', 'ticket', 'highlighted', 'hidden');
     }
 
     public function owner()

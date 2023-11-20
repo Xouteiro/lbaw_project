@@ -33,12 +33,13 @@ class User extends Authenticatable
     public function events()
     {
         return $this->belongsToMany(Event::class, 'joined', 'id_owner', 'id_event')
-        ->withPivot('date', 'ticket');
+        ->withPivot('date', 'ticket', 'highlighted', 'hidden');
     }
 
     public function ownedEvents()
     {
-        return $this->hasMany(Event::class, 'id_owner');
+        return $this->hasMany(Event::class, 'id_owner')
+        ->orderByRaw('highlight_owner DESC, hide_owner ASC');
     }
     
     public function pollOptions()

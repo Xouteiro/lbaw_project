@@ -24,14 +24,10 @@
     <input type="password" name="password_confirmation">
     -->
 
-
     <a href="{{ route('user.show', ['id' => $user->id]) }}">
         <button type="button">Cancel</button>
     </a>
 
-
     <button type="submit">Save Changes</button>
-
-    
 </form>
 @endsection
