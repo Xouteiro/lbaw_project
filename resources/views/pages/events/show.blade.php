@@ -36,6 +36,12 @@
             <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
                 Edit Event
             </a>
+            <form action= "{{ route('event.delete', ['id' => $event->id])}}" method="POST">
+                @csrf
+                <button class="button" type="submit">
+                    Delete Event
+                </button>
+            </form>
         @endif
         
         <div class="comments">

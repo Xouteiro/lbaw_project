@@ -66,7 +66,7 @@ class EventController extends Controller
             'id_location' => $request->input('id_location')
         ]);
 
-        $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
+        //$user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]); se pusermos por so quando der para dar unjoin se nao parte o delete do evento
 
 
 
@@ -116,13 +116,18 @@ class EventController extends Controller
             ->withSuccess('You have successfully edited your profile!');
     }
 
-    public function delete($id)
+    public function delete(string $id)
     {
         $event = Event::find($id);
-        $this->authorize('delete', Auth::user(), $event);
+        $this->authorize('delete', $event);
         $event->delete();
-        return redirect()->route('event.index')
+        return redirect()->route('user.show', ['id' => Auth::user()->id])
             ->withSuccess('You have successfully deleted your comment!');
+    }
+
+    public function deleteDummy()
+    { 
+        abort(403, 'This is a great event! Why would you want to do that?');
     }
 
     public function eventsSearch(Request $request)
