@@ -1,5 +1,5 @@
 
-<div class="participant-card">
+<div class="participant-card" id="{{$participant->id}}">
     @if($event->id_owner == $participant->id)
     <h2>{{ $participant->name }} - Owner</h2>
     @else
@@ -19,11 +19,8 @@
     </a>
     <form action="{{ route('event.removeparticipant', ['id' => $event->id, 'id_p' => $participant->id]) }}" method="POST">
         @csrf
-        <div class="button" id=fake-button-remove>
-            Remove Participant f
+        <div class="fake button remove" id="{{$participant->id}}">
+            Remove Participant
         </div>
-        <button class="button" type="submit">
-            Remove Participant  
-        </button>
     </form>
 </div>

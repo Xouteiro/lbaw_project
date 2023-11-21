@@ -227,25 +227,57 @@ function switchEvents() {
 
 }
 
-
-function removeParticipant() {
-  const fakebutton = document.getElementById("fake-button-remove")
-  fakebutton.addEventListener("click", () => {
-    const surebox = document.createElement("div");
-    surebox.classList.add("surebox");
-    surebox.innerHTML = `
-        <p>Are you sure ?</p>
-        <button type="submit" class="surebox-button yes">Yes</button>
-        <button type="submit" class="surebox-button no">No</button>
-    `;
-    fakebutton.parentElement.appendChild(surebox);
+function closeSureOptions() {
+  
+  document.addEventListener("click", (e) => {
+    console.log(e.target.classList.contains("fake"))
+    if (e.target.classList.contains("fake") || e.target.classList.contains("yes")) {
+      return;
+    }
+    const sureboxes = document.querySelectorAll(".surebox");
+    sureboxes.forEach((surebox) => {
+      surebox.remove();
+    });
   });
 
 }
 
+function removeParticipant() {
+  const fakebuttons = document.querySelectorAll(".fake.button.remove");
+  fakebuttons.forEach((fakebutton) => {
+  fakebutton.addEventListener("click", () => {
+    const participant_id = fakebutton.id;
+    const participant_card = document.getElementById(participant_id);
+    const sureboxExists = participant_card.querySelector(".surebox");
+    
+    if (!sureboxExists) {
+      const surebox = document.createElement("div");
+      surebox.classList.add("surebox");
+      surebox.innerHTML = `
+          <p>Are you sure ?</p>
+          <div class="surebox-buttons">
+          <button type="submit" class="surebox button yes">Yes</button>
+          <button type="button" class="surebox button no">No</button>
+          </div>
+      `;
+      fakebutton.parentElement.appendChild(surebox);
+      const noButton = surebox.querySelector(".surebox.button.no");
+      noButton.addEventListener("click", () => {
+        surebox.remove();
+      });
+        
+    }
+  
+  })
+});
+closeSureOptions();
+}
+
+
+
 
 addEventListeners();
-removeParticipant();
 openOptions();
 closeOptions();
 switchEvents();
+removeParticipant();
