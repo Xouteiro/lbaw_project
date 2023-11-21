@@ -116,6 +116,22 @@ class EventController extends Controller
             ->withSuccess('You have successfully edited your profile!');
     }
 
+    public function participants(string $id)
+    {
+        $event = Event::findOrFail($id);
+        $this->authorize('participants', $event);
+        return view('pages.events.participants', ['event' => $event]);
+    }
+
+    public function removeparticipant(string $id, string $id_participant)
+    {
+        $event = Event::findOrFail($id);
+        $this->authorize('participants', $event);
+        $event->participants()->detach($id_participant);
+        return redirect()->route('event.participants', ['id' => $event->id])
+            ->withSuccess('You have successfully removed the participant!');
+    }
+
     public function delete(string $id)
     {
         $event = Event::find($id);
@@ -129,6 +145,11 @@ class EventController extends Controller
     public function deleteDummy()
     { 
         abort(403, 'This is a great event! Why would you want to do that?');
+    }
+
+    public function removeDummy()
+    { 
+        abort(403, 'This is not your event!');
     }
 
     public function eventsSearch(Request $request)
