@@ -1,4 +1,4 @@
-@if (url()->current() == route('events'))
+@if (url()->current() == route('events') || url()->current() == route('events.search'))
     @if (($event->public || Auth::check()) && !$event->hide_owner) 
         <div id="event-{{ $event->id }}" class="event-card">
             <a href="{{ route('event.show', ['id' => $event->id]) }}">

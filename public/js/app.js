@@ -37,7 +37,6 @@ function loadMoreEvents() {
         const eventsContainer = document.getElementById('eventsContainer');
         if (eventsContainer) {
           events.forEach(event => {
-            if (!event.hide_owner) {
               const eventCard = document.createElement('div');
               eventCard.classList.add('event-card');
 
@@ -48,7 +47,6 @@ function loadMoreEvents() {
                             </a>
                         `;
               eventsContainer.appendChild(eventCard);
-            }
           });
 
           // Update the page number for the next request
