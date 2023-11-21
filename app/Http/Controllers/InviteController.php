@@ -42,7 +42,7 @@ class InviteController extends Controller
         $notification->save();
 
         $invite = new Invite();
-        $invite->sentBy()->associate($user->id);
+        $invite->sentBy()->associate($user);
         $invite->notification()->associate($notification);
         $invite->save();
 
