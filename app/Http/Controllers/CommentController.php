@@ -26,7 +26,7 @@ class CommentController extends Controller
         $comment->id_event = $id_event;
         $comment->id_user = $id_user;
         $comment->text = $request->input('text');
-        $comment->date = date('Y-m-d');
+        $comment->date = date('Y-m-d H:i:s');
 
         // $this->authorize('create', $comment);    is this necessary?
 

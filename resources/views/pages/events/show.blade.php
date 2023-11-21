@@ -29,11 +29,11 @@
             </form>
         @endif
         @if($event->public && Auth::check())
-            <form id="invitationForm">
+            <form method="POST" action="{{ route('invite.send') }}" id="invitationForm">
                 @csrf
                 <input type="text" name="email" placeholder="Enter user's email">
-                <input type="hidden" name="eventId" value="{{ $event->id }}">
-                <button type="button" onclick="sendInvitation()">Send Invitation</button>
+                <input type="hidden" name="id_event" value="{{ $event->id }}">
+                <button type="submit">Send Invitation</button>
             </form>
         @endif
         @if (Auth::check() && Auth::user()->id == $event->id_owner)

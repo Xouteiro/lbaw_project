@@ -9,7 +9,8 @@ class Invite extends Notification
 {
     use HasFactory;
 
-    // Don't add create and update timestamps in database.
+    protected $primaryKey = ['id_eventnotification', 'id_user'];
+    public $incrementing = false;
     public $timestamps = false;
     protected $table = 'invite';
 
