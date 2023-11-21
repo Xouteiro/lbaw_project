@@ -7,7 +7,7 @@
     <div class="participants">
         @if($event->participants->count() == 0)
             <p>No participants yet</p>
-            <!-- invite button >
+            <!-- invite button -->
         @endif
         @foreach($event->participants as $participant)
             @include('partials.participant', ['participant' => $participant])
