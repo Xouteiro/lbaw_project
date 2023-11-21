@@ -30,9 +30,11 @@ class EventPolicy
 
     public function delete(User $user, Event $event): bool
     {
-        if($event->owner() === $user->id) return true;
+        if($event->id_owner == $user->id) return true;
         return false;
     }
+
+
 
     public function join(User $user, Event $event): bool
     {
