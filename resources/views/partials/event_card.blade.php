@@ -1,17 +1,15 @@
-@if (url()->current() == route('events'))
-    @if ($event->public && !$event->hide_owner) <!-- Make private events visible for authenticated users -->
+@if (url()->current() == route('events') || url()->current() == route('events.search'))
+    @if (($event->public || Auth::check()) && !$event->hide_owner) 
         <div id="event-{{ $event->id }}" class="event-card">
             <a href="{{ route('event.show', ['id' => $event->id]) }}">
                 <h3>{{ $event->name }}</h3>
                 <p> {{ $event->description }}</p>
+
             </a>
-            @if (Auth::check() && Auth::user()->id == $event->id_owner)
-            <img src="{{ asset('icons/option.png') }}" alt="Manage Icon" class="event-manage">
-            @endif
         </div>
     @endif
 @elseif (url()->current() == route('user.show', ['id' => request()->route('id')]))
-    @if ($event->public || Auth::check()) <!-- Make private events visible for authenticated users -->
+    @if ($event->public || Auth::check()) 
         <div id="event-{{ $event->id }}" class="event-card">
             <a href="{{ route('event.show', ['id' => $event->id]) }}">
                 @if ($event->highlight_owner || $event->getOriginal('pivot_highlighted'))

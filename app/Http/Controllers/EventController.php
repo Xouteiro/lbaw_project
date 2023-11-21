@@ -12,14 +12,26 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::paginate(10);
-        return view('pages.events.index', ['events' => $events]);
+        if(Auth::check()){
+            $events = Event::where('hide_owner','=', false)->paginate(10);
+            return view('pages.events.index', ['events' => $events]);
+        }
+        else{
+            $events = Event::where('public', '=' , true)->paginate(10); 
+            return view('pages.events.index', ['events' => $events]);
+        }
     }
 
     public function indexAjax()
     {
-        $events = Event::paginate(10);
-        return response()->json(['events' => $events]);
+        if(Auth::check()){
+            $events = Event::where('hide_owner','=', false)->paginate(10);
+            return response()->json(['events' => $events]);
+        }
+        else{
+            $events = Event::where('public', '=' , true)->where('hide_owner','=', false)->paginate(10); 
+            return response()->json(['events' => $events]);
+        }
     }
 
     public function create(): View
@@ -29,21 +41,20 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-
         $id = Auth::user()->id; 
-        //$this->authorize('create');
+        $user = User::findOrFail($id);
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'date' => 'required',
             'time' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'capacity' => 'required',
-            'id_location' => 'required'
+            'description' => 'required|string|max:5000',
+            'price' => 'required|numeric',
+            'capacity' => 'required|numeric',
+            'id_location' => 'required|numeric'
         ]);
 
         $eventdate = $request->input('date') . ' ' . $request->input('time') . ':00';
-        Event::create([
+        $event = Event::create([
             'name' => $request->input('name'),
             'eventdate' => $eventdate,
             'description' => $request->input('description'),
@@ -55,6 +66,9 @@ class EventController extends Controller
             'id_location' => $request->input('id_location')
         ]);
 
+        $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
+
+
 
         return redirect()->route('user.show', ['id' => $id])
             ->withSuccess('You have successfully created your event!');
@@ -63,14 +77,16 @@ class EventController extends Controller
     public function show(string $id)
     {
         $event = Event::findOrFail($id);
-        //$this->authorize('view', Auth::user(), $event);
+        if(!Auth::check() && $event->public == false){ //por mensagem de erro dizer que é preciso estar logado para ver o evento
+            return redirect()->route('login');
+        }
         return view('pages.events.show', ['event' => $event]);
     }
 
     public function edit(string $id)
     {   
         $event = Event::findOrFail($id);
-        //$this->authorize('update', Auth::user(), $event);
+        $this->authorize('edit', $event);
         return view('pages.events.edit', ['event' => $event]);
     }
 
@@ -85,7 +101,7 @@ class EventController extends Controller
             'capacity' => 'required',
             'id_location' => 'required',
         ]);
-        //$this->authorize('update', Auth::user(), $event);
+        $this->authorize('update', $event);
         $event->name = $request->input('name');
         $event->eventdate = $request->input('eventdate');
         $event->description = $request->input('description');
@@ -124,7 +140,7 @@ class EventController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
-        // $this->authorize('join', $event);
+        //$this->authorize('join', $event); fazer esta depois
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
