@@ -1,7 +1,16 @@
-<li class="comment" data-id="{{$item->id}}">
-    <label>
-        <input type="checkbox" {{ $item->done?'checked':''}}>
-        <span>{{ $item->description }}</span>
-        <a href="#" class="delete">&#10761;</a>
-    </label>
+<li>
+    <h3>{{ $comment->user->username }}</h3>
+    @if (Auth::check() && Auth::id() === $comment->user->id)
+        <form action="" method="POST">
+            <button class="delete_comment_button" type="submit">
+                <p> Delete comment</p>
+            </button>
+        </form>
+        <form action="" method="POST">
+            <button class="edit_comment_button" type="submit">
+                <p> Edit comment</p>
+            </button>
+        </form>
+    @endif
+    <p>{{ $comment->text }}</p>
 </li>

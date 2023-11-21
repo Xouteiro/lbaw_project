@@ -3,43 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-
-
+use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
-    public function index(){
-        $events = Event::all();
+    public function index()
+    {
+        $events = Event::paginate(10);
         return view('pages.events.index', ['events' => $events]);
     }
 
-    public function create(Request $request)
+    public function indexAjax()
     {
-        $user = Auth::user();
-        //$this->authorize('create', $user);
+        $events = Event::paginate(10);
+        return response()->json(['events' => $events]);
+    }
+
+    public function create(): View
+    {
         return view('pages.events.create');
     }
 
     public function store(Request $request)
     {
-        $user = Auth::user();
+
+        $id = Auth::user()->id; 
         //$this->authorize('create');
         $request->validate([
-        'name' => 'required',
-        'date' => 'required',
-        'time' => 'required',
-        'description' => 'required',
-        'price' => 'required',
-        'public' => 'required',
-        'opentojoin' => 'required',
-        'capacity' => 'required',
-        'id_location' => 'required'
+            'name' => 'required',
+            'date' => 'required',
+            'time' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'capacity' => 'required',
+            'id_location' => 'required'
         ]);
 
-        $eventdate = $request->input('date') . ' ' . $request->input('time'). ':00';
-        
+        $eventdate = $request->input('date') . ' ' . $request->input('time') . ':00';
         Event::create([
             'name' => $request->input('name'),
             'eventdate' => $eventdate,
@@ -48,25 +51,26 @@ class EventController extends Controller
             'public' => $request->input('public'),
             'opentojoin' => $request->input('opentojoin'),
             'capacity' => $request->input('capacity'),
-            'id_user' => $user->id,
+            'id_owner' => $id,
             'id_location' => $request->input('id_location')
         ]);
 
 
-        return redirect()->route('user.show', ['id' => $user->id])
+        return redirect()->route('user.show', ['id' => $id])
             ->withSuccess('You have successfully created your event!');
     }
 
     public function show(string $id)
     {
         $event = Event::findOrFail($id);
-        $this->authorize('view', Auth::user(), $event);
+        //$this->authorize('view', Auth::user(), $event);
         return view('pages.events.show', ['event' => $event]);
     }
 
-    public function edit(Event $event)
-    {
-        $this->authorize('update', Auth::user(), $event);
+    public function edit(string $id)
+    {   
+        $event = Event::findOrFail($id);
+        //$this->authorize('update', Auth::user(), $event);
         return view('pages.events.edit', ['event' => $event]);
     }
 
@@ -74,28 +78,26 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $request->validate([
-        'name' => 'required|string',
-        'eventDate' => 'required|date',
-        'description' => 'required|string',
-        'price' => 'required|numeric',
-        'public' => 'required|boolean',
-        'opentoJoin' => 'required|boolean',
-        'capacity' => 'required|numeric',
-        'id_location' => 'required|string',
-        //'eventTags' => 'json' //TODO tenho que fazer algo com isso?
+            'name' => 'required',
+            'eventdate' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'capacity' => 'required',
+            'id_location' => 'required',
         ]);
-        $this->authorize('update', Auth::user(), $event);
+        //$this->authorize('update', Auth::user(), $event);
         $event->name = $request->input('name');
-        $event->eventDate = $request->input('eventDate');
+        $event->eventdate = $request->input('eventdate');
         $event->description = $request->input('description');
         $event->price = $request->input('price');
         $event->public = $request->input('public');
         $event->opentojoin = $request->input('opentojoin');
         $event->capacity = $request->input('capacity');
-        $event->id_user = $request->input('id_user');
+        $event->id_owner = $event->id_owner;
         $event->id_location = $request->input('id_location');
         $event->save();
-        return response()->json($event);
+        return redirect()->route('event.show', ['id' => $event->id])
+            ->withSuccess('You have successfully edited your profile!');
     }
 
     public function delete($id)
@@ -109,7 +111,24 @@ class EventController extends Controller
 
     public function eventsSearch(Request $request)
     {
-        $events = Event::where('name', 'like', '%' . $request->input('search') . '%')->get();
+        $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
+        $events = Event::select()
+            ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
+            ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input])
+            ->get();
         return view('pages.events.search', ['events' => $events]);
+    }
+
+    public function joinEvent(string $id)
+    {
+        $user = User::find(Auth::user()->id);
+        $event = Event::findOrFail($id);
+
+        // $this->authorize('join', $event);
+
+        $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
+
+        return redirect()->route('event.show', ['id' => $event->id])
+            ->withSuccess('You have successfully joined the event!');
     }
 }

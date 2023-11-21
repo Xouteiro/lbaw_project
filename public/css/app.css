@@ -138,3 +138,62 @@ input[type=password]:focus {
   background-color: white;
   margin-left: 2em;
 }
+
+.event-pin {
+  width: 10px;
+  margin: 0.1em;
+}
+
+.event-manage {
+  width: 25px;
+  margin: 0.1em;
+}
+
+/* Add these styles to your existing CSS file or create a new one */
+
+.ui.pagination.menu {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.ui.pagination.menu .item {
+  margin-right: 5px;
+}
+
+.ui.pagination.menu a {
+  color: #333;
+  text-decoration: none;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.ui.pagination.menu a.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.ui.pagination.menu a:hover {
+  background-color: #eee;
+}
+
+.ui.pagination.menu .disabled {
+  pointer-events: none;
+  color: #777;
+}
+
+.ui.pagination.menu .icon.item i {
+  margin: 0;
+}
+
+.ui.pagination.menu .icon.item.disabled {
+  opacity: 0.5;
+}
+
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

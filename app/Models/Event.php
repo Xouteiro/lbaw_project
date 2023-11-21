@@ -21,8 +21,10 @@ class Event extends Model
         'public',
         'opentojoin',
         'capacity',
-        'id_user',
-        'id_location'
+        'id_owner',
+        'id_location',
+        'highlight_owner',
+        'hide_owner'
     ];
 
     protected static function boot()
@@ -34,16 +36,15 @@ class Event extends Model
         });
     }
 
-
     public function participants()
     {
         return $this->belongsToMany(User::class, 'joined', 'id_event', 'id_user')
-        ->withPivot('date', 'ticket');
+        ->withPivot('date', 'ticket', 'highlighted', 'hidden');
     }
 
     public function owner()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_owner');
     }
 
     public function polls()
@@ -53,7 +54,7 @@ class Event extends Model
 
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class, 'id_event');
     }
 
     public function location()
@@ -75,4 +76,5 @@ class Event extends Model
     {
         return $this->hasMany(Notification::class);
     }
+    
 }

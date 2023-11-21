@@ -1,181 +1,197 @@
 function addEventListeners() {
-    let itemCheckers = document.querySelectorAll('article.card li.item input[type=checkbox]');
-    [].forEach.call(itemCheckers, function(checker) {
-      checker.addEventListener('change', sendItemUpdateRequest);
+  window.addEventListener('load', function () {
+    // Load events from the API on page load
+    loadMoreEvents();
+  });
+}
+
+function encodeForAjax(data) {
+  if (data == null) return null;
+  return Object.keys(data).map(function (k) {
+    return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
+  }).join('&');
+}
+
+function sendAjaxRequest(method, url, data, handler) {
+  let request = new XMLHttpRequest();
+
+  request.open(method, url, true);
+  request.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
+  request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  request.addEventListener('load', handler);
+  request.send(encodeForAjax(data));
+}
+
+// Infinite scroll
+let page = 1;
+
+function loadMoreEvents() {
+  const xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        const events = response.events.data;
+
+        // Append the new events to the container
+        const eventsContainer = document.getElementById('eventsContainer');
+        if(eventsContainer){
+          events.forEach(event => {
+            const eventCard = document.createElement('div');
+            eventCard.classList.add('event-card');
+            
+            eventCard.innerHTML = `
+                          <a href="/event/${event.id}">
+                            <h3>${event.name}</h3>
+                            <p>${event.description}</p>
+                          </a>
+                      `;
+            eventsContainer.appendChild(eventCard);
+          });
+
+          // Update the page number for the next request
+          page++;
+
+          // If there are more pages, continue to listen for scroll events
+          if (response.events.next_page_url) {
+            window.addEventListener('scroll', scrollHandler);
+          }
+        }
+      } else {
+        console.error('Error fetching events:', xhr.status, xhr.statusText);
+      }
+    }
+  };
+
+  const url = `/api/events-ajax?page=${page}`;
+  xhr.open('GET', url, true);
+  xhr.send();
+}
+
+function scrollHandler() {
+  const threshold = 200;
+
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - threshold) {
+    window.removeEventListener('scroll', scrollHandler);
+    loadMoreEvents();
+  }
+}
+
+function openOptions() {
+  const options = document.querySelectorAll(".event-manage");
+  let topElement;
+  if (options) {
+    options.forEach((option) => {
+      option.addEventListener("click", (e) => {
+        const alreadyOpen = document.querySelector(".event-manage-div");
+        if (!alreadyOpen) {
+          const id_event = option.parentElement.id.split("-")[1];
+          let pinButtonText = "Pin";
+          let hideButtonText = "Hide";
+          let pinAction = true;
+          let hideAction = true;
+
+          const isEventPinned = option.parentElement.firstElementChild.firstElementChild.classList.contains("event-pin");
+          const isEventHidden = option.parentElement.firstElementChild.firstElementChild.classList.contains("event-hidden");
+
+          if (isEventPinned) {
+            pinButtonText = "Unpin";
+            pinAction = false;
+          }
+          if (isEventHidden) {
+            hideButtonText = "Unhide";
+            hideAction = false;
+          }
+
+          const optionsDiv = document.createElement("div");
+          optionsDiv.classList.add("event-manage-div");
+          optionsDiv.style.top = (parseInt(e.clientY) + parseInt(window.scrollY)).toString() + "px";
+          optionsDiv.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 100).toString() + "px";
+
+          const pinButton = document.createElement("button");
+          pinButton.type = "button";
+          pinButton.textContent = pinButtonText;
+          pinButton.addEventListener("click", () => {
+            topElement = option.parentElement;
+            if(pinAction) {
+              if(isEventHidden){
+                option.parentElement.firstElementChild.firstElementChild.remove();
+              }
+
+              const pin = document.createElement("img");
+              pin.src = "/icons/pin.png";
+              pin.alt = "Pin Icon";
+              pin.classList.add("event-pin");
+              option.parentElement.firstElementChild.prepend(pin);
+              option.parentElement.remove();
+              document.querySelector(".events-container").prepend(topElement);
+            }
+            else {
+              option.parentElement.firstElementChild.firstElementChild.remove();
+              const findFirstHidden = document.querySelector(".event-hide");
+              if(findFirstHidden){
+                findFirstHidden.parentNode.insertBefore(topElement, findFirstHidden.nextSibling);
+              }
+              else{
+                document.querySelector(".events-container").appendChild(topElement);
+              }
+            }
+            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'pin', pinAction: pinAction}, function(){});
+          });
+
+          const hideButton = document.createElement("button");
+          hideButton.type = "button";
+          hideButton.textContent = hideButtonText;
+          hideButton.addEventListener("click", () => {
+            topElement = option.parentElement;
+            if(hideAction) {
+              if(isEventPinned){
+                option.parentElement.firstElementChild.firstElementChild.remove();
+              }
+
+              const hide = document.createElement("p");
+              hide.textContent = "Hidden";
+              hide.classList.add("event-hidden");
+              option.parentElement.firstElementChild.prepend(hide);
+              option.parentElement.remove();
+              document.querySelector(".events-container").appendChild(topElement);
+            }
+            else {
+              option.parentElement.firstElementChild.firstElementChild.remove();
+              const findLastPinned = document.querySelectorAll(".event-pin")[document.querySelectorAll(".event-pin").length - 1];
+              if(findLastPinned){
+                findLastPinned.parentNode.insertBefore(topElement, findLastPinned.nextSibling);
+              }
+              else{
+                document.querySelector(".events-container").prepend(topElement);
+              }
+            }
+            sendAjaxRequest('PUT', `/api/user/manage-event/${id_event}`, {actionName: 'hide', hideAction: hideAction}, function(){});
+          });
+
+          optionsDiv.appendChild(pinButton);
+          optionsDiv.appendChild(hideButton);
+
+          option.parentElement.appendChild(optionsDiv);
+        }
+      });
     });
-  
-    let itemCreators = document.querySelectorAll('article.card form.new_item');
-    [].forEach.call(itemCreators, function(creator) {
-      creator.addEventListener('submit', sendCreateItemRequest);
+  }
+}
+
+function closeOptions() {
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("event-manage")) {
+      return;
+    }
+    const options = document.querySelectorAll(".event-manage-div");
+
+    options.forEach((option) => {
+      option.remove();
     });
-  
-    let itemDeleters = document.querySelectorAll('article.card li a.delete');
-    [].forEach.call(itemDeleters, function(deleter) {
-      deleter.addEventListener('click', sendDeleteItemRequest);
-    });
-  
-    let cardDeleters = document.querySelectorAll('article.card header a.delete');
-    [].forEach.call(cardDeleters, function(deleter) {
-      deleter.addEventListener('click', sendDeleteCardRequest);
-    });
-  
-    let cardCreator = document.querySelector('article.card form.new_card');
-    if (cardCreator != null)
-      cardCreator.addEventListener('submit', sendCreateCardRequest);
-  }
-  
-  function encodeForAjax(data) {
-    if (data == null) return null;
-    return Object.keys(data).map(function(k){
-      return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
-    }).join('&');
-  }
-  
-  function sendAjaxRequest(method, url, data, handler) {
-    let request = new XMLHttpRequest();
-  
-    request.open(method, url, true);
-    request.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    request.addEventListener('load', handler);
-    request.send(encodeForAjax(data));
-  }
-  
-  function sendItemUpdateRequest() {
-    let item = this.closest('li.item');
-    let id = item.getAttribute('data-id');
-    let checked = item.querySelector('input[type=checkbox]').checked;
-  
-    sendAjaxRequest('post', '/api/item/' + id, {done: checked}, itemUpdatedHandler);
-  }
-  
-  function sendDeleteItemRequest() {
-    let id = this.closest('li.item').getAttribute('data-id');
-  
-    sendAjaxRequest('delete', '/api/item/' + id, null, itemDeletedHandler);
-  }
-  
-  function sendCreateItemRequest(event) {
-    let id = this.closest('article').getAttribute('data-id');
-    let description = this.querySelector('input[name=description]').value;
-  
-    if (description != '')
-      sendAjaxRequest('put', '/api/cards/' + id, {description: description}, itemAddedHandler);
-  
-    event.preventDefault();
-  }
-  
-  function sendDeleteCardRequest(event) {
-    let id = this.closest('article').getAttribute('data-id');
-  
-    sendAjaxRequest('delete', '/api/cards/' + id, null, cardDeletedHandler);
-  }
-  
-  function sendCreateCardRequest(event) {
-    let name = this.querySelector('input[name=name]').value;
-  
-    if (name != '')
-      sendAjaxRequest('put', '/api/cards/', {name: name}, cardAddedHandler);
-  
-    event.preventDefault();
-  }
-  
-  function itemUpdatedHandler() {
-    let item = JSON.parse(this.responseText);
-    let element = document.querySelector('li.item[data-id="' + item.id + '"]');
-    let input = element.querySelector('input[type=checkbox]');
-    element.checked = item.done == "true";
-  }
-  
-  function itemAddedHandler() {
-    if (this.status != 200) window.location = '/';
-    let item = JSON.parse(this.responseText);
-  
-    // Create the new item
-    let new_item = createItem(item);
-  
-    // Insert the new item
-    let card = document.querySelector('article.card[data-id="' + item.card_id + '"]');
-    let form = card.querySelector('form.new_item');
-    form.previousElementSibling.append(new_item);
-  
-    // Reset the new item form
-    form.querySelector('[type=text]').value="";
-  }
-  
-  function itemDeletedHandler() {
-    if (this.status != 200) window.location = '/';
-    let item = JSON.parse(this.responseText);
-    let element = document.querySelector('li.item[data-id="' + item.id + '"]');
-    element.remove();
-  }
-  
-  function cardDeletedHandler() {
-    if (this.status != 200) window.location = '/';
-    let card = JSON.parse(this.responseText);
-    let article = document.querySelector('article.card[data-id="'+ card.id + '"]');
-    article.remove();
-  }
-  
-  function cardAddedHandler() {
-    if (this.status != 200) window.location = '/';
-    let card = JSON.parse(this.responseText);
-  
-    // Create the new card
-    let new_card = createCard(card);
-  
-    // Reset the new card input
-    let form = document.querySelector('article.card form.new_card');
-    form.querySelector('[type=text]').value="";
-  
-    // Insert the new card
-    let article = form.parentElement;
-    let section = article.parentElement;
-    section.insertBefore(new_card, article);
-  
-    // Focus on adding an item to the new card
-    new_card.querySelector('[type=text]').focus();
-  }
-  
-  function createCard(card) {
-    let new_card = document.createElement('article');
-    new_card.classList.add('card');
-    new_card.setAttribute('data-id', card.id);
-    new_card.innerHTML = `
-  
-    <header>
-      <h2><a href="cards/${card.id}">${card.name}</a></h2>
-      <a href="#" class="delete">&#10761;</a>
-    </header>
-    <ul></ul>
-    <form class="new_item">
-      <input name="description" type="text">
-    </form>`;
-  
-    let creator = new_card.querySelector('form.new_item');
-    creator.addEventListener('submit', sendCreateItemRequest);
-  
-    let deleter = new_card.querySelector('header a.delete');
-    deleter.addEventListener('click', sendDeleteCardRequest);
-  
-    return new_card;
-  }
-  
-  function createItem(item) {
-    let new_item = document.createElement('li');
-    new_item.classList.add('item');
-    new_item.setAttribute('data-id', item.id);
-    new_item.innerHTML = `
-    <label>
-      <input type="checkbox"> <span>${item.description}</span><a href="#" class="delete">&#10761;</a>
-    </label>
-    `;
-  
-    new_item.querySelector('input').addEventListener('change', sendItemUpdateRequest);
-    new_item.querySelector('a.delete').addEventListener('click', sendDeleteItemRequest);
-  
-    return new_item;
-  }
-  
-  addEventListeners();
-  
+  });
+}
+
+addEventListeners();
+openOptions();
+closeOptions();
