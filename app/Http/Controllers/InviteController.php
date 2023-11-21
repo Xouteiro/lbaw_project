@@ -11,44 +11,47 @@ use Illuminate\Support\Facades\Auth;
 
 class InviteController extends Controller
 {
-    public function sendInvite(Request $request)
-{
-    $event = Event::findOrFail($request->input('id_event'));
+    public function sendInvite(Request $request) {
+        $event = Event::findOrFail($request->id_event);
 
-    if (!$event) {
-        return response()->json(['error' => 'Event not found'], 404);
+        if (!$event) {
+            return response()->json(['error' => 'Event not found'], 404);
+        }
+
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+        }
+        else {
+            return response()->json(['error' => 'Need to be logged in'], 401);
+        }
+
+        $userToInvite = User::where('email', $request->email)->first();
+
+        if (!$userToInvite) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $date = date('Y-m-d H:i:s');
+        $notification = Notification::create([
+            'date' => $date,
+            'text' => "You've been invited to " . $event->name . " by " . $user->username,
+            'link' => "/event/" . $event->id
+        ]);
+        $notification->recievedBy()->associate($userToInvite);
+        $notification->event()->associate($event);
+        $notification->save();
+        dd($date);
+        $invite = Invite::create([
+            'id_user' => $user->id
+        ]);
+        $invite->notification()->associate($notification);
+        $invite->save();
+
+        $user->pendingInvites()->save($invite);
+
+        return redirect()->route('event.show', ['id' => $event->id])
+        ->withSuccess('Invitation sent successfully!');
     }
-
-    if (Auth::check()) {
-        $user = User::findOrFail(Auth::user()->id);
-    }
-    else {
-        return response()->json(['error' => 'Need to be logged in'], 401);
-    }
-
-    $userToInvite = User::where('email', $request->input('email'))->first();
-
-    if (!$userToInvite) {
-        return response()->json(['error' => 'User not found'], 404);
-    }
-
-    $date = date('Y-m-d H:i:s');
-    $notification = Notification::create([
-        'date' => $date,
-        'text' => "You've been invited to " . $event->name . " by " . $user->username,
-        'link' => "/event\/" . $event->id,
-        'id_event' => $event->id,
-        'id_user' => $userToInvite->id
-    ]);
-
-
-    Invite::create([
-        'id_eventnotification' => $notification->id,
-        'id_user' => $user->id
-    ]);
-
-    return response()->json(['message' => 'Invitation sent successfully'], 200);
-}
 
 
     /**

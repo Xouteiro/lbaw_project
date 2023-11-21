@@ -29,7 +29,6 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-
         $id = Auth::user()->id; 
         //$this->authorize('create');
         $request->validate([
