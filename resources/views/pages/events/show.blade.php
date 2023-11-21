@@ -28,6 +28,14 @@
                 </button>
             </form>
         @endif
+        @if($event->public && Auth::check())
+            <form id="invitationForm">
+                @csrf
+                <input type="text" name="email" placeholder="Enter user's email">
+                <input type="hidden" name="eventId" value="{{ $event->id }}">
+                <button type="button" onclick="sendInvitation()">Send Invitation</button>
+            </form>
+        @endif
         @if (Auth::check() && Auth::user()->id == $event->id_owner)
             <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
                 Edit Event

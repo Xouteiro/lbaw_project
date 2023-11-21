@@ -11,10 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class InviteController extends Controller
 {
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    
+    public function sendInvite(Request $request)
     {
         $event = Event::findOrFail($request->input('event_id'));
 

@@ -12,5 +12,16 @@
         <div class="events-container">
         @each('partials.event_card', $user->ownedEvents, 'event')
         </div>
+        <div class="notifications">
+            <h2> Notifications</h2>
+            <div class="invites">
+                @foreach ($user->pendingInvites() as $invite)
+                    <a class="pending_invite" href="{{url($invite->notification()->link)}}">
+                        <h3>Sent by: {{$invite->sentBy()->name}}</h3>
+                        <p> {{$invite->notification()->text}}</p>
+                    </a>
+                @endforeach
+            </div>
+        </div>
     </div>
 @endsection

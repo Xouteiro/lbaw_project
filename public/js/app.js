@@ -195,3 +195,29 @@ function closeOptions() {
 addEventListeners();
 openOptions();
 closeOptions();
+
+function sendInvitation() {
+  var formData = new FormData(document.getElementById('invitationForm'));
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/event/send-invite', true);
+  xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        try {
+          var jsonResponse = JSON.parse(xhr.responseText);
+          console.log(jsonResponse.message);
+        } catch (e) {
+          console.error('Error parsing JSON response:', e);
+        }
+      } else {
+        console.error('HTTP error:', xhr.status);
+      }
+    }
+  };
+
+  xhr.send(formData);
+}
