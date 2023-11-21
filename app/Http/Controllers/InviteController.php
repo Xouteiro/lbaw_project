@@ -40,10 +40,9 @@ class InviteController extends Controller
         $notification->recievedBy()->associate($userToInvite);
         $notification->event()->associate($event);
         $notification->save();
-        dd($date);
-        $invite = Invite::create([
-            'id_user' => $user->id
-        ]);
+
+        $invite = new Invite();
+        $invite->sentBy()->associate($user->id);
         $invite->notification()->associate($notification);
         $invite->save();
 
