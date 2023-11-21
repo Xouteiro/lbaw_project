@@ -1,4 +1,6 @@
 body {
+  margin: 0;
+  padding: 0;
   background-color: #ffffff;
   color: #9b4dca;
 }
@@ -9,7 +11,7 @@ main>header {
   align-items: center;
   background-color: #d2afe7;
   padding: 1em;
-  margin: 1em;
+  margin: 0em;
 }
 
 main>header h1 {
@@ -126,6 +128,10 @@ input[type=password]:focus {
   border-radius: 4px;
   padding: 10px;
   margin-bottom: 10px;
+}
+
+input.search-event {
+  margin: 1em 0;
 }
 
 .event-search {

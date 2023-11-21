@@ -17,7 +17,6 @@ class CommentController extends Controller
         return view('partials.comment', [
             'comment' => $comment
         ]);
-
     }
 
     public function create(Request $request, $id_event, $id_user)

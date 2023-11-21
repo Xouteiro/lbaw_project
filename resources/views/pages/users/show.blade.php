@@ -19,14 +19,30 @@
         @each('partials.event_card', $user->ownedEvents, 'event')
         </div>
         <div class="notifications">
-            <h2> Notifications</h2>
+            <h2>Invites</h2>
             <div class="invites">
-                @foreach ($user->notifications as $notification)
-                    <a class="pending_invite" href="{{url($notification->link)}}">
-                        <h4> {{$notification->text}}</h4>
-                    </a>
+                @foreach($notifications[0] as $invite)
+                <a class="pending_invite" href="{{ url($invite->link) . '?id_invite=' . $invite->id}}">
+                    <h4>- {{$invite->text}}</h4>
+                </a>
                 @endforeach
             </div>
+            {{-- <h2>Event Updates</h2>
+            <div class="event-updates">
+                @foreach($notifcations[1] as $eventUpdate)
+                <a class="pending_event_update" href="{{ url($eventUpdate->link) . '?id_eventUpdate=' . $eventUpdate->id}}">
+                    <h4>- {{$eventUpdate->text}}</h4>
+                </a>
+                @endforeach
+            </div>
+            <h2>Requests To Join</h2>
+            <div class="requests-to-join">
+                @foreach($notifcations[2] as $requestToJoin)
+                <a class="pending_request_to_join" href="{{ url($requestToJoin->link) . '?id_requestToJoin=' . $requestToJoin->id}}">
+                    <h4>- {{$requestToJoin->text}}</h4>
+                </a>
+                @endforeach
+            </div> --}}
         </div>
     </div>
 @endsection

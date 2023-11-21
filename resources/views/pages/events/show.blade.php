@@ -36,7 +36,7 @@
                 </button>
             </form>
         @endif
-        @if($event->public && Auth::check())
+        @if(Auth::check() && Auth::user()->id == $event->id_owner)
             <form method="POST" action="{{ route('invite.send') }}" id="invitationForm">
                 @csrf
                 <input type="text" name="email" placeholder="Enter user's email">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Event;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,10 +14,28 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        //  get all types of notifications
+        $invites = Notification::where('event_notification.id_user', $id)
+        ->join('invite', 
+        'invite.id_eventnotification', '=', 'event_notification.id')
+        ->get();
+        $eventUpdates = Notification::where('event_notification.id_user', $id)
+        ->join('event_update', 
+        'event_update.id_eventnotification', '=', 'event_notification.id')
+        ->get();
+        $requestsToJoin = Notification::where('event_notification.id_user', $id)
+        ->join('request_to_join',
+        'request_to_join.id_eventnotification', '=', 'event_notification.id')
+        ->get();
+
+        // join all notifications
+        $notitications = [$invites, $eventUpdates, $requestsToJoin];
+
         $this->authorize('show', $user);
         
         return view('pages.users.show', [
-            'user' => $user
+            'user' => $user,
+            'notifications' => $notitications
         ]);
     }
 

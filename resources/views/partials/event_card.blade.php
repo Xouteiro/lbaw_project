@@ -4,7 +4,6 @@
             <a href="{{ route('event.show', ['id' => $event->id]) }}">
                 <h3>{{ $event->name }}</h3>
                 <p> {{ $event->description }}</p>
-
             </a>
         </div>
     @endif
