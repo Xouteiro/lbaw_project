@@ -227,7 +227,25 @@ function switchEvents() {
 
 }
 
+
+function removeParticipant() {
+  const fakebutton = document.getElementById("fake-button-remove")
+  fakebutton.addEventListener("click", () => {
+    const surebox = document.createElement("div");
+    surebox.classList.add("surebox");
+    surebox.innerHTML = `
+        <p>Are you sure ?</p>
+        <button type="submit" class="surebox-button yes">Yes</button>
+        <button type="submit" class="surebox-button no">No</button>
+    `;
+    fakebutton.parentElement.appendChild(surebox);
+  });
+
+}
+
+
 addEventListeners();
+removeParticipant();
 openOptions();
 closeOptions();
 switchEvents();

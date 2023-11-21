@@ -19,6 +19,9 @@
     </a>
     <form action="{{ route('event.removeparticipant', ['id' => $event->id, 'id_p' => $participant->id]) }}" method="POST">
         @csrf
+        <div class="button" id=fake-button-remove>
+            Remove Participant f
+        </div>
         <button class="button" type="submit">
             Remove Participant  
         </button>
