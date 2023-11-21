@@ -65,5 +65,5 @@ Route::controller(EventController::class)->group(function () {
 });
 
 Route::controller(InviteController::class)->group(function(){
-    Route::post('/event/send-invite', 'sendInvite')->name('send-invite');
+    Route::post('/api/send-invite', 'sendInvite');
 });

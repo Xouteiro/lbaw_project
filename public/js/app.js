@@ -200,7 +200,7 @@ function sendInvitation() {
   var formData = new FormData(document.getElementById('invitationForm'));
 
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/event/send-invite', true);
+  xhr.open('POST', '/api/send-invite', true);
   xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
