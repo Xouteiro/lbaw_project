@@ -42,6 +42,9 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/event/{id}', 'show')->name('event.show');
     Route::get('/event/{id}/edit', 'edit')->name('event.edit');
     Route::post('/event/{id}/edit', 'update')->name('event.update');
+    Route::get('/event/{id}/participants', 'participants')->name('event.participants');
+    Route::post('/event/{id}/participants/{id_p}/remove', 'removeparticipant')->name('event.removeparticipant');
+    Route::get('/event/{id}/participants/{id_p}/remove', 'removeDummy');
     Route::get('/event/{id}/delete', 'deleteDummy');
     Route::post('/event/{id}/delete', 'delete')->name('event.delete');
     Route::post('/event/{id}/join', 'joinEvent')->name('event.join');

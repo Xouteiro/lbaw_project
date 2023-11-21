@@ -185,7 +185,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   SELECT capacity INTO event_capacity FROM Event WHERE id = NEW.id_event;
   SELECT COUNT(*) INTO event_participants FROM Joined WHERE id_event = NEW.id_event;
-  IF event_participants >= event_capacity THEN
+  IF event_participants >= event_capacity AND event_capacity != 0 THEN
     RAISE EXCEPTION 'Event has reached its capacity. You cannot join this event.';
   END IF;
   RETURN NEW;

@@ -214,3 +214,11 @@ input[type=password]:focus {
   background-color: #f2e8f8;
   border-bottom: 2px #9b4dca; /* Não funciona ??? */
 }
+
+.participant-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}

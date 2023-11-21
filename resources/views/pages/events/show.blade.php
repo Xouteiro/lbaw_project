@@ -9,7 +9,11 @@
         <p>Event Creator: <a href="{{ route('login') }}"> {{ $event->owner->name }}</a></p>
         @endif
         <p>Event date: {{ $event->eventdate }}</p>
-        <p>Capacity: {{$event->participants->count()}}/{{$event->capacity}}</p>
+        @if($event->capacity == 0)
+            <p>Participants: {{$event->participants->count()}} </p>
+        @else
+            <p>Capacity: {{$event->participants->count()}}/{{$event->capacity}}</p>
+        @endif
         @if ($event->price == 0)
             <p>Free Event</p>
         @else
@@ -43,6 +47,9 @@
         @if (Auth::check() && Auth::user()->id == $event->id_owner)
             <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
                 Edit Event
+            </a>
+            <a class="button" href="{{ route('event.participants', ['id' => $event->id]) }}">
+                Manage Participants
             </a>
             <form action= "{{ route('event.delete', ['id' => $event->id])}}" method="POST">
                 @csrf
