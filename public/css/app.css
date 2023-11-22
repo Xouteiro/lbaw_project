@@ -1,199 +1,227 @@
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #e8ecf8;
-  color: rgb(43, 63, 124);
+    margin: 0;
+    padding: 0;
+    background-color: #e8ecf8;
+    color: rgb(43, 63, 124);
 }
 
 main>header {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  background-color: rgb(148, 170, 236);
-  padding: 1em;
-  margin: 0em;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    background-color: rgb(148, 170, 236);
+    padding: 1em;
+    margin: 0em;
 }
 
 main>header h1 {
-  margin: 0;
+    margin: 0;
 }
 
 main>header a.button {
-  margin: 1em;
-  justify-self: center;
+    margin: 1em;
+    justify-self: center;
 }
 
 main>header span {
-  margin: 1em;
-  justify-self: center;
+    margin: 1em;
+    justify-self: center;
 }
 
 #content label {
-  font-weight: normal;
+    font-weight: normal;
 }
 
-#content> form {
-  margin: 0 auto;
-  padding: 1em;
-  max-width: 20em;
-  border: 1px solid rgb(148, 170, 236);
+#content .home-page {
+    text-align: center;
+    margin: 3em auto;
 }
 
-#content form .error {
-  font-weight: bold;
-  color: #ff3333;
+#content .container>form.general {
+    margin: 0 auto;
+    padding: 1em;
+    max-width: 30em;
+    border: 1px solid rgb(148, 170, 236);
 }
 
-#content form .success {
-  font-weight: bold;
-  color: #106af1;
+#content .container>form .error {
+    font-weight: bold;
+    color: #ff3333;
 }
 
-#content form input {
-  background-color: #e8ecf8;
+#content .container>form .success {
+    font-weight: bold;
+    color: #106af1;
+}
+
+#content .container>form input {
+    background-color: #e8ecf8;
 }
 
 @media (max-width: 70em) {
-  #cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    #cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
-  main>header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-  }
+    main>header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+    }
 
-  main>header h1 {
-    grid-row-end: span 2;
-  }
+    main>header h1 {
+        grid-row-end: span 2;
+    }
 }
 
 @media (max-width: 40em) {
-  #cards {
-    grid-template-columns: 1fr;
-  }
+    #cards {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 25em) {
-  body {
-    margin: 0;
-  }
+    body {
+        margin: 0;
+    }
 
-  main>header {
-    margin: 0;
-    padding: 0.5em;
-  }
+    main>header {
+        margin: 0;
+        padding: 0.5em;
+    }
 
-  main>header span {
-    margin: 0;
-  }
+    main>header span {
+        margin: 0;
+    }
 
-  #content form {
-    margin: 0;
-    max-width: 25em;
-  }
+    #content .container form {
+        margin: 0;
+        max-width: 25em;
+    }
 }
 
-/**
-   * Override milligram colors
-   * Some styles might be missing
-   **/
 button {
-  background-color: rgb(43, 63, 124);
-  border-color: rgb(43, 63, 124);
+    background-color: rgb(43, 63, 124);
+    border-color: rgb(43, 63, 124);
+}
+
+.button {
+    background-color: rgb(43, 63, 124);
+    border-color: rgb(43, 63, 124);
 }
 
 a.button {
-  background-color: rgb(43, 63, 124);
-  border-color: rgb(43, 63, 124);
+    background-color: rgb(43, 63, 124);
+    border-color: rgb(43, 63, 124);
 }
 
 a.button.button-outline {
-  color: rgb(43, 63, 124);
+    color: rgb(43, 63, 124);
 }
 
 a {
-  color: rgb(43, 63, 124);
+    color: rgb(43, 63, 124);
 }
 
 input[type=text]:focus,
 input[type=email]:focus,
 input[type=password]:focus {
-  border-color: rgb(43, 63, 124);
+    border-color: rgb(43, 63, 124);
 }
 
 .event-card {
-  background-color: #e8ecf8;
-  border: 1px solid rgb(43, 63, 124);
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 10px;
+    background-color: #fff;
+    border-radius: 5%;
+    padding: 0;
+    margin-bottom: 10px;
+    width: 21em;
+    min-height: fit-content;
+}
+
+.event-card .event-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: auto;
+    padding: 0 1em;
+    text-align: center;
+}
+
+.event-image {
+    width: 100%;
+    height: auto;
+    border-radius: 5% 5% 0 0;
 }
 
 .container {
-  margin: 1em auto;
+    margin: 1em auto;
 }
 
 input.search-event {
-  margin: 1em 0;
+    margin: 1em 0;
+}
+
+.events-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    flex-direction: row;
 }
 
 .event-search {
-  font-size: .8em;
-  font-weight: lighter;
-  width: 50%;
-  padding: .6em 1.2em;
-  border-style: none;
-  border-radius: 4px;
-  background-color: #e8ecf8;
-  margin-left: 2em;
+    font-size: .8em;
+    font-weight: lighter;
+    width: 50%;
+    padding: .6em 1.2em;
+    border-style: none;
+    border-radius: 4px;
+    background-color: #e8ecf8;
+    margin-left: 2em;
 }
 
 .event-name {
-  margin: 1em 0;
+    margin: 1em 0;
 }
 
 .event-pin {
-  width: 10px;
-  margin: 0.1em;
+    width: 10px;
+    margin: 0.1em;
 }
 
 .event-manage {
-  width: 25px;
-  margin: 0.1em;
+    width: 25px;
+    margin: 0.1em;
 }
 
 .invite-container {
-  margin: 2em 0;
+    margin: 2em 0;
 }
 
 .comment-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .profile-events-title-div {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
-.profile-events-title-div > h2 {
-  text-align: center;
-  width: 100%;
-  margin: 0;
-  padding: 0.5em;
+.profile-events-title-div>h2 {
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    padding: 0.5em;
 }
 
-.profile-events-title-div > h2.active {
-  background-color: rgb(148, 170, 236);
-  border-bottom: 2px rgb(43, 63, 124); /* Não funciona ??? */
+.profile-events-title-div>h2.active {
+    background-color: rgb(148, 170, 236);
 }
 
 .participant-card {
-  background-color: #e8ecf8;
-  border: 1px solid #e8ecf8;
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 10px;
+    background-color: #e8ecf8;
+    border: 1px solid #e8ecf8;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
