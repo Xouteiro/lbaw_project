@@ -36,12 +36,14 @@ class EventController extends Controller
 
     public function create(): View
     {
+        $this->authorize('create');
         return view('pages.events.create');
     }
 
     public function store(Request $request)
     {
         $id = Auth::user()->id; 
+        $this->authorize('create');
         $user = User::findOrFail($id);
         $request->validate([
             'name' => 'required|string|max:255',
@@ -77,16 +79,15 @@ class EventController extends Controller
     public function show(string $id)
     {
         $event = Event::findOrFail($id);
-        if(!Auth::check() && $event->public == false){ //por mensagem de erro dizer que é preciso estar logado para ver o evento
-            return redirect()->route('login');
-        }
+        $this->authorize('view', $event);
+
         return view('pages.events.show', ['event' => $event]);
     }
 
     public function edit(string $id)
     {   
         $event = Event::findOrFail($id);
-        $this->authorize('edit', $event);
+        $this->authorize('update', $event);
         return view('pages.events.edit', ['event' => $event]);
     }
 
@@ -167,7 +168,7 @@ class EventController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
-        //$this->authorize('join', $event); fazer esta depois
+        $this->authorize('join', $event);
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 

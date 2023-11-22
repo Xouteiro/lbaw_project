@@ -12,8 +12,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
-
-        $this->authorize('show', $user);
+        $this->authorize('show',$user);
         
         return view('pages.users.show', [
             'user' => $user
@@ -24,7 +23,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $this->authorize('edit', $user);
+        $this->authorize('update', $user);
 
         return view('pages.users.edit', [
             'user' => $user
@@ -65,7 +64,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $this->authorize('delete', $user);
+        $this->authorize('update',$user);
 
         $user->delete();
         return redirect()->route('home')
@@ -77,7 +76,7 @@ class UserController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id_event);
 
-        // $this->authorize('manageEvent', $user, $event);
+        $this->authorize('manageEvent', $event);
         if($request->events == 'created') {
             if($request->actionName == 'pin'){
                 $pinAction = filter_var($request->input('pinAction'), FILTER_VALIDATE_BOOLEAN);
