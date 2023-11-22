@@ -73,24 +73,41 @@ class UserController extends Controller
 
     public function manageEvent(Request $request, string $id_event)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id_event);
 
         // $this->authorize('manageEvent', $user, $event);
-
-        if($request->actionName == 'pin'){
-            $pinAction = filter_var($request->input('pinAction'), FILTER_VALIDATE_BOOLEAN);
-            $event->update([
-                'highlight_owner' => $pinAction,
-                'hide_owner' => false
-            ]);
+        if($request->events == 'created') {
+            if($request->actionName == 'pin'){
+                $pinAction = filter_var($request->input('pinAction'), FILTER_VALIDATE_BOOLEAN);
+                $event->update([
+                    'highlight_owner' => $pinAction,
+                    'hide_owner' => false
+                ]);
+            }
+            else if($request->actionName == 'hide'){
+                $hideAction = filter_var($request->input('hideAction'), FILTER_VALIDATE_BOOLEAN);
+                $event->update([
+                    'highlight_owner' => false,
+                    'hide_owner' => $hideAction,
+                ]);
+            }
         }
-        else if($request->actionName == 'hide'){
-            $hideAction = filter_var($request->input('hideAction'), FILTER_VALIDATE_BOOLEAN);
-            $event->update([
-                'highlight_owner' => false,
-                'hide_owner' => $hideAction,
-            ]);
+        else if($request->events == 'joined') {
+            if($request->actionName == 'pin'){
+                $pinAction = filter_var($request->input('pinAction'), FILTER_VALIDATE_BOOLEAN);
+                $user->events()->updateExistingPivot($id_event, [
+                    'highlighted' => $pinAction,
+                    'hidden' => false
+                ]);
+            }
+            else if($request->actionName == 'hide'){
+                $hideAction = filter_var($request->input('hideAction'), FILTER_VALIDATE_BOOLEAN);
+                $user->events()->updateExistingPivot($id_event, [
+                    'highlighted' => false,
+                    'hidden' => $hideAction,
+                ]);
+            }
         }
 
         return response()->json(['message' => 'Update successful'], 200);

@@ -12,14 +12,26 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::paginate(10);
-        return view('pages.events.index', ['events' => $events]);
+        if(Auth::check()){
+            $events = Event::where('hide_owner','=', false)->paginate(10);
+            return view('pages.events.index', ['events' => $events]);
+        }
+        else{
+            $events = Event::where('public', '=' , true)->paginate(10); 
+            return view('pages.events.index', ['events' => $events]);
+        }
     }
 
     public function indexAjax()
     {
-        $events = Event::paginate(10);
-        return response()->json(['events' => $events]);
+        if(Auth::check()){
+            $events = Event::where('hide_owner','=', false)->paginate(10);
+            return response()->json(['events' => $events]);
+        }
+        else{
+            $events = Event::where('public', '=' , true)->where('hide_owner','=', false)->paginate(10); 
+            return response()->json(['events' => $events]);
+        }
     }
 
     public function create(): View
@@ -30,21 +42,21 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-
         $id = Auth::user()->id; 
         $this->authorize('create');
+        $user = User::findOrFail($id);
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'date' => 'required',
             'time' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'capacity' => 'required',
-            'id_location' => 'required'
+            'description' => 'required|string|max:5000',
+            'price' => 'required|numeric',
+            'capacity' => 'required|numeric',
+            'id_location' => 'required|numeric'
         ]);
 
         $eventdate = $request->input('date') . ' ' . $request->input('time') . ':00';
-        Event::create([
+        $event = Event::create([
             'name' => $request->input('name'),
             'eventdate' => $eventdate,
             'description' => $request->input('description'),
@@ -56,6 +68,9 @@ class EventController extends Controller
             'id_location' => $request->input('id_location')
         ]);
 
+        //$user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]); se pusermos por so quando der para dar unjoin se nao parte o delete do evento
+
+
 
         return redirect()->route('user.show', ['id' => $id])
             ->withSuccess('You have successfully created your event!');
@@ -65,6 +80,7 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
         $this->authorize('view', $event);
+
         return view('pages.events.show', ['event' => $event]);
     }
 
@@ -101,13 +117,40 @@ class EventController extends Controller
             ->withSuccess('You have successfully edited your profile!');
     }
 
-    public function delete($id)
+    public function participants(string $id)
+    {
+        $event = Event::findOrFail($id);
+        $this->authorize('participants', $event);
+        return view('pages.events.participants', ['event' => $event]);
+    }
+
+    public function removeparticipant(string $id, string $id_participant)
+    {
+        $event = Event::findOrFail($id);
+        $this->authorize('participants', $event);
+        $event->participants()->detach($id_participant);
+        return redirect()->route('event.participants', ['id' => $event->id])
+            ->withSuccess('You have successfully removed the participant!');
+    }
+
+    public function delete(string $id)
     {
         $event = Event::find($id);
         $this->authorize('delete', $event);
+        $event->participants()->detach();
         $event->delete();
-        return redirect()->route('event.index')
+        return redirect()->route('user.show', ['id' => Auth::user()->id])
             ->withSuccess('You have successfully deleted your comment!');
+    }
+
+    public function deleteDummy()
+    { 
+        abort(403, 'This is a great event! Why would you want to do that?');
+    }
+
+    public function removeDummy()
+    { 
+        abort(403, 'This is not your event!');
     }
 
     public function eventsSearch(Request $request)

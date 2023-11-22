@@ -8,8 +8,14 @@
         @if (Auth::check() && (Auth::user()->id === $user->id || Auth::user()->admin))
             <a class="button" href="{{ url('/user/' . $user->id .'/edit')}}">Edit Profile</a>
         @endif
-        <h2>Created Events</h2>
-        <div class="events-container">
+        <div class="profile-events-title-div">
+            <h2 class="joined-events-title active">Joined Events</h2>
+            <h2 class="created-events-title">Created Events</h2>
+        </div>
+        <div class="joined-events-container" style="display: block">
+        @each('partials.event_card', $user->events, 'event')
+        </div>
+        <div class="created-events-container" style="display: none">
         @each('partials.event_card', $user->ownedEvents, 'event')
         </div>
     </div>
