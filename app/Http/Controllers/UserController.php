@@ -14,9 +14,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $this->authorize('show', $user);
-
-        //  get all types of notifications
+        // get all types of notifications
         $invites = Notification::where('event_notification.id_user', $id)
         ->join('invite', 
         'invite.id_eventnotification', '=', 'event_notification.id')
@@ -33,7 +31,6 @@ class UserController extends Controller
         // join all notifications
         $notitications = [$invites, $eventUpdates, $requestsToJoin];
 
-        
         return view('pages.users.show', [
             'user' => $user,
             'notifications' => $notitications

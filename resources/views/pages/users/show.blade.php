@@ -41,12 +41,11 @@
             <h2 class="joined-events-title active">Joined Events</h2>
             <h2 class="created-events-title">Created Events</h2>
         </div>
-        <div class="joined-events-container" style="display: block">
+        <div class="joined-events-container" style="display: flex">
         @each('partials.joined_event_card', $user->events, 'event')
         </div>
         <div class="created-events-container" style="display: none">
         @each('partials.created_event_card', $user->ownedEvents, 'event')
         </div>
-        
     </div>
 @endsection
