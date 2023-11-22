@@ -33,7 +33,6 @@ function loadMoreEvents() {
         const response = JSON.parse(xhr.responseText);
         const events = response.events.data;
 
-        // Append the new events to the container
         const eventsContainer = document.getElementById('eventsContainer');
         if (eventsContainer) {
           events.forEach(event => {
@@ -49,10 +48,8 @@ function loadMoreEvents() {
               eventsContainer.appendChild(eventCard);
           });
 
-          // Update the page number for the next request
           page++;
 
-          // If there are more pages, continue to listen for scroll events
           if (response.events.next_page_url) {
             window.addEventListener('scroll', scrollHandler);
           }
