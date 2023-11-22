@@ -584,8 +584,8 @@ paths:
   /event/{id}/participants/{id_p}/remove:
     get:
       operationId: R213
-      summary: "R213: Remove Participant Dummy. Access: PUB"
-      description: "Dummy for the Remove Participant feature"
+      summary: "R213: Remove Participant Dummy"
+      description: "Dummy for the Remove Participant feature. Access: PUB"
       tags:
        - "M02: Events"
       parameters:
