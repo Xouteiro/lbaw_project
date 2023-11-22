@@ -14,6 +14,8 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        $this->authorize('show', $user);
+
         //  get all types of notifications
         $invites = Notification::where('event_notification.id_user', $id)
         ->join('invite', 
@@ -31,7 +33,6 @@ class UserController extends Controller
         // join all notifications
         $notitications = [$invites, $eventUpdates, $requestsToJoin];
 
-        $this->authorize('show', $user);
         
         return view('pages.users.show', [
             'user' => $user,
@@ -61,8 +62,13 @@ class UserController extends Controller
             'email' => 'required|email|max:250|unique:users,email,' . $id,
             'username' => 'required|string|max:250|unique:users,username,' . $id,
             'name' => 'required|string|max:250|unique:users,name,' . $id,
-            'description' => 'string|max:1000',
-            'password' => 'nullable|min:8',
+            'description' => 'string|max:2000',
+            'password' => 'nullable|min:8|confirmed',
+        ],[
+            'email.unique' => 'This email is already in use.',
+            'username.unique' => 'This username is already in use.',
+            'name.unique' => 'This name is already in use.',
+            
         ]);
 
         if ($request->filled('password')) {
@@ -84,7 +90,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $this->authorize('delete', $user);
+        $this->authorize('update',$user);
 
         $user->delete();
         return redirect()->route('home')
@@ -96,7 +102,6 @@ class UserController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id_event);
 
-        // $this->authorize('manageEvent', $user, $event);
         if($request->events == 'created') {
             if($request->actionName == 'pin'){
                 $pinAction = filter_var($request->input('pinAction'), FILTER_VALIDATE_BOOLEAN);

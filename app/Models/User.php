@@ -33,7 +33,8 @@ class User extends Authenticatable
     public function events()
     {
         return $this->belongsToMany(Event::class, 'joined', 'id_user', 'id_event')
-        ->withPivot('date', 'ticket', 'highlighted', 'hidden');
+        ->withPivot('date', 'ticket', 'highlighted', 'hidden')
+        ->orderByRaw('highlighted DESC, hidden ASC');
     }
 
     public function ownedEvents()

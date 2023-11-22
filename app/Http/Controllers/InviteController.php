@@ -85,7 +85,7 @@ class InviteController extends Controller
             return redirect()->route('event.show', ['id' => $event])
             ->withSuccess('You have successfully denied the invite!');
         }
-        return EventController::joinEvent($event);
+        return (new EventController())->joinEvent($event);
     }
 
     /**

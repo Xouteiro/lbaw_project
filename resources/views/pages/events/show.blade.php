@@ -69,7 +69,7 @@
             @endif
             </div>
         @endif
-        @if (Auth::check() && Auth::user()->id == $event->id_owner)
+        @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
             <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
                 Edit Event
             </a>

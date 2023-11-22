@@ -139,9 +139,10 @@ function openOptions() {
             }
             else {
               option.parentElement.firstElementChild.firstElementChild.remove();
-              const findFirstHidden = document.querySelector(".event-hide");
+              const findFirstHidden = document.querySelector(`${selectedEvents} .event-hidden`);
               if (findFirstHidden) {
-                findFirstHidden.parentNode.insertBefore(topElement, findFirstHidden.nextSibling);
+                console.log(findFirstHidden.parentElement.parentElement);
+                findFirstHidden.parentElement.parentElement.parentElement.insertBefore(topElement, findFirstHidden.parentElement.parentElement.previousSibling);
               }
               else {
                 document.querySelector(selectedEvents).appendChild(topElement);
@@ -169,9 +170,9 @@ function openOptions() {
             }
             else {
               option.parentElement.firstElementChild.firstElementChild.remove();
-              const findLastPinned = document.querySelectorAll(".event-pin")[document.querySelectorAll(".event-pin").length - 1];
+              const findLastPinned = document.querySelectorAll(`${selectedEvents} .event-pin`)[document.querySelectorAll(`${selectedEvents} .event-pin`).length - 1];
               if (findLastPinned) {
-                findLastPinned.parentNode.insertBefore(topElement, findLastPinned.nextSibling);
+                findLastPinned.parentElement.parentElement.parentElement.insertBefore(topElement, findLastPinned.parentElement.parentElement.nextSibling);
               }
               else {
                 document.querySelector(selectedEvents).prepend(topElement);

@@ -12,8 +12,6 @@ class CommentController extends Controller
     {
         $comment = Comment::findOrFail($id);
 
-        // $this->authorize('show', $comment);    is this necessary?
-
         return view('partials.comment', [
             'comment' => $comment
         ]);
@@ -21,13 +19,13 @@ class CommentController extends Controller
 
     public function create(Request $request, $id_event, $id_user)
     {
+        // $this->authorize('create');
+
         $comment = new Comment();
         $comment->id_event = $id_event;
         $comment->id_user = $id_user;
         $comment->text = $request->input('text');
         $comment->date = date('Y-m-d H:i:s');
-
-        // $this->authorize('create', $comment);    is this necessary?
 
         $comment->save();
         return response()->json($comment);
@@ -37,7 +35,7 @@ class CommentController extends Controller
     {
         $comment = Comment::find($id);
 
-        // $this->authorize('update', $comment); is this necessary?
+        // $this->authorize('update', $comment);
 
         $comment->text = $request->input('text');
 
@@ -49,7 +47,7 @@ class CommentController extends Controller
     {
         $comment = Comment::find($id);
 
-        // $this->authorize('delete', $comment); is this necessary?
+        // $this->authorize('delete', $comment);
 
         $comment->delete();
         return redirect()->route('event.show', ['id' => $comment->id_event])

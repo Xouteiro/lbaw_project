@@ -8,6 +8,8 @@ use App\Models\Notification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class EventController extends Controller
 {
@@ -33,23 +35,34 @@ class EventController extends Controller
         }
     }
 
-    public function create(): View
+    public function create()
     {
+        if(!Auth::check()){
+            return redirect()->route('login');
+        }
         return view('pages.events.create');
     }
 
     public function store(Request $request)
     {
-        $id = Auth::user()->id;
+        $id = Auth::user()->id; 
         $user = User::findOrFail($id);
         $request->validate([
-            'name' => 'required|string|max:255',
-            'date' => 'required',
+            'name' => 'required|string|max:100',
+            'date' => [
+                'required',
+                'date_format:Y-m-d',
+                'after_or_equal:' . date('Y-m-d'),
+            ],
             'time' => 'required',
             'description' => 'required|string|max:5000',
-            'price' => 'required|numeric',
-            'capacity' => 'required|numeric',
-            'id_location' => 'required|numeric'
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|numeric|min:0',
+            'id_location' => 'required|numeric|min:1',
+        ],[
+            'date.after_or_equal' => 'Event date must be in the future.',
+            'price' => 'Price must 0 or more.',
+            'capacity' => 'Capacity must be 0 or more.',
         ]);
 
         $eventdate = $request->input('date') . ' ' . $request->input('time') . ':00';
@@ -65,10 +78,6 @@ class EventController extends Controller
             'id_location' => $request->input('id_location')
         ]);
 
-        //$user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]); se pusermos por so quando der para dar unjoin se nao parte o delete do evento
-
-
-
         return redirect()->route('user.show', ['id' => $id])
             ->withSuccess('You have successfully created your event!');
     }
@@ -76,6 +85,7 @@ class EventController extends Controller
     public function show(Request $request, string $id)
     {
         $event = Event::findOrFail($id);
+
         if ($request->id_invite) {
             $invite = Notification::findOrFail($request->id_invite);
             return view('pages.events.show', ['event' => $event, 'invite' => $invite]);
@@ -84,6 +94,7 @@ class EventController extends Controller
         if (!Auth::check() && $event->public == false) { //por mensagem de erro dizer que é preciso estar logado para ver o evento
             return redirect()->route('login');
         }
+
         return view('pages.events.show', ['event' => $event]);
     }
 
@@ -98,14 +109,24 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $request->validate([
-            'name' => 'required',
-            'eventdate' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'capacity' => 'required',
-            'id_location' => 'required',
+            'name' => 'required|max:100',
+            'eventdate' => [
+                'required',
+                'date_format:Y-m-d\TH:i',
+                'after_or_equal:' . date(DATE_ATOM),
+            ],
+            'description' => 'required|max:5000',
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|numeric|min:0',
+            'id_location' => 'required|numeric|min:1',
+        ], [
+            'eventdate.after_or_equal' => 'Event date must be in the future.',
+            'price' => 'Price must 0 or more.',
+            'capacity' => 'Capacity must be 0 or more.',
         ]);
+
         $this->authorize('update', $event);
+
         $event->name = $request->input('name');
         $event->eventdate = $request->input('eventdate');
         $event->description = $request->input('description');
@@ -130,7 +151,7 @@ class EventController extends Controller
     public function removeparticipant(string $id, string $id_participant)
     {
         $event = Event::findOrFail($id);
-        $this->authorize('participants', $event);
+        $this->authorize('removeparticipant', $event);
         $event->participants()->detach($id_participant);
         return redirect()->route('event.participants', ['id' => $event->id])
             ->withSuccess('You have successfully removed the participant!');
@@ -163,7 +184,7 @@ class EventController extends Controller
             ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
             ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input])
             ->get();
-        return view('pages.events.search', ['events' => $events]);
+        return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
     }
 
     static public function joinEvent(string $id)
@@ -171,7 +192,7 @@ class EventController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
-        //$this->authorize('join', $event); fazer esta depois
+        // $this->authorize('join', $event);
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
