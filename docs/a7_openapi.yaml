@@ -38,7 +38,6 @@ paths:
       description: "Processes the login form submission. Access: PUB"
       tags:
         - "M01: Authentication and Individual Profile"
-
       requestBody:
         required: true
         content:
@@ -50,10 +49,12 @@ paths:
                   type: string
                 password:
                   type: string
+                remember:
+                  type: bool
               required:
                 - email
                 - password
-
+                - remember
       responses:
         "302":
           description: "Redirect after processing the login credentials."
@@ -64,7 +65,7 @@ paths:
               examples:
                 302Success:
                   description: "Successful authentication. Redirect to home."
-                  value: "/"
+                  value: "/home"
                 302Error:
                   description: "Failed authentication. Redirect to login form."
                   value: "/login"
@@ -85,8 +86,11 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: "Successful logout. Redirect to login form."
-                  value: "/login"
+                  description: "Successful logout. Redirect to home."
+                  value: "/home"
+                302Failure:
+                  description: "Failed logout. Redirect to home."
+                  value: "/home"
 
   /register:
     get:
@@ -98,14 +102,12 @@ paths:
       responses:
         "200":
           description: "Ok. Show Sign-Up UI"
-
     post:
       operationId: R105
       summary: "R105: Register Action"
       description: "Processes the new user registration form submission. Access: PUB"
       tags:
         - "M01: Authentication and Individual Profile"
-
       requestBody:
         required: true
         content:
@@ -131,7 +133,6 @@ paths:
                 - username
                 - email
                 - password
-
       responses:
         "302":
           description: "Redirect after processing the new user information."
@@ -141,22 +142,121 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: "Successful authentication. Redirect to home."
-                  value: "/"
+                  description: "Successful registration. Redirect to home."
+                  value: "/home"
                 302Failure:
-                  description: "Failed authentication. Redirect to login form."
+                  description: "Failed registration. Redirect to register form."
                   value: "/register"
 
-  /home:
+  /user/{id}:
     get:
       operationId: R106
-      summary: "R106: Home Page"
-      description: "Show the home page. Access: PUB"
-      tags:
-        - "M02: Events"
+      summary: "R106: User profile page"
+      description: "Shows the user profile page. Access: USR"
+      tags: "M01: Authentication and Individual Profile"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
       responses:
         "200":
-          description: "Ok. Show Home UI"
+          description: "Ok. Show User UI"
+        "403":
+          description: "Unauthorized. Need to be logged in."
+
+  /user/{id}/edit:
+    get:
+      operationId: R107
+      summary: "R107: Edit profile form"
+      description: "Shows the edit profile page. Access: OWN ADM"
+      tags: "M01: Authentication and Individual Profile"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: "Ok. Show User UI"
+        "403":
+          description: "Unauthorized. Trying to edit another user profile."
+    post:
+      operationId: R108
+      summary: "R108: Update user profile"
+      description: "Changes the profile information. Access: OWN ADM"
+      tags: "M01: Authentication and Individual Profile"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                name:
+                  type: string
+                descritpion:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - username
+                - name
+      responses:
+        "302":
+          description: "Redirect after processing the new event information."
+            examples:
+              302Success:
+                description: "Successful update of the user. Redirect to user page."
+                value: "/user/{id}"
+              302Failure:
+                description: "Failed update of the user. Redirect to edit user page."
+                value: "/user/{id}/edit"
+
+  /api/user/manage-event/{id_event}:
+    put:
+      operationId: R109
+      summary: "R109: Manage Events joined/created"
+      description: "Update user preferences for his joined/created events. Access: OWN ADM"
+      tags: "M01: Authentication and Individual Profile"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                events:
+                  type: string
+                actionName:
+                  type: string
+                pinAction:
+                  type: string
+                hideAction:
+                  type: string
+      responses:
+        "200":
+          description: "Update successfull"
 
   /events:
     get:
@@ -169,7 +269,7 @@ paths:
         "200":
           description: "Ok. Show Events UI"
 
-  /events/createEvent:
+  /event/create:
     get:
       operationId: R202
       summary: "R202: Create Event Page"
@@ -180,8 +280,7 @@ paths:
         "200":
           description: "Ok. Show Create Event UI"
         "403":
-          description: "Forbidden. Login required."
-
+          description: "Unauthorized. Login required."
     post:
       operationId: R203
       summary: "R203: Create Event Action"
@@ -195,28 +294,29 @@ paths:
             schema:
               type: object
               properties:
-                eventTitle:
+                name:
                   type: string
-                eventDescription:
+                description:
                   type: string
-                eventDate:
+                date:
                   type: string
                   format: date
-                eventLocation:
+                time:
                   type: string
-                eventTags:
-                  type: json
+                  format: time
+                id_location:
+                  type: string
+                  format: numeric
                 price:
                   type: string
-                  format: number
-                eventCapacity:
+                  format: numeric
+                capacity:
                   type: string
-                  format: number
+                  format: numeric
                 openToJoin:
                   type: boolean
                 public:
                   type: boolean
-
       responses:
         "302":
           description: "Redirect after processing the new event information."
@@ -227,12 +327,12 @@ paths:
               examples:
                 302Success:
                   description: "Successful creation of the event. Redirect to event page."
-                  value: "/events/{id}"
+                  value: "/event/{id}"
                 302Failure:
                   description: "Failed creation of the event. Redirect to create event page."
-                  value: "/events/createEvent"
+                  value: "/event/create"
 
-  /events/{id}:
+  /event/{id}:
     get:
       operationId: R204
       summary: "R204: View Event"
@@ -249,13 +349,13 @@ paths:
         "200":
           description: "Ok. Show Event UI"
         "403":
-          description: "Forbidden. Private event. Login required."
-          value: "/events"
+          description: "Unauthorized. Private event. Login required."
 
-    delete:
+  /event/{id}/delete:
+    get: 
       operationId: R205
-      summary: "R205: Delete Event"
-      description: "Delete event. Access: OWN."
+      summary: "R205: Delete Event dummy"
+      description: "Delete event dummy. Access: PUB."
       tags:
         - "M02: Events"
       parameters:
@@ -265,17 +365,39 @@ paths:
             type: integer
           required: true
       responses:
-        "202":
-          description: "Accepted. Event deleted."
-          value: "/events"
-        "401":
-          description: "Unauthorized. User not owner of event."
-          value: "/events/{id}"
-
-  /events/{id}/join:
+        "403":
+          description: "Unauthorized. User tried to delete event through a GET request."
     post:
       operationId: R206
-      summary: "R206: Join Event"
+      summary: "R206: Delete Event"
+      description: "Delete Event. Access: OWN ADM"
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      responses:
+        "302":
+          description: "Redirect after processing the event deletion."
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Successful event deleted. Redirect to events page."
+                  value: "/events/"
+                302Failure:
+                  description: "Failed to delete event. Redirect to event page."
+                  value: "/event/{id}"
+
+  /event/{id}/join:
+    post:
+      operationId: R207
+      summary: "R207: Join Event"
       description: "Join event. Access: USR."
       tags:
         - "M02: Events"
@@ -286,60 +408,25 @@ paths:
             type: integer
           required: true
       responses:
-        "202":
-          description: "Accepted. Event joined."
-          value: "/events/{id}"
-        "400":
-          description: "Bad Request. "
-          value: "/events/{id}"
+        "302":
+          description: "Redirect after processing join"
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Successful user joined the Event. Redirect to event page."
+                  value: "/event/{id}"
+                302Failure:
+                  description: "Failed user did not join the Event. Redirect to event page."
+                  value: "/event/{id}"
 
-  /events/{id}/askToJoin:
-    post:
-      operationId: R207
-      summary: "R207: Ask to Join Event"
-      description: "Ask to join event. Access: USR."
-      tags:
-        - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-      responses:
-        "200":
-          description: "OK. Request sent."
-          value: "/events/{id}"
-        "400":
-          description: "Bad Request. Not sent."
-          value: "/events/{id}"
-
-  /events/{id}/leave:
-    post:
-      operationId: R208
-      summary: "R208: Leave Event"
-      description: "Leave event. Access: USR."
-      tags:
-        - "M02: Events"
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-      responses:
-        "202":
-          description: "Accepted. Event left."
-          value: "/events/{id}"
-        "400":
-          description: "Bad Request. Did not left event."
-          value: "/events/{id}"
-
-  /events/{id}/edit:
+  /event/{id}/edit:
     get:
-      operationId: R205
-      summary: "R205: Edit Event"
-      description: "Show the edit event form. Access: USR OWN."
+      operationId: R208
+      summary: "R208: Edit Event"
+      description: "Show the edit event form. Access: OWN ADM."
       tags:
         - "M02: Events"
       parameters:
@@ -352,15 +439,19 @@ paths:
         "200":
           description: "Ok. Show Edit Event UI"
         "403":
-          description: "Forbidden. Private event. Login required."
-          value: "/events"
-
-    put:
-      operationId: R204
-      summary: "R204: Update Event"
+          description: "Unauthorized. Only Owner and admin can edit."
+    post:
+      operationId: R209
+      summary: "R209: Update Event"
       description: "Processes the update event form submission. Access: OWN."
       tags:
         - "M02: Events"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
       requestBody:
         required: true
         content:
@@ -368,100 +459,57 @@ paths:
             schema:
               type: object
               properties:
-                eventDescription:
+                name:
+                  type: string
+                description:
                   type: string
                 eventDate:
                   type: string
                   format: date
-                eventLocation:
+                id_location:
                   type: string
-                eventTags:
-                  type: json
+                  format: numeric
                 price:
                   type: string
-                  format: number
-                eventCapacity:
+                  format: numeric
+                capacity:
                   type: string
-                  format: number
+                  format: numeric
                 openToJoin:
                   type: boolean
                 public:
                   type: boolean
-
+              required:
+                - name
+                - eventDate
+                - description
+                - price
+                - capacity
       responses:
-        "200":
-          description: "Update successful. Redirect to event page."
-        "400":
-          description: "Bad request"
+        "302":
+          description: "Redirect after processing new event information"
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Successful Event updated. Redirect to event page."
+                  value: "/event/{id}"
+                302Failure:
+                  description: "Failed to update Event. Redirect to event page."
+                  value: "/event/{id}"
 
-  /users/{id}:
+  /api/events-ajax:
     get:
-      operationId: R107
-      summary: "R107: View user profile"
-      description: "Show the individual user profile. Access: USR"
-      tags:
-        - "M01: Authentication and Individual Profile"
-
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-
-      responses:
-        "200":
-          description: "Ok. Show User Profile UI"
-
-  /api/events:
-    get:
-      operationId: R202
-      summary: "R202: Search Events API"
-      description: "Searches for events and returns the results as JSON. Access: PUB."
-
+      operationId: R210
+      summary: "R210: Get Events API"
+      description: "Get events and returns the results as JSON. Access: PUB."
       tags:
         - "M02: Events"
-
-      parameters:
-        - in: query
-          name: query
-          description: String to use for full-text search
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: names
-          description: Names of the events
-          schema:
-            type: string
-        - in: query
-          name: tags
-          description: Tags of the events
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: date
-          description: Dates for the events
-          schema:
-            type: boolean
-          required: false
-        - in: query
-          name: owner
-          description: Boolean with the owner flag value
-          schema:
-            type: boolean
-          required: false
-        - in: query
-          name: classification
-          description: Integer corresponding to the work classification
-          schema:
-            type: integer
-          required: false
-
       responses:
         "200":
-          description: Success
+          description: "Success"
           content:
             application/json:
               schema:
@@ -471,13 +519,210 @@ paths:
                   properties:
                     id:
                       type: string
-                    title:
+                    name:
                       type: string
-                    obs:
+                    description:
                       type: string
-                    year:
+                    eventDate:
                       type: string
-                    owner:
+                    id_owner:
                       type: string
-                    type:
+                    price:
                       type: string
+                      format: numeric
+                    public:
+                      type: boolean
+                    openToJoin:
+                      type: boolean
+                    capacity:
+                      type: string
+                      format: numeric
+                    id_location:
+                      type: string
+                      format: numeric
+                    highlight_owner:
+                      type: boolean
+                    hide_owner:
+                      type: boolean
+
+  /events/search:
+    get:
+      operationId: R211
+      summary: "R211: Search Events"
+      description: "Search events and returns a view with the events that match the search. Access: PUB."
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+          name: search
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: "Success. Show events seached UI"
+
+  /event/{id}/participants:
+    get:
+      operationId: R212
+      summary: "R212 See Event Participants"
+      description: "Shows Event Participants UI"
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      responses:
+        "200":
+          description: "Ok. Show Event Participants UI"
+        "403":
+          description: "Unauthorized. Only Owner and Admin can see event participants"
+
+  /event/{id}/participants/{id_p}/remove:
+    get:
+      operationId: R213
+      summary: "R213: Remove Participant Dummy"
+      description: "Dummy for the Remove Participant feature. Access: PUB"
+      tags:
+       - "M02: Events"
+      parameters:
+        - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        - in: path
+        name: id_p
+        schema:
+          type: integer
+        required: true
+      responses:
+        "403":
+          description: "Unauthorized. User tried to remove a participant through a GET request"
+    post:
+      operationId: R214
+      summary: "R214: Remove Participant"
+      description: "Remove a participant from an Event. Access: OWN ADM"
+      tags:
+        - "M02: Events"
+      parameters:
+        - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        - in: path
+        name: id_p
+        schema:
+          type: integer
+        required: true
+      responses:
+        "302":
+          description: "Redirect after processing the remove participant."
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Successful removal. Redirect to Participants page."
+                  value: "/event/{id}/participants"
+                302Success:
+                  description: "Failed to remove participant. Redirect to Participants page."
+                  value: "/event/{id}/participants"
+
+  /api/send-invite:
+    post:
+      operationId: R401
+      summary: "R401: Send Invite"
+      description: "Sends an invite to the user with the specified email"
+      tags:
+        - "M04: Invite and join events"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                id_event:
+                  type: string
+              required:
+                - email
+                - id_event
+      responses:
+        "302":
+          description: "Redirect after sending the invite."
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: "Invite sent. Redirect to Event page."
+                  value: "/event/{id}"
+                302Error:
+                  description: "Failed to send Invite. Redirect to Event Page."
+                  value: "/event/{id}"
+
+  /api/accept-invite:
+    post:
+      operationId: R402
+      summary: "R402: Accept Invite"
+      description: "Accepts an invite to an Event"
+      tags:
+        - "M04: Invite and join events"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id_invite:
+                  type: string
+                  format: numeric
+                deny:
+                  type: boolean
+              required:
+                - id_invite
+    responses:
+      "404":
+        description: "Event not found"
+      "401"
+        description: "Need to be logged in"
+      "400":
+        description: "Bad Request"
+        headers:
+          Location:
+            schema:
+              type: string
+            examples:
+              400UserNF:
+                description: "User not found with the specified email"
+                value: "User not found!"
+              400Self:
+                description: "Tried to 'self-invite' to an event"
+                value: "Cannot invite yourself!"
+              400UserIE:
+                descritpion: "User has already joined the Event"
+                value: "User already in event!"
+              400Invite:
+                description: "User has already been invited to this Event"
+                value: "User already has an invite for this event!"
+
+  /home:
+    get:
+      operationId: R501
+      summary: "R501: Home Page"
+      description: "Show the home page. Access: PUB"
+      tags:
+        - "M05: User Administration and Static pages"
+      responses:
+        "200":
+          description: "Ok. Show Home UI"
