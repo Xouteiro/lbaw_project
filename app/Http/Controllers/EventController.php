@@ -16,10 +16,10 @@ class EventController extends Controller
     public function index()
     {
         if (Auth::check()) {
-            $events = Event::where('hide_owner', '=', false)->paginate(10);
+            $events = Event::where('hide_owner', '=', false)->inRandomOrder()->paginate(10);
             return view('pages.events.index', ['events' => $events]);
         } else {
-            $events = Event::where('public', '=', true)->paginate(10);
+            $events = Event::where('public', '=', true)->inRandomOrder()->paginate(10);
             return view('pages.events.index', ['events' => $events]);
         }
     }

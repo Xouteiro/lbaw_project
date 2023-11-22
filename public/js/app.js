@@ -182,7 +182,7 @@ function openOptions() {
 
                     optionsDiv.appendChild(pinButton);
                     optionsDiv.appendChild(hideButton);
-                    optionsDiv.style = "position: absolute; bottom: 0; left: 13%;"
+                    optionsDiv.style = "position: absolute; bottom: 8px; left: 13%;"
                     option.parentElement.appendChild(optionsDiv);
                 }
             });

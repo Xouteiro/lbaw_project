@@ -24,7 +24,7 @@
             <header>
                 <h1><a href="{{ url('/home') }}">Invents</a></h1>
                 @if (Auth::check())
-                    <a class="button" href="{{ url('/logout') }}"> Logout </a> <a href="{{ url('/user/' . Auth::user()->id) }}"><span>{{ Auth::user()->name }}</span></a>
+                <a href="{{ url('/user/' . Auth::user()->id) }}"><span>{{ Auth::user()->name }}</span></a><a class="button" href="{{ url('/logout') }}"> Logout </a> 
                 @elseif (request()->path() !== 'login')
                     <a class="button" href="{{ url('/login') }}"> Login </a> 
                 @endif
@@ -32,6 +32,9 @@
             <section id="content">
                 @yield('content')
             </section>
+            <footer>
+                <p>© 2018 Invents</p>
+            </footer>
         </main>
     </body>
 </html>
