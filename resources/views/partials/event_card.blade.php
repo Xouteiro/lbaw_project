@@ -6,6 +6,9 @@
                 <p> {{ $event->description }}</p>
 
             </a>
+            @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
+            <img src="{{ asset('icons/option.png') }}" alt="Manage Icon" class="event-manage">
+            @endif
         </div>
     @endif
 @elseif (url()->current() == route('user.show', ['id' => request()->route('id')]))
@@ -21,7 +24,7 @@
                 <h3>{{ $event->name }}</h3>
                 <p> {{ $event->description }}</p>
             </a>
-            @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->id == request()->route('id')))
+            @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->id == request()->route('id') || Auth::user()->admin))
             <img src="{{ asset('icons/option.png') }}" alt="Manage Icon" class="event-manage">
             @endif
         </div>
