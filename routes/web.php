@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\InviteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,4 +69,7 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/api/events-ajax', 'indexAjax');
 });
 
-
+Route::controller(InviteController::class)->group(function(){
+    Route::post('/api/send-invite', 'sendInvite')->name('invite.send');
+    Route::post('/api/accept-invite', 'acceptInvite')->name('invite.accept');
+});

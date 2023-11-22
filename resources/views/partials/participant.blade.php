@@ -1,4 +1,3 @@
-
 <div class="participant-card" id="{{$participant->id}}">
     @if($event->id_owner == $participant->id)
     <h2>{{ $participant->name }} - Owner</h2>

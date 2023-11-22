@@ -1,4 +1,6 @@
 body {
+  margin: 0;
+  padding: 0;
   background-color: #ffffff;
   color: #9b4dca;
 }
@@ -9,7 +11,7 @@ main>header {
   align-items: center;
   background-color: #d2afe7;
   padding: 1em;
-  margin: 1em;
+  margin: 0em;
 }
 
 main>header h1 {
@@ -128,6 +130,10 @@ input[type=password]:focus {
   margin-bottom: 10px;
 }
 
+input.search-event {
+  margin: 1em 0;
+}
+
 .event-search {
   font-size: .8em;
   font-weight: lighter;
@@ -139,6 +145,10 @@ input[type=password]:focus {
   margin-left: 2em;
 }
 
+.event-name {
+  margin: 1em 0;
+}
+
 .event-pin {
   width: 10px;
   margin: 0.1em;
@@ -147,6 +157,10 @@ input[type=password]:focus {
 .event-manage {
   width: 25px;
   margin: 0.1em;
+}
+
+.invite-container {
+  margin: 2em 0;
 }
 
 /* Add these styles to your existing CSS file or create a new one */

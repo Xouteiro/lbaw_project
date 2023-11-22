@@ -8,11 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class EventPolicy
 {
-    public function create(User $user): bool
-    {
-        return ($user != NULL);
-    }
-
     public function view(User $user, Event $event): bool
     {
         if ($event->public) return true;
@@ -26,7 +21,6 @@ class EventPolicy
             return false;
         }
     }
-
 
     public function update(User $user, Event $event): bool
     {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,38 +15,37 @@ class EventController extends Controller
 {
     public function index()
     {
-        if(Auth::check()){
-            $events = Event::where('hide_owner','=', false)->paginate(10);
+        if (Auth::check()) {
+            $events = Event::where('hide_owner', '=', false)->paginate(10);
             return view('pages.events.index', ['events' => $events]);
-        }
-        else{
-            $events = Event::where('public', '=' , true)->paginate(10); 
+        } else {
+            $events = Event::where('public', '=', true)->paginate(10);
             return view('pages.events.index', ['events' => $events]);
         }
     }
 
     public function indexAjax()
     {
-        if(Auth::check()){
-            $events = Event::where('hide_owner','=', false)->paginate(10);
+        if (Auth::check()) {
+            $events = Event::where('hide_owner', '=', false)->paginate(10);
             return response()->json(['events' => $events]);
-        }
-        else{
-            $events = Event::where('public', '=' , true)->where('hide_owner','=', false)->paginate(10); 
+        } else {
+            $events = Event::where('public', '=', true)->where('hide_owner', '=', false)->paginate(10);
             return response()->json(['events' => $events]);
         }
     }
 
-    public function create(): View
+    public function create()
     {
-        $this->authorize('create');
+        if(!Auth::check()){
+            return redirect()->route('login');
+        }
         return view('pages.events.create');
     }
 
     public function store(Request $request)
     {
         $id = Auth::user()->id; 
-        $this->authorize('create');
         $user = User::findOrFail($id);
         $request->validate([
             'name' => 'required|string|max:100',
@@ -78,26 +78,30 @@ class EventController extends Controller
             'id_location' => $request->input('id_location')
         ]);
 
-        //$user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]); se pusermos por so quando der para dar unjoin se nao parte o delete do evento
-
-
-
         return redirect()->route('user.show', ['id' => $id])
             ->withSuccess('You have successfully created your event!');
     }
 
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         $event = Event::findOrFail($id);
-        $this->authorize('view', $event);
+
+        if ($request->id_invite) {
+            $invite = Notification::findOrFail($request->id_invite);
+            return view('pages.events.show', ['event' => $event, 'invite' => $invite]);
+        }
+
+        if (!Auth::check() && $event->public == false) { //por mensagem de erro dizer que é preciso estar logado para ver o evento
+            return redirect()->route('login');
+        }
 
         return view('pages.events.show', ['event' => $event]);
     }
 
     public function edit(string $id)
-    {   
+    {
         $event = Event::findOrFail($id);
-        $this->authorize('update', $event);
+        $this->authorize('edit', $event);
         return view('pages.events.edit', ['event' => $event]);
     }
 
@@ -120,7 +124,8 @@ class EventController extends Controller
             'price' => 'Price must 0 or more.',
             'capacity' => 'Capacity must be 0 or more.',
         ]);
-    
+
+        $this->authorize('update', $event);
 
         $event->name = $request->input('name');
         $event->eventdate = $request->input('eventdate');
@@ -146,7 +151,7 @@ class EventController extends Controller
     public function removeparticipant(string $id, string $id_participant)
     {
         $event = Event::findOrFail($id);
-        $this->authorize('participants', $event);
+        $this->authorize('removeparticipant', $event);
         $event->participants()->detach($id_participant);
         return redirect()->route('event.participants', ['id' => $event->id])
             ->withSuccess('You have successfully removed the participant!');
@@ -163,12 +168,12 @@ class EventController extends Controller
     }
 
     public function deleteDummy()
-    { 
+    {
         abort(403, 'This is a great event! Why would you want to do that?');
     }
 
     public function removeDummy()
-    { 
+    {
         abort(403, 'This is not your event!');
     }
 
@@ -182,12 +187,12 @@ class EventController extends Controller
         return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
     }
 
-    public function joinEvent(string $id)
+    static public function joinEvent(string $id)
     {
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
-        $this->authorize('join', $event);
+        // $this->authorize('join', $event);
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 

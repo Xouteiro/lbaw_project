@@ -54,8 +54,6 @@ CREATE TABLE event (
     hide_owner BOOLEAN DEFAULT FALSE
 );
 
-
-
 CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE
@@ -64,7 +62,7 @@ CREATE TABLE tags (
 CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
-    date DATE CHECK (date > current_date),
+    date TIMESTAMP CHECK (date > current_date),
     id_event INTEGER REFERENCES event(id),
     id_user INTEGER REFERENCES users(id)
 );
@@ -80,7 +78,7 @@ CREATE TABLE file (
 CREATE TABLE poll (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    creationDate DATE CHECK (creationDate > current_date),
+    creationDate TIMESTAMP CHECK (creationDate > current_date),
     id_event INTEGER REFERENCES event(id),
     id_user INTEGER REFERENCES users(id)
 );
@@ -93,7 +91,7 @@ CREATE TABLE option (
 
 CREATE TABLE event_notification (
     id SERIAL PRIMARY KEY,
-    date DATE CHECK (date > current_date),
+    date TIMESTAMP CHECK (date >= current_date),
     text TEXT NOT NULL,
     link VARCHAR(255) NOT NULL,
     id_event INTEGER REFERENCES event(id),
@@ -121,7 +119,7 @@ CREATE TABLE request_to_join (
 CREATE TABLE joined (
     id_event INTEGER REFERENCES event(id),
     id_user INTEGER REFERENCES users(id),
-    date DATE CHECK (date > current_date),
+    date TIMESTAMP CHECK (date > current_date),
     ticket VARCHAR(255),
     highlighted BOOLEAN DEFAULT false,
     hidden BOOLEAN DEFAULT false,

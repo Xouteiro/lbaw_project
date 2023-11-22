@@ -5,13 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Invite extends Notification
+class Invite extends Model
 {
     use HasFactory;
 
-    // Don't add create and update timestamps in database.
+    protected $primaryKey = 'id_eventnotification';
+    public $incrementing = false;
     public $timestamps = false;
     protected $table = 'invite';
+    
 
     public function notification()
     {

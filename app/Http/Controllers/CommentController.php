@@ -15,18 +15,17 @@ class CommentController extends Controller
         return view('partials.comment', [
             'comment' => $comment
         ]);
-
     }
 
     public function create(Request $request, $id_event, $id_user)
     {
-        $this->authorize('create');
+        // $this->authorize('create');
 
         $comment = new Comment();
         $comment->id_event = $id_event;
         $comment->id_user = $id_user;
         $comment->text = $request->input('text');
-        $comment->date = date('Y-m-d');
+        $comment->date = date('Y-m-d H:i:s');
 
         $comment->save();
         return response()->json($comment);
@@ -36,7 +35,7 @@ class CommentController extends Controller
     {
         $comment = Comment::find($id);
 
-        $this->authorize('update', $comment);
+        // $this->authorize('update', $comment);
 
         $comment->text = $request->input('text');
 
@@ -48,7 +47,7 @@ class CommentController extends Controller
     {
         $comment = Comment::find($id);
 
-        $this->authorize('delete', $comment);
+        // $this->authorize('delete', $comment);
 
         $comment->delete();
         return redirect()->route('event.show', ['id' => $comment->id_event])

@@ -229,9 +229,7 @@ function switchEvents() {
 }
 
 function closeSureOptions() {
-  
   document.addEventListener("click", (e) => {
-    console.log(e.target.classList.contains("fake"))
     if (e.target.classList.contains("fake") || e.target.classList.contains("yes")) {
       return;
     }

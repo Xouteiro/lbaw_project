@@ -34,7 +34,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Event::class, 'joined', 'id_user', 'id_event')
         ->withPivot('date', 'ticket', 'highlighted', 'hidden')
-        ->orderByRaw('highlighted DESC, hidden ASC');;
+        ->orderByRaw('highlighted DESC, hidden ASC');
     }
 
     public function ownedEvents()
@@ -50,31 +50,31 @@ class User extends Authenticatable
 
     public function createdPolls()
     {
-        return $this->hasMany(Poll::class);
+        return $this->hasMany(Poll::class, 'id_user');
     }
 
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class, 'id_user');
     }
 
     public function files()
     {
-        return $this->hasMany(File::class);
+        return $this->hasMany(File::class, 'id_user');
     }
 
     public function notifications()
     {
-        return $this->hasMany(Notification::class);
+        return $this->hasMany(Notification::class, 'id_user');
     }
 
     public function pendingInvites()
     {
-        return $this->hasMany(Invite::class);
+        return $this->hasMany(Invite::class, 'id_user');
     }
 
     public function joinRequests()
     {
-        return $this->hasMany(RequestToJoin::class);
+        return $this->hasMany(RequestToJoin::class, 'id_user');
     }
 }
