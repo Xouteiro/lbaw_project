@@ -7,12 +7,18 @@
             @csrf
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $event->name) }}" required>
+                <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $event->name) }}" required/>
             </div>
 
             <div class="form-group">
                 <label for="eventdate">Event Date</label>
-                <input type="datetime-local" class="form-control" id="eventdate" name="eventdate" value="{{ date('Y-m-d\TH:i', strtotime($event->eventdate)) }}" required>
+                <input type="datetime-local" class="form-control" id="eventdate" name="eventdate" value="{{ date('Y-m-d\TH:i', strtotime($event->eventdate)) }}" required/>
+                @if ($errors->has('eventdate'))
+                    <span class="error">
+                    {{ $errors->first('eventdate') }}
+                    </span>
+                @endif
+
             </div>
 
             <div class="form-group">
@@ -38,6 +44,11 @@
             <div class="form-group">
                 <label for="capacity">Capacity</label>
                 <input type="number" class="form-control" id="capacity" name="capacity" value="{{ $event->capacity }}" required>
+                @if ($errors->has('capacity'))
+                <span class="error">
+                    {{ $errors->first('capacity') }}
+                </span>
+              @endif
             </div>
 
             <div class="form-group">

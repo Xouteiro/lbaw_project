@@ -95,31 +95,15 @@ class EventController extends Controller
     public function update(Request $request, $id)
     {
         $event = Event::find($id);
-        $failed = false;
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
+        $request->validate([
+            'name' => 'required|max:100',
             'eventdate' => 'required|date',
-            'description' => 'required',
-            'price' => 'required',
-            'capacity' => 'required',
-            'id_location' => 'required',
+            'description' => 'required|max:5000',
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|numeric|min:0',
+            'id_location' => 'required|numeric|min:1',
         ]);
     
-        if ($validator->passes()) {
-            $currentDateTime = now();
-            $inputDateTime = Carbon::parse($request->input('eventdate'));
-    
-            if ($inputDateTime->lt($currentDateTime)) {
-                $validator->errors()->add('eventdate', 'The event date must be greater than or equal to the current date and time.');
-                $failed = true;
-            }
-        }
-    
-        if ($validator->fails() || $failed) {
-            return redirect()->back()
-                ->withErrors($validator->errors())
-                ->withInput();
-        }
 
         $event->name = $request->input('name');
         $event->eventdate = $request->input('eventdate');
