@@ -56,9 +56,10 @@ class InviteController extends Controller
     public function acceptInvite(Request $request) {
         $invite = Notification::findOrFail($request->id_invite);
         error_log($invite->recievedBy->id === Auth::user()->id);
-        $this->authorize('acceptInvite', $invite);
+        //$this->authorize('acceptInvite', $invite);
         $event = $invite->event->id;
-        $this->destroy($invite);
+        Invite::where('id_eventnotification', $invite->id)->delete();
+        $invite->delete();
         return EventController::joinEvent($event);
     }
 
