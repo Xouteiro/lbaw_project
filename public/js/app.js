@@ -117,8 +117,6 @@ function openOptions() {
 
                     const optionsDiv = document.createElement("div");
                     optionsDiv.classList.add("event-manage-div");
-                    optionsDiv.style.top = (parseInt(e.clientY) + parseInt(window.scrollY)).toString() + "px";
-                    optionsDiv.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 100).toString() + "px";
 
                     const pinButton = document.createElement("button");
                     pinButton.type = "button";
@@ -184,7 +182,7 @@ function openOptions() {
 
                     optionsDiv.appendChild(pinButton);
                     optionsDiv.appendChild(hideButton);
-
+                    optionsDiv.style = "position: absolute; bottom: 0; left: 13%;"
                     option.parentElement.appendChild(optionsDiv);
                 }
             });
