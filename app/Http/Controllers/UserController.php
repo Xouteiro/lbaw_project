@@ -76,7 +76,7 @@ class UserController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id_event);
 
-        // $this->authorize('manageEvent', $user, $event);
+        $this->authorize('manageEvent', $event);
         if($request->events == 'created') {
             if($request->actionName == 'pin'){
                 $pinAction = filter_var($request->input('pinAction'), FILTER_VALIDATE_BOOLEAN);
