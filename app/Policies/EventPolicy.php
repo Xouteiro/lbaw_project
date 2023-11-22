@@ -8,17 +8,18 @@ use Illuminate\Support\Facades\Auth;
 
 class EventPolicy
 {
-    public function create(User $user): bool{
+    public function create(User $user): bool
+    {
         return ($user != NULL);
     }
 
     public function view(User $user, Event $event): bool
     {
-        if($event->public) return true;
-        else{
-            if($user){
-                if($event->id_owner === $user->id || $user->admin) return true;
-                else{
+        if ($event->public) return true;
+        else {
+            if ($user) {
+                if ($event->id_owner === $user->id || $user->admin) return true;
+                else {
                     //TODO CHECK IF USER WAS INVITED
                 }
             }
@@ -26,35 +27,35 @@ class EventPolicy
         }
     }
 
-    
+
     public function update(User $user, Event $event): bool
     {
-        if($user){
-            if($event->id_owner === $user->id || $user->admin) return true;
+        if (Auth::check()) {
+            if ($event->id_owner === $user->id || $user->admin) return true;
         }
         return false;
     }
 
     public function edit(User $user, Event $event): bool
     {
-        if(Auth::check()){
-            if($event->id_owner === $user->id || $user->admin) return true;
+        if (Auth::check()) {
+            if ($event->id_owner === $user->id || $user->admin) return true;
         }
         return false;
     }
 
     public function participants(User $user, Event $event): bool
     {
-        if(Auth::check()){
-            if($event->id_owner === $user->id || $user->admin) return true;
+        if (Auth::check()) {
+            if ($event->id_owner === $user->id || $user->admin) return true;
         }
         return false;
     }
 
     public function removeparticipant(User $user, Event $event): bool
     {
-        if(Auth::check()){
-            if($event->id_owner === $user->id || $user->admin) return true;
+        if (Auth::check()) {
+            if ($event->id_owner === $user->id || $user->admin) return true;
         }
         return false;
     }
@@ -62,18 +63,19 @@ class EventPolicy
 
     public function delete(User $user, Event $event): bool
     {
-        if($event->id_owner === $user->id || $user->admin) return true;
+        if ($event->id_owner === $user->id || $user->admin) return true;
         return false;
     }
 
-    public function join(User $user, Event $event){
-        if($event->public && $event->openToJoin) return true;
-        else if($user){
-                if($event->id_owner === $user->id) return true;
-                else{
-                    //TODO CHECK IF USER WAS INVITED
-                }
+    public function join(User $user, Event $event)
+    {
+        if ($event->public && $event->openToJoin) return true;
+        else if ($user) {
+            if ($event->id_owner === $user->id) return true;
+            else {
+                //TODO CHECK IF USER WAS INVITED
             }
+        }
         return false;
     }
 }

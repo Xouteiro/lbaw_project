@@ -30,24 +30,24 @@ main>header span {
   font-weight: normal;
 }
 
-#content>form {
+#content> form {
   margin: 0 auto;
   padding: 1em;
   max-width: 20em;
   border: 1px solid #d2afe7;
 }
 
-#content>form .error {
+#content form .error {
   font-weight: bold;
   color: #ff3333;
 }
 
-#content>form .success {
+#content form .success {
   font-weight: bold;
   color: #106af1;
 }
 
-#content>form input {
+#content form input {
   background-color: white;
 }
 

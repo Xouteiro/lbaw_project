@@ -41,8 +41,13 @@ class UserController extends Controller
             'email' => 'required|email|max:250|unique:users,email,' . $id,
             'username' => 'required|string|max:250|unique:users,username,' . $id,
             'name' => 'required|string|max:250|unique:users,name,' . $id,
-            'description' => 'string|max:1000',
-            'password' => 'nullable|min:8',
+            'description' => 'string|max:2000',
+            'password' => 'nullable|min:8|confirmed',
+        ],[
+            'email.unique' => 'This email is already in use.',
+            'username.unique' => 'This username is already in use.',
+            'name.unique' => 'This name is already in use.',
+            
         ]);
 
         if ($request->filled('password')) {
