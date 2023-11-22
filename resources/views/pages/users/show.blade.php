@@ -21,6 +21,9 @@
         <div class="notifications">
             <h2>Invites</h2>
             <div class="invites">
+                @if($notifications[0]->count() == 0)
+                    <h4>No invites</h4>
+                @endif
                 @foreach($notifications[0] as $invite)
                 <a class="pending_invite" href="{{ url($invite->link) . '?id_invite=' . $invite->id}}">
                     <h4>- {{$invite->text}}</h4>
