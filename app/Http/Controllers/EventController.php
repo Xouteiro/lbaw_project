@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class EventController extends Controller
 {
@@ -93,15 +95,32 @@ class EventController extends Controller
     public function update(Request $request, $id)
     {
         $event = Event::find($id);
-        $request->validate([
+        $failed = false;
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'eventdate' => 'required',
+            'eventdate' => 'required|date',
             'description' => 'required',
             'price' => 'required',
             'capacity' => 'required',
             'id_location' => 'required',
         ]);
-        $this->authorize('update', $event);
+    
+        if ($validator->passes()) {
+            $currentDateTime = now();
+            $inputDateTime = Carbon::parse($request->input('eventdate'));
+    
+            if ($inputDateTime->lt($currentDateTime)) {
+                $validator->errors()->add('eventdate', 'The event date must be greater than or equal to the current date and time.');
+                $failed = true;
+            }
+        }
+    
+        if ($validator->fails() || $failed) {
+            return redirect()->back()
+                ->withErrors($validator->errors())
+                ->withInput();
+        }
+
         $event->name = $request->input('name');
         $event->eventdate = $request->input('eventdate');
         $event->description = $request->input('description');

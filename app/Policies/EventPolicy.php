@@ -12,7 +12,6 @@ class EventPolicy
     
     public function update(User $user, Event $event): bool
     {
-        dd($event->id_owner, $user->id);
         if(Auth::check()){
             if($event->id_owner === $user->id) return true;
         }
