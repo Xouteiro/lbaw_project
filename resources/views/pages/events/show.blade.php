@@ -29,14 +29,12 @@
             <form action="{{ route('invite.accept') }}" method="POST">
                 @csrf
                 <input type="hidden" name="id_invite" value="{{ $invite->id }}">
-                <button class="button" type="submit">
+                <button class="button" name="accept" value="accept" type="submit">
                     Accept
                 </button>
-                <a href="{{ route('event.show', ['id' => $event->id]) }}">
-                    <button type="button">
-                        Deny
-                    </button>
-                </a>
+                <button class="button" name="deny" value="deny" type="submit">
+                    Deny
+                </button>
             </form>
         </div>
         @endif
