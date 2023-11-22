@@ -62,6 +62,11 @@
                 <input type="hidden" name="id_event" value="{{ $event->id }}">
                 <button type="submit">Send Invitation</button>
             </form>
+            @if(session()->has('message'))
+            <div class="alert alert-success">
+            {{ session()->get('message') }}
+            </div>
+            @endif
             @if ($errors->has('invite'))
             <span class="error" style="margin: 1em 0; color: red;">
             {{ $errors->first('invite') }}
@@ -83,12 +88,15 @@
                 </button>
             </form>
         @endif
-        
         <div class="comments">
             <h3>Comments</h3>
+            @if($event->comments->count() == 0)
+            <p>No comments yet</p>
+            @else
             <ul class="comment-list">
                 @each('partials.comment', $event->comments, 'comment')
             </ul>
+            @endif
         </div>
     </div>
 @endsection

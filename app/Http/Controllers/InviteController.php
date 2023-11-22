@@ -82,7 +82,7 @@ class InviteController extends Controller
         Invite::where('id_eventnotification', $invite->id)->delete();
         $invite->delete();
         if(isset($request->deny)){
-            return redirect()->route('event.show', ['id' => $event])
+            return redirect()->route('user.show', ['id' => Auth::user()->id])
             ->withSuccess('You have successfully denied the invite!');
         }
         return (new EventController())->joinEvent($event);
