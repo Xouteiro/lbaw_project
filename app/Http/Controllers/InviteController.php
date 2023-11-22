@@ -6,6 +6,7 @@ use App\Models\Invite;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\Event;
+use App\Http\Controllers\EventController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -52,6 +53,11 @@ class InviteController extends Controller
         ->withSuccess('Invitation sent successfully!');
     }
 
+    public function acceptInvite(Request $request) {
+        $invite = Notification::findOrFail($request->id_invite);
+        $this->authorize('acceptInvite', $invite);
+        return EventController::joinEvent($invite->event->id);
+    }
 
     /**
      * Remove the specified resource from storage.

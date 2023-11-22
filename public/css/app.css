@@ -145,6 +145,10 @@ input.search-event {
   margin-left: 2em;
 }
 
+.event-name {
+  margin: 1em 0;
+}
+
 .event-pin {
   width: 10px;
   margin: 0.1em;

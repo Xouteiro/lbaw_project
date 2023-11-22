@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,24 +13,22 @@ class EventController extends Controller
 {
     public function index()
     {
-        if(Auth::check()){
-            $events = Event::where('hide_owner','=', false)->paginate(10);
+        if (Auth::check()) {
+            $events = Event::where('hide_owner', '=', false)->paginate(10);
             return view('pages.events.index', ['events' => $events]);
-        }
-        else{
-            $events = Event::where('public', '=' , true)->paginate(10); 
+        } else {
+            $events = Event::where('public', '=', true)->paginate(10);
             return view('pages.events.index', ['events' => $events]);
         }
     }
 
     public function indexAjax()
     {
-        if(Auth::check()){
-            $events = Event::where('hide_owner','=', false)->paginate(10);
+        if (Auth::check()) {
+            $events = Event::where('hide_owner', '=', false)->paginate(10);
             return response()->json(['events' => $events]);
-        }
-        else{
-            $events = Event::where('public', '=' , true)->where('hide_owner','=', false)->paginate(10); 
+        } else {
+            $events = Event::where('public', '=', true)->where('hide_owner', '=', false)->paginate(10);
             return response()->json(['events' => $events]);
         }
     }
@@ -41,7 +40,7 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-        $id = Auth::user()->id; 
+        $id = Auth::user()->id;
         $user = User::findOrFail($id);
         $request->validate([
             'name' => 'required|string|max:255',
@@ -74,17 +73,22 @@ class EventController extends Controller
             ->withSuccess('You have successfully created your event!');
     }
 
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         $event = Event::findOrFail($id);
-        if(!Auth::check() && $event->public == false){ //por mensagem de erro dizer que é preciso estar logado para ver o evento
+        if ($request->id_invite) {
+            $invite = Notification::findOrFail($request->id_invite);
+            return view('pages.events.show', ['event' => $event, 'invite' => $invite]);
+        }
+
+        if (!Auth::check() && $event->public == false) { //por mensagem de erro dizer que é preciso estar logado para ver o evento
             return redirect()->route('login');
         }
         return view('pages.events.show', ['event' => $event]);
     }
 
     public function edit(string $id)
-    {   
+    {
         $event = Event::findOrFail($id);
         $this->authorize('edit', $event);
         return view('pages.events.edit', ['event' => $event]);
@@ -143,12 +147,12 @@ class EventController extends Controller
     }
 
     public function deleteDummy()
-    { 
+    {
         abort(403, 'This is a great event! Why would you want to do that?');
     }
 
     public function removeDummy()
-    { 
+    {
         abort(403, 'This is not your event!');
     }
 
@@ -162,7 +166,7 @@ class EventController extends Controller
         return view('pages.events.search', ['events' => $events]);
     }
 
-    public function joinEvent(string $id)
+    static public function joinEvent(string $id)
     {
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
