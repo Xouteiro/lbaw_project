@@ -411,3 +411,97 @@ input.search-event {
     padding: 10px;
     margin-bottom: 10px;
 }
+
+.event-container {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 2rem;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 4px 8px 4px rgba(0, 0, 0, 0.1);
+    border-color: #000;
+    border-width: 20px;
+}
+
+.event-container .event-info {
+    border-bottom: 1px solid #eaeaea;
+    margin-bottom: 20px;
+}
+
+.event-container .event-header {
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+
+.event-container .event-header > :not(:first-child) {
+    margin-left: 1.5rem;
+}
+
+.event-container .event-header form{
+    margin-bottom: 0;
+}
+
+.event-container .event-name {
+    color: #000;
+    margin: 0;
+}
+
+.event-container .button {
+    border: none;
+    color: white;
+    padding: 12.5px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+.event-container button {
+    border: none;
+    color: white;
+    padding: 12.5px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+.event-container .button:hover {
+    background-color: #0056b3;
+}
+
+.event-container .comments {
+    margin-top: 20px;
+}
+
+.event-container .comment-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.event-container .comment-list li {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.event-container .error {
+    display: block;
+}
+
+.event-container .comment {
+    display: flex;
+    align-items: center;
+}
+
+.event-container .comment > :not(:first-child){
+    margin-left: 1.5rem;
+}
