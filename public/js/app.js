@@ -213,7 +213,7 @@ function switchEvents() {
 
     if (createdEvents && joinedEvents && createdEventsButton && joinedEventsButton) {
         createdEventsButton.addEventListener("click", () => {
-            createdEvents.style.display = "block";
+            createdEvents.style.display = "flex";
             joinedEvents.style.display = "none";
             createdEventsButton.classList.add("active");
             joinedEventsButton.classList.remove("active");
@@ -221,7 +221,7 @@ function switchEvents() {
 
         joinedEventsButton.addEventListener("click", () => {
             createdEvents.style.display = "none";
-            joinedEvents.style.display = "block";
+            joinedEvents.style.display = "flex";
             createdEventsButton.classList.remove("active");
             joinedEventsButton.classList.add("active");
         });
