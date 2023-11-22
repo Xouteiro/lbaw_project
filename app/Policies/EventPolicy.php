@@ -8,13 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 class EventPolicy
 {
-    public function create(User $auth, User $user ): bool{
-        return ($user->id == $auth->id);
-    }
-
-    public function viewAny(User $user): bool
-    {
-        return true;
+    public function create(User $user): bool{
+        return ($user != NULL);
     }
 
     public function view(User $user, Event $event): bool
@@ -22,7 +17,7 @@ class EventPolicy
         if($event->public) return true;
         else{
             if($user){
-                if($event->owner() === $user->id) return true;
+                if($event->id_owner === $user->id || $user->admin) return true;
                 else{
                     //TODO CHECK IF USER WAS INVITED
                 }
@@ -34,14 +29,25 @@ class EventPolicy
     public function update(User $user, Event $event): bool
     {
         if($user){
-            if($event->owner() === $user->id) return true;
+            if($event->id_owner === $user->id || $user->admin) return true;
         }
         return false;
     }
 
     public function delete(User $user, Event $event): bool
     {
-        if($event->owner() === $user->id) return true;
+        if($event->id_owner === $user->id || Auth::user()->admin) return true;
+        return false;
+    }
+
+    public function join(User $user, Event $event){
+        if($event->public && $event->openToJoin) return true;
+        else if($user){
+                if($event->id_owner === $user->id || $user->admin) return true;
+                else{
+                    //TODO CHECK IF USER WAS INVITED
+                }
+            }
         return false;
     }
 }

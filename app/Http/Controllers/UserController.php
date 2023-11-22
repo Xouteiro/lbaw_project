@@ -12,8 +12,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
-
-        $this->authorize('show', $user);
+        $this->authorize('show',$user);
         
         return view('pages.users.show', [
             'user' => $user
@@ -24,7 +23,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $this->authorize('edit', $user);
+        $this->authorize('update', $user);
 
         return view('pages.users.edit', [
             'user' => $user
@@ -65,7 +64,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $this->authorize('delete', $user);
+        $this->authorize('update',$user);
 
         $user->delete();
         return redirect()->route('home')

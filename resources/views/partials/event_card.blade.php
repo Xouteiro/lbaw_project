@@ -5,7 +5,7 @@
                 <h3>{{ $event->name }}</h3>
                 <p> {{ $event->description }}</p>
             </a>
-            @if (Auth::check() && Auth::user()->id == $event->id_owner)
+            @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
             <img src="{{ asset('icons/option.png') }}" alt="Manage Icon" class="event-manage">
             @endif
         </div>
@@ -23,7 +23,7 @@
                 <h3>{{ $event->name }}</h3>
                 <p> {{ $event->description }}</p>
             </a>
-            @if (Auth::check() && Auth::user()->id == $event->id_owner)
+            @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
             <img src="{{ asset('icons/option.png') }}" alt="Manage Icon" class="event-manage">
             @endif
         </div>

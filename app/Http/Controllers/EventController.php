@@ -24,6 +24,7 @@ class EventController extends Controller
 
     public function create(): View
     {
+        $this->authorize('create');
         return view('pages.events.create');
     }
 
@@ -31,7 +32,7 @@ class EventController extends Controller
     {
 
         $id = Auth::user()->id; 
-        //$this->authorize('create');
+        $this->authorize('create');
         $request->validate([
             'name' => 'required',
             'date' => 'required',
@@ -63,14 +64,14 @@ class EventController extends Controller
     public function show(string $id)
     {
         $event = Event::findOrFail($id);
-        //$this->authorize('view', Auth::user(), $event);
+        $this->authorize('view', $event);
         return view('pages.events.show', ['event' => $event]);
     }
 
     public function edit(string $id)
     {   
         $event = Event::findOrFail($id);
-        //$this->authorize('update', Auth::user(), $event);
+        $this->authorize('update', $event);
         return view('pages.events.edit', ['event' => $event]);
     }
 
@@ -85,7 +86,7 @@ class EventController extends Controller
             'capacity' => 'required',
             'id_location' => 'required',
         ]);
-        //$this->authorize('update', Auth::user(), $event);
+        $this->authorize('update', $event);
         $event->name = $request->input('name');
         $event->eventdate = $request->input('eventdate');
         $event->description = $request->input('description');
@@ -103,7 +104,7 @@ class EventController extends Controller
     public function delete($id)
     {
         $event = Event::find($id);
-        $this->authorize('delete', Auth::user(), $event);
+        $this->authorize('delete', $event);
         $event->delete();
         return redirect()->route('event.index')
             ->withSuccess('You have successfully deleted your comment!');
@@ -124,7 +125,7 @@ class EventController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
-        // $this->authorize('join', $event);
+        $this->authorize('join', $event);
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
