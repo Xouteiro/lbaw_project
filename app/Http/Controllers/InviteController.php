@@ -55,8 +55,11 @@ class InviteController extends Controller
 
     public function acceptInvite(Request $request) {
         $invite = Notification::findOrFail($request->id_invite);
+        error_log($invite->recievedBy->id === Auth::user()->id);
         $this->authorize('acceptInvite', $invite);
-        return EventController::joinEvent($invite->event->id);
+        $event = $invite->event->id;
+        $this->destroy($invite);
+        return EventController::joinEvent($event);
     }
 
     /**
@@ -64,6 +67,11 @@ class InviteController extends Controller
      */
     public function destroy(Invite $invite)
     {
-        //
+        // $this->authorize('delete', $invite);
+        $temp = $invite->id_eventnotification;
+        $invite->delete();
+        Notification::findOrFail($temp)->delete();
+        return redirect()->route('event.show', ['id' => $invite->event->id])
+        ->withSuccess('You have successfully deleted your invite!');
     }
 }
