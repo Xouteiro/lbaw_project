@@ -178,7 +178,7 @@ class EventController extends Controller
             ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
             ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input])
             ->get();
-        return view('pages.events.search', ['events' => $events]);
+        return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
     }
 
     public function joinEvent(string $id)
