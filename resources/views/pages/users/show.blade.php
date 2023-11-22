@@ -33,8 +33,8 @@
                 @endforeach
             </div> --}}
         </div>
-        <a class="button" href="{{ route('event.create') }}">Create Event</a>
         @if (Auth::check() && (Auth::user()->id === $user->id || Auth::user()->admin))
+            <a class="button" href="{{ route('event.create') }}">Create Event</a>
             <a class="button" href="{{ url('/user/' . $user->id .'/edit')}}">Edit Profile</a>
         @endif
         <div class="profile-events-title-div">
