@@ -13,10 +13,10 @@
             <h2 class="created-events-title">Created Events</h2>
         </div>
         <div class="joined-events-container" style="display: block">
-        @each('partials.event_card', $user->events, 'event')
+        @each('partials.joined_event_card', $user->events, 'event')
         </div>
         <div class="created-events-container" style="display: none">
-        @each('partials.event_card', $user->ownedEvents, 'event')
+        @each('partials.created_event_card', $user->ownedEvents, 'event')
         </div>
         <div class="notifications">
             <h2>Invites</h2>
