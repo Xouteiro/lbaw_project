@@ -159,6 +159,10 @@ input.search-event {
   margin: 0.1em;
 }
 
+.invite-container {
+  margin: 2em 0;
+}
+
 /* Add these styles to your existing CSS file or create a new one */
 
 .ui.pagination.menu {

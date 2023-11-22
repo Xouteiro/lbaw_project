@@ -29,7 +29,29 @@ class InviteController extends Controller
         $userToInvite = User::where('email', $request->email)->first();
 
         if (!$userToInvite) {
-            return response()->json(['error' => 'User not found'], 404);
+            return back()->withErrors([
+                'invite' => 'User not found!',
+            ])->onlyInput('invite');
+        }
+
+        if($event->owner->id == $userToInvite->id) {
+            return back()->withErrors([
+                'invite' => 'Cannot invite yourself!',
+            ])->onlyInput('invite');
+        }
+
+        $checkIfUserAlreadyIn = $event->participants()->where('id_user', $userToInvite->id)->first();
+        if($checkIfUserAlreadyIn) {
+            return back()->withErrors([
+                'invite' => 'User already in event!',
+            ])->onlyInput('invite');
+        }
+
+        $checkIfAlreadyExists = Notification::where('id_user', $userToInvite->id)->first();
+        if($checkIfAlreadyExists) {
+            return back()->withErrors([
+                'invite' => 'User already has an invite for this event!',
+            ])->onlyInput('invite');
         }
 
         $date = date('Y-m-d H:i:s');

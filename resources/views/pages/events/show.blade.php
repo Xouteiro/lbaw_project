@@ -56,12 +56,20 @@
             </form>
         @endif
         @if(Auth::check() && Auth::user()->id == $event->id_owner)
-            <form method="POST" action="{{ route('invite.send') }}" id="invitationForm">
+            <div class="invite-container">
+            <h3>Invite a user to this event</h3>
+            <form method="POST" action="{{ route('invite.send') }}" id="invitationForm" style="margin: 0;">
                 @csrf
                 <input type="text" name="email" placeholder="Enter user's email">
                 <input type="hidden" name="id_event" value="{{ $event->id }}">
                 <button type="submit">Send Invitation</button>
             </form>
+            @if ($errors->has('invite'))
+            <span class="error" style="margin: 1em 0; color: red;">
+            {{ $errors->first('invite') }}
+            </span>
+            @endif
+            </div>
         @endif
         @if (Auth::check() && Auth::user()->id == $event->id_owner)
             <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
