@@ -47,7 +47,7 @@ class InviteController extends Controller
             ])->onlyInput('invite');
         }
 
-        $checkIfAlreadyExists = Notification::where('id_user', $userToInvite->id)->first();
+        $checkIfAlreadyExists = Notification::where([['id_user', $userToInvite->id], ['id_event', $event->id]])->first();
         if($checkIfAlreadyExists) {
             return back()->withErrors([
                 'invite' => 'User already has an invite for this event!',
@@ -82,7 +82,6 @@ class InviteController extends Controller
         Invite::where('id_eventnotification', $invite->id)->delete();
         $invite->delete();
         if(isset($request->deny)){
-            dd('nice');
             return redirect()->route('event.show', ['id' => $event])
             ->withSuccess('You have successfully denied the invite!');
         }
