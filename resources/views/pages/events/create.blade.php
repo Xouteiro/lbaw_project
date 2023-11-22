@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="container">
+        <h1 style="text-align: center">Create Event</h1>
         <form class="general" method="POST" action="{{ route('event.store') }}">
             @csrf
 

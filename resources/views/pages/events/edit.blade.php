@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <div class="container">
-        <h1>Edit Event</h1>
+        <h1 style="text-align: center">Edit Event</h1>
         <form class="general" action="{{ route('event.update', ['id' => $event->id]) }}" method="POST">
             @csrf
                 <label for="name">Name</label>

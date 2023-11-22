@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="container">
+        <h1 style="text-align: center">Edit Profile</h1>
         <form class="general" action="{{ route('user.update', ['id' => $user->id]) }}" method="POST">
             @csrf
 

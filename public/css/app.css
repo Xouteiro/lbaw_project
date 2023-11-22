@@ -166,29 +166,89 @@ main>header span {
     }
 }
 
-button {
+
+.button,
+button,
+input[type='button'],
+input[type='submit'] {
+    border-radius: .4rem;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    height: 3.8rem;
+    letter-spacing: .1rem;
+    line-height: 3.8rem;
+    padding: 0 3.0rem;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
     background-color: rgb(43, 63, 124);
     border-color: rgb(43, 63, 124);
 }
 
-.button {
-    background-color: rgb(43, 63, 124);
-    border-color: rgb(43, 63, 124);
-}
-
-a.button {
-    background-color: rgb(43, 63, 124);
-    border-color: rgb(43, 63, 124);
-}
-
-a.button.button-outline {
-    color: rgb(43, 63, 124);
+.button:focus,
+.button:hover,
+button:focus,
+button:hover,
+input[type='button']:focus,
+input[type='button']:hover,
+input[type='submit']:focus,
+input[type='submit']:hover {
+    background-color: #606c76;
+    border-color: #606c76;
+    color: #fff;
+    outline: 0
 }
 
 input[type=text]:focus,
 input[type=email]:focus,
 input[type=password]:focus {
     border-color: rgb(43, 63, 124);
+}
+
+
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'],
+input[type='email'],
+input[type='month'],
+input[type='number'],
+input[type='password'],
+input[type='search'],
+input[type='text'],
+input[type='url'],
+textarea,
+select {
+    background-color: transparent;
+    border: 0.1rem solid #d1d1d1;
+    border-radius: .4rem;
+    box-shadow: none;
+    box-sizing: inherit;
+    height: 3.8rem;
+    padding: .6rem 1.0rem .7rem;
+    width: 100%
+}
+
+select {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" width="30"><path fill="%23d1d1d1" d="M0,0l6,8l6-8"/></svg>') center right no-repeat;
+    padding-right: 3.0rem
+}
+
+
+select[multiple] {
+    background: none;
+    height: auto
+}
+
+textarea {
+    min-height: 6.5rem
+}
+
+a.button.button-outline {
+    color: rgb(43, 63, 124);
 }
 
 .event-card {
@@ -273,6 +333,7 @@ input.search-event {
     justify-content: space-around;
     flex-direction: row;
 }
+
 .joined-events-container, .created-events-container{
     flex-wrap: wrap;
     justify-content: space-around;
@@ -328,8 +389,3 @@ input.search-event {
     padding: 10px;
     margin-bottom: 10px;
 }
-
-
-
-
-
