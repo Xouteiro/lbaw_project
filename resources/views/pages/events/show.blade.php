@@ -100,20 +100,6 @@
             @endif
             </div>
         @endif
-        @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
-            <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
-                Edit Event
-            </a>
-            <a class="button" href="{{ route('event.participants', ['id' => $event->id]) }}">
-                Manage Participants
-            </a>
-            <form action= "{{ route('event.delete', ['id' => $event->id])}}" method="POST">
-                @csrf
-                <button class="button" type="submit">
-                    Delete Event
-                </button>
-            </form>
-        @endif
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)

@@ -13,6 +13,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
+        $this->authorize('show', $user);
 
         // get all types of notifications
         $invites = Notification::where('event_notification.id_user', $id)

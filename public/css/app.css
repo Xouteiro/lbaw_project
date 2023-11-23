@@ -507,6 +507,7 @@ form#searchForm{
     box-shadow: 0 4px 8px 4px rgba(0, 0, 0, 0.1);
     border-color: #000;
     border-width: 20px;
+    margin-bottom: 2rem;
 }
 
 .event-container .event-info {
@@ -529,7 +530,7 @@ form#searchForm{
 }
 
 .event-container .event-name {
-    color: #000;
+    color: rgb(43, 63, 124);
     margin: 0;
 }
 

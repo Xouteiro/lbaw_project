@@ -14,7 +14,7 @@ class HomeController extends Controller
             $events = Event::where('hide_owner', '=', false)->inRandomOrder()->get()->take(3);
             return view('pages.home', ['events' => $events]);
         } else {
-            $events = Event::where(['hide_owner', '=', false],['public', '=', true])->inRandomOrder()->get()->take(3);
+            $events = Event::where([['hide_owner', '=', false] , ['public', '=', true]] )->inRandomOrder()->get()->take(3);
             return view('pages.home', ['events' => $events]);
         }
     }
