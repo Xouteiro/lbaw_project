@@ -33,7 +33,7 @@
                 @yield('content')
             </section>
             <footer>
-                <p>© 2018 Invents</p>
+                <p>© 2023 Invents</p>
             </footer>
         </main>
     </body>
