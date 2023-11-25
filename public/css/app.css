@@ -34,6 +34,7 @@ header h1 a{
 
 section#content {
   display: flex;
+
   flex-direction: row;
   justify-content: space-around;
   min-height:max-content;
@@ -331,6 +332,12 @@ input[type='radio'] {
   margin-bottom: 10px;
   width: 21em;
   min-height: 28em;
+  scale: 0.95;
+  transition: scale 0.9s
+}
+
+.event-card:hover {
+  scale: 1.05;
 }
 
 .event-card>a {
@@ -338,6 +345,10 @@ input[type='radio'] {
   height: 100%;
   display: block;
 }
+
+
+
+
 
 .event-pin {
   margin: 0.1em;
