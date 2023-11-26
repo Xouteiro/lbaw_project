@@ -22,9 +22,9 @@
     <body>
         <main>
             <header>
-                <h1><a href="{{ url('/home') }}">Invents</a></h1>
+                <a href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>
                 @if (Auth::check())
-                <a href="{{ url('/user/' . Auth::user()->id) }}"><span>{{ Auth::user()->name }}</span></a><a class="button" href="{{ url('/logout') }}"> Logout </a> 
+                <a href="{{ url('/user/' . Auth::user()->id) }}"><span>{{ Auth::user()->name }}</span></a>
                 @elseif (request()->path() !== 'login')
                     <a class="button" href="{{ url('/login') }}"> Login </a> 
                 @endif

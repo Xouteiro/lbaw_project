@@ -4,14 +4,15 @@
 
 html {
   box-sizing: border-box;
-  font-size: 62.5%
+  font-size: 62.5%;
 }
+
 
 main{
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-
+  min-width: 100%;
 }
 
 body {
@@ -22,7 +23,7 @@ body {
   font-weight: 300;
   letter-spacing: .01em;
   line-height: 1.6;
-  background-color: #e8ecf8;
+  background-color: white;
   color: rgb(43, 63, 124);
 }
 
@@ -34,7 +35,6 @@ header h1 a{
 
 section#content {
   display: flex;
-
   flex-direction: row;
   justify-content: space-around;
   min-height:max-content;
@@ -43,7 +43,7 @@ section#content {
 
 footer{
   display: flex;
-  background-color: rgb(148, 170, 236);
+  background-color: #00172b;
   margin: 0em;
   text-align: left;
   width: 100%;
@@ -55,6 +55,7 @@ footer p{
   align-self: center;
   margin-left: 50px;
   margin-bottom: 0;
+  color: white;
 }
 
 h1,
@@ -115,13 +116,18 @@ p {
   margin-top: 0
 }
 
+img.logo{
+  height : 8em;
+  margin:10px;
+  padding-left: 40px;
+}
+
 main>header {
   display: grid;
   grid-template-columns: 1fr auto auto;
   align-items: center;
-  background-color: rgb(148, 170, 236);
   padding: 1.5em;
-  margin: 0em;
+  background-color: #00172b;
 }
 
 main>header h1 {
@@ -131,11 +137,14 @@ main>header h1 {
 main>header a.button {
   margin: 1em;
   justify-self: center;
+  margin-right: 60px;
 }
 
 main>header span {
   margin: 1em;
+  margin-right: 3em;
   justify-self: center;
+  color: white;
 }
 
 #content label {
@@ -144,10 +153,10 @@ main>header span {
 
 #content .home-page {
   text-align: center;
-  margin: 3em auto;
+  margin: 0 auto 3em auto;
   display: flex;
   flex-direction: column;
-  max-width: 130rem;
+  max-width:fit-content;
 }
 
 #content .container>form.general {
@@ -318,8 +327,14 @@ input[type='radio'] {
 .container {
   margin: 1em auto;
   max-width: 112.0rem;
-  padding: 0 2.0rem;
   position: relative;
+  width: 100%
+}
+
+.container.image-home-page {
+  margin: 0 0 auto 0;
+  position: relative;
+  max-width: 100%;
   width: 100%
 }
 
@@ -422,6 +437,8 @@ input.search-event {
   flex-wrap: wrap;
   justify-content: space-around;
   flex-direction: row;
+  max-width: 113rem;
+  align-self: center;
 }
 
 .joined-events-container,
@@ -603,3 +620,61 @@ form#searchForm{
 .event-container .comment > :not(:first-child){
     margin-left: 1.5rem;
 }
+
+
+.background-image {
+  position: relative;
+  text-align: center;
+  display: flex;
+}
+
+.background-image img {
+  width: 100%; /* Make the image fill the container */
+  height: auto;
+}
+
+.background-image .overlay-text h1{
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff; /* Text color */
+  font-size: 4.5vw;
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Optional text shadow for better visibility */
+}
+
+.background-image .overlay-text h2{
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff; /* Text color */
+  font-size: 3vw;
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Optional text shadow for better visibility */
+}
+
+.background-image .overlay-text h3{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff; /* Text color */
+  font-size: 2vw;
+  font-weight: 800;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Optional text shadow for better visibility */
+}
+
+
+.background-image .overlay-text a{
+  position: absolute;
+  top: 95%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #00172b; /* Text color */
+  font-weight: 800;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Optional text shadow for better visibility */
+}
+
+
