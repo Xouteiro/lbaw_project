@@ -659,7 +659,7 @@ form#searchForm {
 
 .background-image .overlay-text h1 {
   position: absolute;
-  top: 15%;
+  top: 5%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
@@ -672,7 +672,7 @@ form#searchForm {
 
 .background-image .overlay-text h2 {
   position: absolute;
-  top: 40%;
+  top: 30%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
@@ -685,7 +685,7 @@ form#searchForm {
 
 .background-image .overlay-text h3 {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
