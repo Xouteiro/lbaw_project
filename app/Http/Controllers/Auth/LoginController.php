@@ -1,5 +1,5 @@
 <?php
- 
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -25,13 +29,13 @@ class LoginController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
- 
+
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
- 
+
             return redirect()->intended('/home');
         }
- 
+
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
@@ -44,5 +48,91 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('home')
             ->withSuccess('You have logged out successfully!');
-    } 
+    }
+
+    public function showForgetPassword()
+    {
+        return view('auth.forget-password');
+    }
+
+    public function sendEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'The provided email does not match our records.',
+            ])->onlyInput('email');
+        }
+
+        $passwordRecover = DB::table('password_recovers')
+            ->where('email', $user->email)->first();
+
+        if($passwordRecover){
+            return back()->withErrors([
+                'email' => 'You have already requested a password reset. Please check your email.',
+            ])->onlyInput('email');
+        }
+
+        $token = Str::random(64);
+
+        DB::table('password_recovers')->insert([
+            'email' => $user->email,
+            'token' => $token,
+            'date' => date('Y-m-d H:i:s')
+        ]);
+
+        $data = array(
+            'name' => $user->name,
+            'token' => $token
+        );
+
+        Mail::send('partials.mail', $data, function ($message) use ($user) {
+            $message->subject('Recover your password!');
+            $message->from('invents@gmail.com', 'Invents Staff');
+            $message->to($user->email, $user->name);
+        });
+
+        return redirect()->route('password.recover')->with('success', "We have sent you an email with a link to reset your password.");
+    }
+
+    public function showPasswordRecover()
+    {
+        return view('auth.password-recover', ['token' => request()->route('token')]);
+    }
+
+    public function recoverPassword(Request $request)
+    {
+        $request->validate(
+            [
+                'token' => 'required',
+                'password' => 'required|confirmed|min:6',
+                'password_confirmation' => 'required|min:6'
+            ],
+            [
+                'password.confirmed' => 'Password confirmation does not match',
+                'password.min' => 'Password must be at least 6 characters'
+            ]
+        );
+
+        $passwordRecover = DB::table('password_recovers')
+            ->where('token', $request->token)->first();
+
+        if (!$passwordRecover) {
+            return back()->with('error', "Invalid token");
+        }
+
+        $user = User::where('email', $passwordRecover->email)->first();
+        $user->update([
+            'password' => bcrypt($request->password)
+        ]);
+
+        DB::table('password_recovers')
+            ->where('token', $request->token)
+            ->delete();
+
+        return redirect()->route('login')->with('success', "Your password has been changed successfully!");
+    }
 }

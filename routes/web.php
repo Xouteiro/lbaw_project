@@ -55,6 +55,10 @@ Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/login', 'authenticate');
     Route::get('/logout', 'logout')->name('logout');
+    Route::get('/forget-password', 'showForgetPassword')->name('forget.password');
+    Route::post('/sendEmail', 'sendEmail')->name('send.email');
+    Route::get('/password-recover/{token}', 'showPasswordRecover')->name('password.recover.show');
+    Route::post('/password-recover/{token}', 'recoverPassword')->name('password.recover');
 });
 
 Route::controller(RegisterController::class)->group(function () {
