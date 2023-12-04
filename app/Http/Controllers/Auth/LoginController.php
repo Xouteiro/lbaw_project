@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\Email;
 use Illuminate\Http\Request;
 
 use Illuminate\Http\RedirectResponse;
@@ -89,13 +90,15 @@ class LoginController extends Controller
             'token' => $token
         );
 
-        Mail::send('partials.mail', $data, function ($message) use ($user) {
-            $message->subject('Recover your password!');
-            $message->from('invents@gmail.com', 'Invents Staff');
-            $message->to($user->email, $user->name);
-        });
+        Mail::to($user->email, $user->name)->send(new Email($data));
 
-        return redirect()->route('password.recover')->with('success', "We have sent you an email with a link to reset your password.");
+        // Mail::send('partials.mail', $data, function ($message) use ($user) {
+        //     $message->subject('Recover your password!');
+        //     $message->from('invents@gmail.com', 'Invents Staff');
+        //     $message->to($user->email, $user->name);
+        // });
+
+        return back()->with('success', "We have sent you an email with a link to reset your password.");
     }
 
     public function showPasswordRecover()

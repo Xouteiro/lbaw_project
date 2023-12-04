@@ -5,7 +5,12 @@
     <h1 style="text-align: center">Recover Password</h1>
     <form class="general" method="POST" action="{{ route('send.email') }}">
         @csrf
-
+        
+        @if(session('success'))
+            <p class="success">
+                {{ session('success') }}
+            </p>
+        @endif
         @if ($errors->has('email'))
                 <span class="error">
                 {{ $errors->first('email') }}

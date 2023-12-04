@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1 style="text-align: center">Change your Password</h1>
-    <form class="general" method="POST" action="{{ route('password.recover') }}">
+    <form class="general" method="POST" action="{{ route('password.recover', ['token' => request()->route('token')]) }}">
         @csrf
 
         @if(session('success'))
