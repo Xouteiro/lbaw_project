@@ -195,7 +195,7 @@ main>header span {
 
 #content .container>form .success {
   font-weight: bold;
-  color: #106af1;
+  color: #30a33a;
 }
 
 #content .container>form input {
@@ -633,6 +633,10 @@ form#searchForm {
 
 .event-container .error {
   display: block;
+}
+
+.event-container .success {
+    display: block;
 }
 
 .event-container .comment {

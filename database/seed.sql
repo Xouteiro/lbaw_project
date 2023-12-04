@@ -138,6 +138,14 @@ CREATE TABLE user_option (
     PRIMARY KEY (id_user, id_option)
 );
 
+CREATE TABLE password_recovers
+(
+    token VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    date TIMESTAMP,
+    PRIMARY KEY (token)
+);
+
 --Indexes
 --01
 CREATE INDEX idx_joined_events ON joined USING btree (id_user);
