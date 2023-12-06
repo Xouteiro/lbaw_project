@@ -123,7 +123,8 @@ p {
   margin-top: 0
 }
 
-a.logo, a.small-logo {
+a.logo,
+a.small-logo {
   margin-left: 0px;
   margin-right: auto;
 }
@@ -146,7 +147,6 @@ img.small-logo {
 
 main>header {
   display: flex;
-  grid-template-columns: 1fr auto auto;
   align-items: center;
   padding: 0.7em;
   background-color: #00172b;
@@ -198,53 +198,6 @@ main>header span {
   color: #30a33a;
 }
 
-#content .container>form input {
-  background-color: #e8ecf8;
-}
-
-@media (max-width: 70em) {
-  #cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  main>header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-  }
-
-  main>header h1 {
-    grid-row-end: span 2;
-  }
-}
-
-@media (max-width: 40em) {
-  #cards {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 25em) {
-  body {
-    margin: 0;
-  }
-
-  main>header {
-    margin: 0;
-    padding: 0.5em;
-  }
-
-  main>header span {
-    margin: 0;
-  }
-
-  #content .container form {
-    margin: 0;
-    max-width: 25em;
-  }
-}
-
-
-
 
 .button,
 button,
@@ -288,11 +241,12 @@ select {
   box-sizing: inherit;
   height: 3.8rem;
   padding: .6rem 1.0rem .7rem;
-  width: 100%
+  width: 100%;
+  appearance: none;
 }
 
 select {
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" width="30"><path fill="%23d1d1d1" d="M0,0l6,8l6-8"/></svg>') center right no-repeat;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" width="30"><path fill="%2300172b" d="M0,0l6,8l6-8"/></svg>') center right no-repeat;
   padding-right: 3.0rem
 }
 
@@ -318,13 +272,15 @@ button,
 input,
 select,
 textarea {
-  margin-bottom: 1.5rem
+  margin-bottom: 1.5rem;
+  outline: none;
+  background-color: #dee6ff;
 }
 
 form,
 p,
 ul {
-  margin-bottom: 2.5rem
+  margin-bottom: 1.0rem
 }
 
 
@@ -336,9 +292,11 @@ ul {
 
 label {
   display: block;
-  font-size: 1.6rem;
+  font-size: 1.2em;
   font-weight: 700;
-  margin-bottom: .5rem
+  margin-bottom: .5rem;
+  padding-right: 0.5em;
+  align-self: center;
 }
 
 input[type='checkbox'],
@@ -353,11 +311,38 @@ input[type='radio'] {
   width: 100%
 }
 
+.search-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+}
+
+.container-events {
+  margin: 2em auto 2em 2em;
+  max-width: 112.0rem;
+  position: relative;
+  width: 100%;
+  padding-right:50px ;
+}
+
+
 .container.image-home-page {
   margin: 0 0 auto 0;
   position: relative;
   max-width: 100%;
   width: 100%
+}
+
+div.form {
+  margin: 2em 2em 2em 0;
+  min-width: 20%;
+}
+
+
+.input_field {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
 
 
@@ -452,6 +437,20 @@ input[type='radio'] {
 
 input.search-event {
   margin: 1em 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  border-color: #00172b;
+  border-radius: 1rem;
+  border-width: 2px;
+  border-style: solid;
+  align-self: center;
+  justify-content: space-between;
+  justify-self: start;
+  align-items: center;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: 10px;
 }
 
 .events-container {
@@ -461,7 +460,7 @@ input.search-event {
   flex-direction: row;
   max-width: 113rem;
   align-self: center;
-  padding-top:15px;
+  padding-top: 15px;
 }
 
 .joined-events-container,
@@ -537,11 +536,11 @@ img.back-button {
 
 form#searchForm {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   margin: 1em 0;
-  width: 80%;
+  width: 100%;
   align-self: center;
 }
 
@@ -753,19 +752,149 @@ form.nothome#searchForm #searchButton {
   width: 20%;
 }
 
-.check-all{
+.check-all {
   margin-top: 55px;
   display: flex;
   flex-direction: column;
 }
 
-.check-all a{
+.check-all a {
   width: 20%;
   align-self: center;
 }
 
-.check-all h3{
-  color:rgb(43, 63, 124);
+.check-all h3 {
+  color: rgb(43, 63, 124);
   font-weight: 800;
   font-size: 25px;
+}
+
+.profile{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+
+form#searchForm div.input_field input#date, form#searchForm div.input_field select {
+  border-color: #00172b;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 1rem;
+
+}
+
+@media (max-width: 1050px) {
+  .search-container {
+    flex-direction: column;
+  }
+
+  div.form {
+    width: 100%;
+    padding-right: 2em;
+  }
+
+  .event-container {
+    padding-left: 0;
+    padding-right: 100px;
+  }
+
+  img.logo {
+    max-height: 5em;
+    margin: 20px;
+    padding-left: 0px;
+  }
+
+  img.small-logo {
+    max-height: 5em;
+    margin: 20px;
+    padding-left: 0px;
+  }
+
+  form.nothome#searchForm {
+    min-width: 35%;
+
+  }
+
+  .event-manage-div button{
+    scale: 0.8;
+  }
+
+
+  .event-card {
+    width: 17em;
+    min-height: 23em;
+  }
+
+  .event-pin {
+    margin: 0.1em;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 50px;
+    height: 50px;
+    z-index: 3;
+
+  }
+
+
+  .event-hidden {
+    background-color: rgb(43, 63, 124);
+    /* Set a background color or add other styles for the hidden status */
+    color: white;
+    border-radius: 15% 0 15% 0;
+    padding: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* Ensure the hidden status is on top of the event image and pin */
+  }
+
+
+
+  .event-card .event-info h3 {
+    font-size: 1.1em;
+  }
+
+  .event-card .event-info p {
+    font-size: 0.9em;
+  }
+
+
+  .background-image .overlay-text h1 {
+    font-size: 2.8em;
+    width: max-content;
+  }
+
+  .background-image .overlay-text h2 {
+    font-size: 1.5em;
+    width: max-content;
+  }
+
+  .background-image .overlay-text h3 {
+    font-size: 1.5em;
+    top: 55%;
+    width: max-content;
+
+  }
+
+
+  .background-image .overlay-text h4 {
+    font-size: 1.3em;
+    width: max-content;
+    top: 99%;
+  }
+
+  .check-all a {
+    width: 30%;
+  }
+
+
+  .profile{
+    padding-right:20px;
+    padding-left:20px;
+  }
+  .profile-events-title-div>h2 {
+    font-size: 2.8rem;
+  }
 }

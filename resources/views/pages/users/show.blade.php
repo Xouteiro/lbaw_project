@@ -1,7 +1,7 @@
 @extends('layouts.nothome')
 
 @section('content')
-    <div class="container">
+    <div class="container profile">
         <h1>{{ $user->username }}</h1>
         <p>{{ $user->description }}</p>
         <div class="notifications">
