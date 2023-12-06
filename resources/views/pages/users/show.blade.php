@@ -34,12 +34,20 @@
             </div> --}}
         </div>
         @if (Auth::check() && (Auth::user()->id === $user->id || Auth::user()->admin))
-            <a class="button" href="{{ route('event.create') }}">Create Event</a>
-            <a class="button" href="{{ url('/user/' . $user->id .'/edit')}}">Edit Profile</a>
+            <div class="account-owner admin">
+                <a class="button" href="{{ route('event.create') }}">Create Event</a>
+                <a class="button" href="{{ url('/user/' . $user->id .'/edit')}}">Edit Profile</a>
+                <div class="button delete-account" id="{{$user->id}}">
+                    Delete Account
+                </div>
+            </div>
         @endif
         @if (AutH::check() && Auth::user()->id === $user->id)
-            <a class="button" href="{{ url('/logout') }}"> Logout </a> 
+            <div class="account-owner">
+                <a class="button" href="{{ url('/logout') }}"> Logout </a>
+            </div>
         @endif
+
         <div class="profile-events-title-div">
             <h2 class="joined-events-title active">Joined Events</h2>
             <h2 class="created-events-title">Created Events</h2>
