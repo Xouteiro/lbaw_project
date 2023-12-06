@@ -6,6 +6,13 @@
                 <h3>{{ $event->name }}</h3>
                 <p>{{ $event->description }}</p>
                 <p> Date: {{ $event->eventdate }}</p>
+                @if($event->eventdate < date('Y-m-d'))
+                <p>Finished</p>
+                @elseif($event->eventdate == date('Y-m-d'))
+                    <p>Today</p>
+                @elseif($event->eventdate > date('Y-m-d'))
+                    <p>Upcoming</p>
+                @endif
             </div>
         </a>
     </div>

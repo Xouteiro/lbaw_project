@@ -38,7 +38,9 @@
             @else
                 <p>Price: {{ $event->price }} €</p>
             @endif
-            <p>Location: {{ $event->location->address }}</p>
+            <p>Location: {{ $event->location->name }}</p>
+            <p>Address: {{ $event->location->address }}</p>
+
         </div>
         @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user)
             {{-- Form of invite decision (Accept/Deny) --}}

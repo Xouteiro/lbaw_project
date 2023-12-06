@@ -37,7 +37,7 @@ class EventController extends Controller
 
     public function create()
     {
-        if(!Auth::check()){
+        if (!Auth::check()) {
             return redirect()->route('login');
         }
         return view('pages.events.create');
@@ -45,7 +45,7 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-        $id = Auth::user()->id; 
+        $id = Auth::user()->id;
         $user = User::findOrFail($id);
         $request->validate([
             'name' => 'required|string|max:100',
@@ -59,7 +59,7 @@ class EventController extends Controller
             'price' => 'required|numeric|min:0',
             'capacity' => 'required|numeric|min:0',
             'id_location' => 'required|numeric|min:1',
-        ],[
+        ], [
             'date.after_or_equal' => 'Event date must be in the future.',
             'price' => 'Price must 0 or more.',
             'capacity' => 'Capacity must be 0 or more.',
@@ -179,12 +179,64 @@ class EventController extends Controller
 
     public function eventsSearch(Request $request)
     {
+        $datefilter = $request->has('date') ? $request->get('date') : null;
+        $locationfilter = $request->has('id_location') ? $request->get('id_location') : null;
+        $freefilter = $request->has('free') ? $request->get('free') : null;
+        $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
         $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
-        $events = Event::select()
-            ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
-            ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input])
-            ->get();
-        return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
+
+        if ($request->get('search') == null && $datefilter == null && $locationfilter == null && $freefilter == null && $finishedfilter == null) { 
+            $events = Event::select()->where('eventdate', '>=', Carbon::now())->get();
+            return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
+        }
+
+        if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
+            $query = Event::select();
+            
+            $query->where(function ($query) use ($datefilter, $locationfilter, $input, $freefilter, $finishedfilter) {
+                    if($input !== '\'*\'') {
+                        $query->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
+                        ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
+                    }
+                    if ($datefilter !== null) {
+                        $query->where('eventdate', '>=', $datefilter);
+                    }
+        
+                    if ($locationfilter !== null) {
+                        $query->where('id_location', '=', $locationfilter);
+                    }
+                    if ($freefilter !== null) {
+                        $query->where('price', '=', 0);
+                    }
+                    if ($finishedfilter !== null) {
+                        $query->where('eventdate', '<', Carbon::now());
+                    }
+                });
+        
+            $events = $query->get();
+        
+            return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
+        }
+        
+
+        if ($request->get('search') !== null) { //com filtros e pesquisa
+            $query = Event::select()
+                ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
+                ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
+        
+            if ($datefilter !== null) {
+                $query->where('eventdate', '>=', $datefilter);
+            }
+        
+            if ($locationfilter !== null) {
+                $query->where('id_location', '=', $locationfilter);
+            }
+        
+            $events = $query->get();
+        
+            return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
+        }
+        
     }
 
     static public function joinEvent(string $id)

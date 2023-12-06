@@ -39,13 +39,27 @@ function loadMoreEvents() {
                         const eventCard = document.createElement('div');
                         eventCard.classList.add('event-card');
 
+                        let eventStatus = '';
+                        const eventDate = new Date(event.eventdate);
+                        const currentDate = new Date();
+
+                        if (eventDate < currentDate) {
+                            eventStatus = 'Finished';
+                        } else if (eventDate.toDateString() === currentDate.toDateString()) {
+                            eventStatus = 'Today';
+                        } else if (eventDate > currentDate) {
+                            eventStatus = 'Upcoming';
+    }
+
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
                                 <img src="/images/event_default.png" alt="Event Image" class="event-image">
+                                
                                 <div class="event-info">
                                     <h3>${event.name}</h3>
                                     <p>${event.description}</p>
                                     <p>${event.eventdate}</p>
+                                    <p>${eventStatus}</p>
                                 </div>
                             </a>
                         `;
