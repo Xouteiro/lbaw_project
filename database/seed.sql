@@ -208,21 +208,21 @@ EXECUTE FUNCTION check_event_capacity();
 
 CREATE OR REPLACE FUNCTION delete_user_trigger()
 RETURNS TRIGGER AS $$
-BEGIN
-	UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
-	UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
-	UPDATE file SET id_user = NULL WHERE id_user = OLD.id;
-	UPDATE poll SET id_user = NULL WHERE id_user = OLD.id;
-	UPDATE user_option SET id_user = NULL WHERE id_user = OLD.id;
-	DELETE FROM joined WHERE id_user = OLD.id;
-	DELETE FROM event_notification WHERE id_user = OLD.id;
-	DELETE FROM invite WHERE id_user = OLD.id;
-	DELETE FROM request_to_join WHERE id_user = OLD.id;
-	RETURN NULL;
+BEGIN 
+    UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
+    UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE file SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE poll SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE user_option SET id_user = NULL WHERE id_user = OLD.id;
+    DELETE FROM joined WHERE id_user = OLD.id;
+    DELETE FROM event_notification WHERE id_user = OLD.id;
+    DELETE FROM invite WHERE id_user = OLD.id;
+    DELETE FROM request_to_join WHERE id_user = OLD.id;
+    return OLD;
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER user_deletion_trigger
-AFTER DELETE ON Users
+BEFORE DELETE ON users
 FOR EACH ROW
 EXECUTE FUNCTION delete_user_trigger();
 

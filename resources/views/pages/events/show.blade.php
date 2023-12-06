@@ -21,10 +21,25 @@
                 @endif
             </div>
             @if (Auth::check())
-                <p>Event Creator: <a href="{{ route('user.show', ['id' => $event->owner->id]) }}">
-                        {{ $event->owner->name }}</a></p>
+                <p>Event Creator: 
+                    @if(isset($event->owner->id)) 
+                        <a href="{{ route('user.show', ['id' => $event->owner->id]) }}">
+                            {{ $event->owner->name }}
+                        </a>
+                    @else
+                        Anonymous
+                    @endif
+                </p>
             @else
-                <p>Event Creator: <a href="{{ route('login') }}"> {{ $event->owner->name }}</a></p>
+                <p>Event Creator: 
+                    @if(isset($event->owner->id)) 
+                        <a href="{{ route('login') }}"> 
+                            {{ $event->owner->name }}
+                        </a>
+                    @else
+                        Anonymous
+                    @endif
+                </p>
             @endif
             <p>Description: {{ $event->description }}</p>
             <p>Event date: {{ $event->eventdate }}</p>
