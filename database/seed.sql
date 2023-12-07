@@ -11,7 +11,6 @@ DROP TABLE IF EXISTS invite CASCADE;
 DROP TABLE IF EXISTS event_notification CASCADE; 
 DROP TABLE IF EXISTS option CASCADE;
 DROP TABLE IF EXISTS poll CASCADE;
-DROP TABLE IF EXISTS file CASCADE;
 DROP TABLE IF EXISTS comment CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS location CASCADE;
@@ -63,14 +62,6 @@ CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
     date TIMESTAMP CHECK (date > current_date),
-    id_event INTEGER REFERENCES event(id),
-    id_user INTEGER REFERENCES users(id)
-);
-
-CREATE TABLE file (
-    id SERIAL PRIMARY KEY,
-    type VARCHAR(255) NOT NULL,
-    file VARCHAR(255) NOT NULL,
     id_event INTEGER REFERENCES event(id),
     id_user INTEGER REFERENCES users(id)
 );
@@ -211,13 +202,27 @@ RETURNS TRIGGER AS $$
 BEGIN
     UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
     UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
-    UPDATE file SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE poll SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE user_option SET id_user = NULL WHERE id_user = OLD.id;
     DELETE FROM joined WHERE id_user = OLD.id;
+    DELETE FROM password_recovers WHERE email = OLD.email;
+
+    DELETE FROM event_update WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
+    DELETE FROM invite WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
+    DELETE FROM request_to_join WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
     DELETE FROM event_notification WHERE id_user = OLD.id;
+
     DELETE FROM invite WHERE id_user = OLD.id;
+    DELETE FROM event_notification WHERE id IN
+        (SELECT id_eventnotification FROM invite WHERE id_user = OLD.id);
+    
     DELETE FROM request_to_join WHERE id_user = OLD.id;
+    DELETE FROM event_notification WHERE id IN
+        (SELECT id_eventnotification FROM request_to_join WHERE id_user = OLD.id);
+
     return OLD;
 END;
 $$ LANGUAGE plpgsql;
@@ -227,6 +232,38 @@ FOR EACH ROW
 EXECUTE FUNCTION delete_user_trigger();
 
 --03
+
+CREATE OR REPLACE FUNCTION delete_event_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM events_tags WHERE id_event = OLD.id;
+    DELETE FROM comment WHERE id_event = OLD.id;
+    DELETE FROM joined WHERE id_event = OLD.id;
+
+    DELETE FROM user_option WHERE id_option IN
+        (SELECT id FROM option WHERE id_poll IN
+            (SELECT id FROM poll WHERE id_event = OLD.id));
+    DELETE FROM option WHERE id_poll IN
+        (SELECT id FROM poll WHERE id_event = OLD.id);
+    DELETE FROM poll WHERE id_event = OLD.id;
+    
+    DELETE FROM event_update WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM invite WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM request_to_join WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM event_notification WHERE id_event = OLD.id;
+
+    return OLD;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER event_deletion_trigger
+BEFORE DELETE ON event
+FOR EACH ROW
+EXECUTE FUNCTION delete_event_trigger();
+
+--04
 
 CREATE OR REPLACE FUNCTION check_event_happened()
 RETURNS TRIGGER AS $$

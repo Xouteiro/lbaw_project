@@ -1,4 +1,4 @@
-@extends('layouts.nothome')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
@@ -7,14 +7,14 @@
         @csrf
         
         @if(session('success'))
-            <p class="success">
+            <span class="success">
                 {{ session('success') }}
-            </p>
+            </span>
         @endif
         @if ($errors->has('email'))
-                <span class="error">
-                {{ $errors->first('email') }}
-                </span>
+            <span class="error">
+            {{ $errors->first('email') }}
+            </span>
         @endif
         <label for="email">Your email</label>
         <input id="email" type="email" name="email" placeholder="Email" required>

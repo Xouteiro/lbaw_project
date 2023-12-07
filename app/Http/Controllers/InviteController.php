@@ -71,8 +71,7 @@ class InviteController extends Controller
 
         $user->pendingInvites()->save($invite);
 
-        return redirect()->route('event.show', ['id' => $event->id])
-        ->withSuccess('Invitation sent successfully!');
+        return back()->with('success', 'Invitation sent successfully!');
     }
 
     public function acceptInvite(Request $request) {

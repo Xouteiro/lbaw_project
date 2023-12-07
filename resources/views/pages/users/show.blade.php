@@ -1,4 +1,4 @@
-@extends('layouts.nothome')
+@extends('layouts.app')
 
 @section('content')
     <div class="container profile">
@@ -11,9 +11,9 @@
                     <h4>No invites</h4>
                 @endif
                 @foreach($notifications[0] as $invite)
-                <a class="pending_invite" href="{{ url($invite->link) . '?id_invite=' . $invite->id}}">
-                    <h4>- {{$invite->text}}</h4>
-                </a>
+                    <a class="pending_invite" href="{{ url($invite->link) . '?id_invite=' . $invite->id}}">
+                        <h4>- {{$invite->text}}</h4>
+                    </a>
                 @endforeach
             </div>
             {{-- <h2>Event Updates</h2>
@@ -59,10 +59,10 @@
             <h2 class="created-events-title">Created Events</h2>
         </div>
         <div class="joined-events-container" style="display: flex">
-        @each('partials.joined_event_card', $user->events, 'event')
+            @each('partials.joined_event_card', $user->events, 'event')
         </div>
         <div class="created-events-container" style="display: none">
-        @each('partials.created_event_card', $user->ownedEvents, 'event')
+            @each('partials.created_event_card', $user->ownedEvents, 'event')
         </div>
     </div>
 @endsection

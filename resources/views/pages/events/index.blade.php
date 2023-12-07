@@ -1,4 +1,4 @@
-@extends('layouts.nothome')
+@extends('layouts.app')
 
 @section('content')
 <div class="back-button-container">
