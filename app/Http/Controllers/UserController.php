@@ -135,4 +135,5 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Update successful'], 200);
     }
+    
 }

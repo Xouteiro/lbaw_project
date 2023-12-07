@@ -30,6 +30,7 @@
 
                 @if (Auth::check())
                 <a class="user" href="{{ url('/user/' . Auth::user()->id) }}"><span>{{ Auth::user()->name }}</span></a>
+                <a href="{{ url('/user/' . Auth::user()->id) }}"><img class="user" src="{{ Auth::user()->getProfileImage() }}"></a>
                 @elseif (request()->path() !== 'login')
                     <a class="button user" href="{{ url('/login') }}"> Login </a> 
                 @endif

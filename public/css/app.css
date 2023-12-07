@@ -32,6 +32,14 @@ header h1 a {
   margin-left: 50px;
 }
 
+header img.user {
+  max-height: 5.5em;
+  max-width: 3.5em;
+  margin-right: 4em;
+  border-radius: 25%;
+}
+
+
 
 section#content {
   display: flex;
@@ -126,13 +134,13 @@ p {
 a.logo,
 a.small-logo {
   margin-left: 0px;
-  margin-right: auto;
 }
 
 a.user {
-  margin-left: 10px;
   margin-right: 0px;
-}
+  align-self: center;
+  text-align: start;
+} 
 
 img.logo {
   height: 7em;
@@ -163,10 +171,13 @@ main>header a.button {
 }
 
 main>header span {
-  margin: 1em;
-  margin-right: 3em;
-  justify-self: center;
+  margin-top: 1em;
+  margin-right: 1.2em;
   color: white;
+  margin-bottom: 0em;
+  height: 100%;
+  display: ruby-base;
+  font-size: 1.32em;
 }
 
 #content label {
@@ -513,6 +524,8 @@ input.search-event {
   background-color: rgb(148, 170, 236);
 }
 
+
+
 .participant-card {
   background-color: #e8ecf8;
   border: 1px solid rgb(148, 170, 236);
@@ -726,7 +739,7 @@ form.nothome#searchForm {
   align-items: center;
   margin: 1em 0;
   margin-left: auto;
-  margin-right: 10px;
+  margin-right: auto;
 }
 
 
@@ -769,10 +782,60 @@ form.nothome#searchForm #searchButton {
   font-size: 25px;
 }
 
+textarea {
+  box-sizing: border-box;
+  resize: none; /* Prevent textarea from being resized */
+  height: 10em;
+}
+
 .profile{
   padding-left: 50px;
   padding-right: 50px;
 }
+
+.profile-picture{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-picture img{
+  margin-bottom: 25px;
+  max-height: 14em;
+  max-width: 16em;
+  border-radius: 3%;
+}
+
+.profile-picture-buttons{
+  display: flex;
+  flex-direction: row;
+}
+
+.profile-header-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.profile-header img{
+  max-height: 9em;
+  max-width: 11em;
+  border-radius: 3%;
+}
+
+.profile-header{
+  margin-top: 2em;
+}
+
+.profile-header:nth-child(2){
+  margin-left: 2em;
+}
+
+.profile-header p{
+  text-wrap: wrap;
+}
+
 
 
 form#searchForm div.input_field input#date, form#searchForm div.input_field select {
@@ -897,4 +960,13 @@ form#searchForm div.input_field input#date, form#searchForm div.input_field sele
   .profile-events-title-div>h2 {
     font-size: 2.8rem;
   }
-}
+
+  a.user{
+    display: none;
+  }
+
+  header img.user{
+    margin-right:2em; 
+  }
+
+} 

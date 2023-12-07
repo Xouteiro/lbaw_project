@@ -2,8 +2,15 @@
 
 @section('content')
     <div class="container profile">
-        <h1>{{ $user->username }}</h1>
-        <p>{{ $user->description }}</p>
+        <div class="profile-header-container">
+            <div class="profile-header">
+                <img src="{{ $user->getProfileImage() }}">
+            </div>
+            <div class='profile-header'>
+                <h1>{{ $user->username }}</h1>
+                <p>{{ $user->description }}</p>
+            </div>
+        </div>
         <div class="notifications">
             <h2>Invites</h2>
             <div class="invites">
