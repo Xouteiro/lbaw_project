@@ -617,12 +617,16 @@ form#searchForm {
     padding-bottom: 10px;
 }
 
-.event-container .error {
+.error {
     display: block;
+    margin: 1em 0; 
+    color: red;
 }
 
-.event-container .success {
+.success {
     display: block;
+    margin: 1em 0; 
+    color: #30a33a;
 }
 
 .event-container .comment {
