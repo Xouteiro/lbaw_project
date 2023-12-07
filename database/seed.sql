@@ -199,9 +199,6 @@ EXECUTE FUNCTION check_event_capacity();
 
 CREATE OR REPLACE FUNCTION delete_user_trigger()
 RETURNS TRIGGER AS $$
-DECLARE id_notification INT;
-DECLARE id_invite INT;
-DECLARE id_request INT;
 BEGIN
     UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
     UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
@@ -210,19 +207,21 @@ BEGIN
     DELETE FROM joined WHERE id_user = OLD.id;
     DELETE FROM password_recovers WHERE email = OLD.email;
 
-    SELECT id INTO id_notification FROM event_notification WHERE id_user = OLD.id;
-    DELETE FROM event_update WHERE id_eventnotification = id_notification;
-    DELETE FROM invite WHERE id_eventnotification = id_notification;
-    DELETE FROM request_to_join WHERE id_eventnotification = id_notification;
+    DELETE FROM event_update WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
+    DELETE FROM invite WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
+    DELETE FROM request_to_join WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
     DELETE FROM event_notification WHERE id_user = OLD.id;
 
-    SELECT id_eventnotification INTO id_invite FROM invite WHERE id_user = OLD.id;
     DELETE FROM invite WHERE id_user = OLD.id;
-    DELETE FROM event_notification WHERE id = id_invite;
+    DELETE FROM event_notification WHERE id IN
+        (SELECT id_eventnotification FROM invite WHERE id_user = OLD.id);
     
-    SELECT id_eventnotification INTO id_request FROM request_to_join WHERE id_user = OLD.id;
     DELETE FROM request_to_join WHERE id_user = OLD.id;
-    DELETE FROM event_notification WHERE id = id_request;
+    DELETE FROM event_notification WHERE id IN
+        (SELECT id_eventnotification FROM request_to_join WHERE id_user = OLD.id);
 
     return OLD;
 END;
@@ -233,6 +232,38 @@ FOR EACH ROW
 EXECUTE FUNCTION delete_user_trigger();
 
 --03
+
+CREATE OR REPLACE FUNCTION delete_event_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM events_tags WHERE id_event = OLD.id;
+    DELETE FROM comment WHERE id_event = OLD.id;
+    DELETE FROM joined WHERE id_event = OLD.id;
+
+    DELETE FROM user_option WHERE id_option IN
+        (SELECT id FROM option WHERE id_poll IN
+            (SELECT id FROM poll WHERE id_event = OLD.id));
+    DELETE FROM option WHERE id_poll IN
+        (SELECT id FROM poll WHERE id_event = OLD.id);
+    DELETE FROM poll WHERE id_event = OLD.id;
+    
+    DELETE FROM event_update WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM invite WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM request_to_join WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM event_notification WHERE id_event = OLD.id;
+
+    return OLD;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER event_deletion_trigger
+BEFORE DELETE ON event
+FOR EACH ROW
+EXECUTE FUNCTION delete_event_trigger();
+
+--04
 
 CREATE OR REPLACE FUNCTION check_event_happened()
 RETURNS TRIGGER AS $$

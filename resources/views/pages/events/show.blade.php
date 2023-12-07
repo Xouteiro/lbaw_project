@@ -1,4 +1,4 @@
-@extends('layouts.nothome')
+@extends('layouts.app')
 
 @section('content')
     <div class="event-container">
@@ -91,9 +91,7 @@
                 !Auth::user()->events->contains($event))
             <form action="" method="POST">
                 @csrf
-                <button class="button" type="submit">
-                    Request to join
-                </button>
+                <button class="button" type="submit">Request to join</button>
             </form>
         @endif
         @if (Auth::check() && Auth::user()->id == $event->id_owner)
@@ -106,25 +104,25 @@
                 <button type="submit">Send Invitation</button>
             </form>
             @if(session()->has('message'))
-            <div class="alert alert-success">
-            {{ session()->get('message') }}
-            </div>
+                <div class="alert alert-success">
+                {{ session()->get('message') }}
+                </div>
             @endif
             @if ($errors->has('invite'))
-            <span class="error" style="margin: 1em 0; color: red;">
-            {{ $errors->first('invite') }}
-            </span>
+                <span class="error" style="margin: 1em 0; color: red;">
+                {{ $errors->first('invite') }}
+                </span>
             @endif
             </div>
         @endif
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)
-            <p>No comments yet</p>
+                <p>No comments yet</p>
             @else
-            <ul class="comment-list">
-                @each('partials.comment', $event->comments, 'comment')
-            </ul>
+                <ul class="comment-list">
+                    @each('partials.comment', $event->comments, 'comment')
+                </ul>
             @endif
         </div>
     </div>

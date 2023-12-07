@@ -161,7 +161,6 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $this->authorize('delete', $event);
-        $event->participants()->detach();
         $event->delete();
         return redirect()->route('user.show', ['id' => Auth::user()->id])
             ->withSuccess('You have successfully deleted your comment!');
