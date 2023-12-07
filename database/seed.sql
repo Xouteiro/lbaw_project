@@ -159,27 +159,27 @@ ALTER TABLE event
 ADD COLUMN tsvectors TSVECTOR;
 CREATE OR REPLACE FUNCTION events_search_update() RETURNS TRIGGER AS $$
 BEGIN
- IF TG_OP = 'INSERT' THEN
-    NEW.tsvectors = (
-        setweight(to_tsvector('english', NEW.name), 'A') ||
-        setweight(to_tsvector('english', NEW.description), 'B')
-    );
- END IF;
- IF TG_OP = 'UPDATE' THEN
-     IF (NEW.name <> OLD.name OR NEW.description <> OLD.description) THEN
-       NEW.tsvectors = (
-         setweight(to_tsvector('english', NEW.name), 'A') ||
-         setweight(to_tsvector('english', NEW.description), 'B')
-       );
-     END IF;
- END IF;
- RETURN NEW;
+    IF TG_OP = 'INSERT' THEN
+        NEW.tsvectors = (
+            setweight(to_tsvector('english', NEW.name), 'A') ||
+            setweight(to_tsvector('english', NEW.description), 'B')
+        );
+    END IF;
+    IF TG_OP = 'UPDATE' THEN
+        IF (NEW.name <> OLD.name OR NEW.description <> OLD.description) THEN
+        NEW.tsvectors = (
+            setweight(to_tsvector('english', NEW.name), 'A') ||
+            setweight(to_tsvector('english', NEW.description), 'B')
+        );
+        END IF;
+    END IF;
+    RETURN NEW;
 END $$
 LANGUAGE plpgsql;
 CREATE TRIGGER events_search_update
- BEFORE INSERT OR UPDATE ON event
- FOR EACH ROW
- EXECUTE PROCEDURE events_search_update();
+BEFORE INSERT OR UPDATE ON event
+FOR EACH ROW
+EXECUTE PROCEDURE events_search_update();
 CREATE INDEX search_idx ON event USING GIN (tsvectors);
 
 --Triggers
@@ -188,15 +188,15 @@ CREATE INDEX search_idx ON event USING GIN (tsvectors);
 
 CREATE OR REPLACE FUNCTION check_event_capacity()
 RETURNS TRIGGER AS $$
-  DECLARE event_capacity INT;
-  DECLARE event_participants INT;
+    DECLARE event_capacity INT;
+    DECLARE event_participants INT;
 BEGIN
-  SELECT capacity INTO event_capacity FROM Event WHERE id = NEW.id_event;
-  SELECT COUNT(*) INTO event_participants FROM Joined WHERE id_event = NEW.id_event;
-  IF event_participants >= event_capacity AND event_capacity != 0 THEN
-    RAISE EXCEPTION 'Event has reached its capacity. You cannot join this event.';
-  END IF;
-  RETURN NEW;
+    SELECT capacity INTO event_capacity FROM Event WHERE id = NEW.id_event;
+    SELECT COUNT(*) INTO event_participants FROM Joined WHERE id_event = NEW.id_event;
+    IF event_participants >= event_capacity AND event_capacity != 0 THEN
+        RAISE EXCEPTION 'Event has reached its capacity. You cannot join this event.';
+    END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER event_capacity_check
@@ -209,23 +209,20 @@ EXECUTE FUNCTION check_event_capacity();
 CREATE OR REPLACE FUNCTION delete_user_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
-  DELETE FROM Users WHERE id = OLD.id;
-  UPDATE Event SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Comment SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE File SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Poll SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Option SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE EventNotification SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Invite SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE EventUpdate SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE RequestToJoin SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Joined SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE UserOption SET id_User = NULL WHERE id_User = OLD.id;
-  RETURN NULL;
+    UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
+    UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE file SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE poll SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE user_option SET id_user = NULL WHERE id_user = OLD.id;
+    DELETE FROM joined WHERE id_user = OLD.id;
+    DELETE FROM event_notification WHERE id_user = OLD.id;
+    DELETE FROM invite WHERE id_user = OLD.id;
+    DELETE FROM request_to_join WHERE id_user = OLD.id;
+    return OLD;
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER user_deletion_trigger
-BEFORE DELETE ON Users
+BEFORE DELETE ON users
 FOR EACH ROW
 EXECUTE FUNCTION delete_user_trigger();
 
@@ -233,13 +230,13 @@ EXECUTE FUNCTION delete_user_trigger();
 
 CREATE OR REPLACE FUNCTION check_event_happened()
 RETURNS TRIGGER AS $$
-  DECLARE event_date DATE;
+DECLARE event_date DATE;
 BEGIN
-  SELECT eventDate INTO event_date FROM Event WHERE id = NEW.id_event;
-  IF event_date < CURRENT_DATE THEN
-    RAISE EXCEPTION 'This event has already happened. You cannot join it.';
-  END IF;
-  RETURN NEW;
+    SELECT eventDate INTO event_date FROM Event WHERE id = NEW.id_event;
+    IF event_date < CURRENT_DATE THEN
+        RAISE EXCEPTION 'This event has already happened. You cannot join it.';
+    END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER event_happened_check
