@@ -22,7 +22,8 @@
     <body>
         <main>
             <header>
-                <a  class="logo" href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>
+                <a href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>    
+                                     
                 <form class="nothome" id="searchForm" action="{{ route('events.search') }}" method="GET">
                     <input name="search" value="" placeholder="Search event" class="search-event"/>
                     <button type="submit" id="searchButton"></button>

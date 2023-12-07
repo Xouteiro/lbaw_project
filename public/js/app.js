@@ -238,7 +238,6 @@ function switchEvents() {
             joinedEventsButton.classList.add("active");
         });
     }
-
 }
 
 function closeSureOptions() {
@@ -251,7 +250,6 @@ function closeSureOptions() {
             surebox.remove();
         });
     });
-
 }
 
 function removeParticipant() {
@@ -266,26 +264,57 @@ function removeParticipant() {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.innerHTML = `
-          <p>Are you sure ?</p>
-          <div class="surebox-buttons">
-          <button type="submit" class="surebox button yes">Yes</button>
-          <button type="button" class="surebox button no">No</button>
-          </div>
-      `;
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <button type="submit" class="surebox button yes">Yes</button>
+                        <button type="button" class="surebox button no">No</button>
+                    </div>
+                `;
                 fakebutton.parentElement.appendChild(surebox);
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
                     surebox.remove();
                 });
-
             }
-
         })
     });
-    closeSureOptions();
+    closeSureOptions()
 }
 
+function deleteAccount() {
+    const deleteAccountButton = document.querySelector(".fake.button.delete-account");
+    if(deleteAccountButton) {
+        deleteAccountButton.addEventListener("click", () => {
+            const accountId = deleteAccountButton.id;
+            const sureboxExists = deleteAccountButton.parentElement.querySelector(".surebox");
 
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                deleteAccountButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('DELETE', `/user/${accountId}/delete`, null, function() {
+                        window.location.href = "/logout";
+                    });
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
 
 
 addEventListeners();
@@ -293,3 +322,4 @@ openOptions();
 closeOptions();
 switchEvents();
 removeParticipant();
+deleteAccount();

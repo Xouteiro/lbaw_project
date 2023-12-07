@@ -21,10 +21,25 @@
                 @endif
             </div>
             @if (Auth::check())
-                <p>Event Creator: <a href="{{ route('user.show', ['id' => $event->owner->id]) }}">
-                        {{ $event->owner->name }}</a></p>
+                <p>Event Creator: 
+                    @if(isset($event->owner->id)) 
+                        <a href="{{ route('user.show', ['id' => $event->owner->id]) }}">
+                            {{ $event->owner->name }}
+                        </a>
+                    @else
+                        Anonymous
+                    @endif
+                </p>
             @else
-                <p>Event Creator: <a href="{{ route('login') }}"> {{ $event->owner->name }}</a></p>
+                <p>Event Creator: 
+                    @if(isset($event->owner->id)) 
+                        <a href="{{ route('login') }}"> 
+                            {{ $event->owner->name }}
+                        </a>
+                    @else
+                        Anonymous
+                    @endif
+                </p>
             @endif
             <p>Description: {{ $event->description }}</p>
             <p>Event date: {{ $event->eventdate }}</p>
@@ -76,40 +91,39 @@
                 !Auth::user()->events->contains($event))
             <form action="" method="POST">
                 @csrf
-                <button class="button" type="submit">
-                    Request to join
-                </button>
+                <button class="button" type="submit">Request to join</button>
             </form>
         @endif
         @if (Auth::check() && Auth::user()->id == $event->id_owner)
             <div class="invite-container">
-            <h3>Invite a user to this event</h3>
-            <form method="POST" action="{{ route('invite.send') }}" id="invitationForm" style="margin: 0;">
-                @csrf
-                <input type="text" name="email" placeholder="Enter user's email">
-                <input type="hidden" name="id_event" value="{{ $event->id }}">
-                <button type="submit">Send Invitation</button>
-            </form>
-            @if(session()->has('message'))
-            <div class="alert alert-success">
-            {{ session()->get('message') }}
-            </div>
-            @endif
-            @if ($errors->has('invite'))
-            <span class="error" style="margin: 1em 0; color: red;">
-            {{ $errors->first('invite') }}
-            </span>
-            @endif
+                <h3>Invite a user to this event</h3>
+                
+                @if(session('success'))
+                    <span class="success">
+                        {{ session('success') }}
+                    </span>
+                @endif
+                @if ($errors->has('invite'))
+                    <span class="error" style="margin: 1em 0; color: red;">
+                        {{ $errors->first('invite') }}
+                    </span>
+                @endif
+                <form method="POST" action="{{ route('invite.send') }}" id="invitationForm" style="margin: 0;">
+                    @csrf
+                    <input type="text" name="email" placeholder="Enter user's email">
+                    <input type="hidden" name="id_event" value="{{ $event->id }}">
+                    <button type="submit">Send Invitation</button>
+                </form>
             </div>
         @endif
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)
-            <p>No comments yet</p>
+                <p>No comments yet</p>
             @else
-            <ul class="comment-list">
-                @each('partials.comment', $event->comments, 'comment')
-            </ul>
+                <ul class="comment-list">
+                    @each('partials.comment', $event->comments, 'comment')
+                </ul>
             @endif
         </div>
     </div>

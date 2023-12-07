@@ -140,7 +140,7 @@ a.user {
   margin-right: 0px;
   align-self: center;
   text-align: start;
-} 
+}
 
 img.logo {
   height: 7em;
@@ -333,7 +333,7 @@ input[type='radio'] {
   max-width: 112.0rem;
   position: relative;
   width: 100%;
-  padding-right:50px ;
+  padding-right: 50px;
 }
 
 
@@ -648,7 +648,7 @@ form#searchForm {
 }
 
 .event-container .success {
-    display: block;
+  display: block;
 }
 
 .event-container .comment {
@@ -784,61 +784,63 @@ form.nothome#searchForm #searchButton {
 
 textarea {
   box-sizing: border-box;
-  resize: none; /* Prevent textarea from being resized */
+  resize: none;
+  /* Prevent textarea from being resized */
   height: 10em;
 }
 
-.profile{
+.profile {
   padding-left: 50px;
   padding-right: 50px;
 }
 
-.profile-picture{
+.profile-picture {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.profile-picture img{
+.profile-picture img {
   margin-bottom: 25px;
   max-height: 14em;
   max-width: 16em;
   border-radius: 3%;
 }
 
-.profile-picture-buttons{
+.profile-picture-buttons {
   display: flex;
   flex-direction: row;
 }
 
-.profile-header-container{
+.profile-header-container {
   display: flex;
   flex-direction: row;
   align-items: center;
   margin-bottom: 1em;
 }
 
-.profile-header img{
+.profile-header img {
   max-height: 9em;
   max-width: 11em;
   border-radius: 3%;
 }
 
-.profile-header{
+.profile-header {
   margin-top: 2em;
 }
 
-.profile-header:nth-child(2){
+.profile-header:nth-child(2) {
   margin-left: 2em;
 }
 
-.profile-header p{
+.profile-header p {
   text-wrap: wrap;
 }
 
 
 
-form#searchForm div.input_field input#date, form#searchForm div.input_field select {
+form#searchForm div.input_field input#date,
+form#searchForm div.input_field select {
   border-color: #00172b;
   border-width: 2px;
   border-style: solid;
@@ -878,7 +880,7 @@ form#searchForm div.input_field input#date, form#searchForm div.input_field sele
 
   }
 
-  .event-manage-div button{
+  .event-manage-div button {
     scale: 0.8;
   }
 
@@ -953,20 +955,21 @@ form#searchForm div.input_field input#date, form#searchForm div.input_field sele
   }
 
 
-  .profile{
-    padding-right:20px;
-    padding-left:20px;
+  .profile {
+    padding-right: 20px;
+    padding-left: 20px;
   }
+
   .profile-events-title-div>h2 {
     font-size: 2.8rem;
   }
 
-  a.user{
+  a.user {
     display: none;
   }
 
-  header img.user{
-    margin-right:2em; 
+  header img.user {
+    margin-right: 2em;
   }
 
-} 
+}
