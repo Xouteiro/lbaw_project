@@ -224,7 +224,18 @@ function switchEvents() {
             joinedEventsButton.classList.add("active");
         });
     }
+}
 
+function closeSureOptions() {
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("fake") || e.target.classList.contains("yes")) {
+            return;
+        }
+        const sureboxes = document.querySelectorAll(".surebox");
+        sureboxes.forEach((surebox) => {
+            surebox.remove();
+        });
+    });
 }
 
 function removeParticipant() {
@@ -253,11 +264,11 @@ function removeParticipant() {
             }
         })
     });
+    closeSureOptions()
 }
 
-
 function deleteAccount() {
-    const deleteAccountButton = document.querySelector(".button.delete-account");
+    const deleteAccountButton = document.querySelector(".fake.button.delete-account");
     if(deleteAccountButton) {
         deleteAccountButton.addEventListener("click", () => {
             const accountId = deleteAccountButton.id;
@@ -288,6 +299,7 @@ function deleteAccount() {
             }
         });
     }
+    closeSureOptions()
 }
 
 

@@ -208,7 +208,7 @@ EXECUTE FUNCTION check_event_capacity();
 
 CREATE OR REPLACE FUNCTION delete_user_trigger()
 RETURNS TRIGGER AS $$
-BEGIN 
+BEGIN
     UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
     UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE file SET id_user = NULL WHERE id_user = OLD.id;

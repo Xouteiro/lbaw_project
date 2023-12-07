@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.nothome')
+
 @section('content')
     <div class="container">
         <h1 style="text-align: center">Edit Event</h1>
