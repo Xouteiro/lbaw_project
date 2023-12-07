@@ -11,7 +11,6 @@ DROP TABLE IF EXISTS invite CASCADE;
 DROP TABLE IF EXISTS event_notification CASCADE; 
 DROP TABLE IF EXISTS option CASCADE;
 DROP TABLE IF EXISTS poll CASCADE;
-DROP TABLE IF EXISTS file CASCADE;
 DROP TABLE IF EXISTS comment CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS location CASCADE;
@@ -63,14 +62,6 @@ CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
     date TIMESTAMP CHECK (date > current_date),
-    id_event INTEGER REFERENCES event(id),
-    id_user INTEGER REFERENCES users(id)
-);
-
-CREATE TABLE file (
-    id SERIAL PRIMARY KEY,
-    type VARCHAR(255) NOT NULL,
-    file VARCHAR(255) NOT NULL,
     id_event INTEGER REFERENCES event(id),
     id_user INTEGER REFERENCES users(id)
 );
@@ -208,16 +199,31 @@ EXECUTE FUNCTION check_event_capacity();
 
 CREATE OR REPLACE FUNCTION delete_user_trigger()
 RETURNS TRIGGER AS $$
+DECLARE id_notification INT;
+DECLARE id_invite INT;
+DECLARE id_request INT;
 BEGIN
     UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
     UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
-    UPDATE file SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE poll SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE user_option SET id_user = NULL WHERE id_user = OLD.id;
     DELETE FROM joined WHERE id_user = OLD.id;
+    DELETE FROM password_recovers WHERE email = OLD.email;
+
+    SELECT id INTO id_notification FROM event_notification WHERE id_user = OLD.id;
+    DELETE FROM event_update WHERE id_eventnotification = id_notification;
+    DELETE FROM invite WHERE id_eventnotification = id_notification;
+    DELETE FROM request_to_join WHERE id_eventnotification = id_notification;
     DELETE FROM event_notification WHERE id_user = OLD.id;
+
+    SELECT id_eventnotification INTO id_invite FROM invite WHERE id_user = OLD.id;
     DELETE FROM invite WHERE id_user = OLD.id;
+    DELETE FROM event_notification WHERE id = id_invite;
+    
+    SELECT id_eventnotification INTO id_request FROM request_to_join WHERE id_user = OLD.id;
     DELETE FROM request_to_join WHERE id_user = OLD.id;
+    DELETE FROM event_notification WHERE id = id_request;
+
     return OLD;
 END;
 $$ LANGUAGE plpgsql;
