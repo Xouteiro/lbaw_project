@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\InviteController;
+use App\Http\Controllers\FileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,4 +78,10 @@ Route::controller(EventController::class)->group(function () {
 Route::controller(InviteController::class)->group(function(){
     Route::post('/api/send-invite', 'sendInvite')->name('invite.send');
     Route::post('/api/accept-invite', 'acceptInvite')->name('invite.accept');
+});
+
+// File
+Route::controller(FileController::class)->group(function () {
+    Route::post('/file/upload', 'upload')->name('file.upload');
+    Route::post('/file/delete', 'deleteProfilePicture')->name('file.deleteProfilePicture');
 });
