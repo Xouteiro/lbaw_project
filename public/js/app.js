@@ -49,7 +49,7 @@ function loadMoreEvents() {
                             eventStatus = 'Today';
                         } else if (eventDate > currentDate) {
                             eventStatus = 'Upcoming';
-    }
+                        }
 
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
@@ -283,14 +283,17 @@ function removeParticipant() {
 
 function deleteAccount() {
     const deleteAccountButton = document.querySelector(".fake.button.delete-account");
-    if(deleteAccountButton) {
-        deleteAccountButton.addEventListener("click", () => {
+    if (deleteAccountButton) {
+        deleteAccountButton.addEventListener("click", (e) => {
             const accountId = deleteAccountButton.id;
             const sureboxExists = deleteAccountButton.parentElement.querySelector(".surebox");
 
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 100).toString() + "px";
+                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) - 250).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -306,7 +309,7 @@ function deleteAccount() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
-                    sendAjaxRequest('DELETE', `/user/${accountId}/delete`, null, function() {
+                    sendAjaxRequest('DELETE', `/user/${accountId}/delete`, null, function () {
                         window.location.href = "/logout";
                     });
                 });
@@ -316,6 +319,128 @@ function deleteAccount() {
     closeSureOptions()
 }
 
+function deleteEvent() {
+    const deleteEventButton = document.querySelector(".fake.button.delete-event");
+    if (deleteEventButton) {
+        deleteEventButton.addEventListener("click", (e) => {
+            const eventId = deleteEventButton.id;
+            const sureboxExists = deleteEventButton.parentElement.querySelector(".surebox");
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 80).toString() + "px";
+                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) + 50).toString() + "px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                deleteEventButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {
+                        window.location.href = "/events";
+                    });
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
+
+function deleteComment() {
+    const deleteCommentButtons = document.querySelectorAll(".fake.button.delete-comment");
+    deleteCommentButtons.forEach((deleteCommentButton) => {
+        deleteCommentButton.addEventListener("click", (e) => {
+            const commentId = deleteCommentButton.id;
+            const sureboxExists = deleteCommentButton.parentElement.querySelector(".surebox");
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) + 100).toString() + "px";
+                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) - 20).toString() + "px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                deleteCommentButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () {});
+                    surebox.remove();
+                    deleteCommentButton.parentElement.parentElement.parentElement.remove();
+                });
+            }
+        });
+    });
+    closeSureOptions()
+}
+
+function editComment() {
+    const editCommentButtons = document.querySelectorAll(".fake.button.edit-comment");
+    editCommentButtons.forEach((editCommentButton) => {
+        editCommentButton.addEventListener("click", (e) => {
+            const commentId = editCommentButton.id;
+            const eventId = window.location.href.split("/")[4].split("#")[0];
+            console.log(eventId);
+            console.log(commentId);
+            editCommentButton.parentElement.style.display = "none";
+            const mainCommentDiv = editCommentButton.parentElement.parentElement;
+            const commentText = mainCommentDiv.querySelector("p");
+            commentText.style.display = "none";
+            const commentTextValue = commentText.textContent;
+
+            const editCommentDiv = document.createElement("div");
+            editCommentDiv.classList.add("edit-comment-form");
+            editCommentDiv.action = `/comment/${commentId}/update`;
+            editCommentDiv.method = "PUT";
+            editCommentDiv.innerHTML = `
+                <textarea name="comment" class="edit-comment-textarea" required>${commentTextValue}</textarea>
+                <button type="button" class="cancel-edit-comment-button">Cancel</button>
+                <button type="button" class="save-edit-comment-button">Save</button>
+            `;
+            mainCommentDiv.insertBefore(editCommentDiv, mainCommentDiv.querySelector(".comment-actions"));
+
+            const cancelEditCommentButton = editCommentDiv.querySelector(".cancel-edit-comment-button");
+            cancelEditCommentButton.addEventListener("click", () => {
+                editCommentDiv.remove();
+                editCommentButton.parentElement.style.display = "flex";
+                commentText.style.display = "block";
+            });
+
+            const saveEditCommentButton = editCommentDiv.querySelector(".save-edit-comment-button");
+            saveEditCommentButton.addEventListener("click", () => {
+                editCommentDiv.addEventListener("click", () => {
+                    const editCommentTextArea = editCommentDiv.querySelector(".edit-comment-textarea");
+                    const comment = editCommentTextArea.value;
+                    sendAjaxRequest('PUT', `/comment/${commentId}/update`, {comment: comment}, function () {});
+                    editCommentDiv.remove();
+                    editCommentButton.parentElement.style.display = "flex";
+                    commentText.style.display = "block";
+                    commentText.textContent = comment;
+                });
+            });
+        });
+    });
+}
+
 
 addEventListeners();
 openOptions();
@@ -323,3 +448,6 @@ closeOptions();
 switchEvents();
 removeParticipant();
 deleteAccount();
+deleteEvent();
+deleteComment();
+editComment();

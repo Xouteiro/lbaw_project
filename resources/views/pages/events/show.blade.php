@@ -12,12 +12,9 @@
                     <a class="button" href="{{ route('event.participants', ['id' => $event->id]) }}">
                         Manage Participants
                     </a>
-                    <form action= "{{ route('event.delete', ['id' => $event->id]) }}" method="POST">
-                        @csrf
-                        <button class="button" type="submit">
-                            Delete Event
-                        </button>
-                    </form>
+                    <div class="fake button delete-event" id="{{$event->id}}">
+                        Delete Event
+                    </div>
                 @endif
             </div>
             @if (Auth::check())
@@ -104,7 +101,7 @@
                     </span>
                 @endif
                 @if ($errors->has('invite'))
-                    <span class="error" style="margin: 1em 0; color: red;">
+                    <span class="error">
                         {{ $errors->first('invite') }}
                     </span>
                 @endif
@@ -126,5 +123,22 @@
                 </ul>
             @endif
         </div>
+        @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
+            <div>
+                <form class="general" action="{{ route('comment.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
+                    <input type="hidden" name="id_event" value="{{ $event->id }}">
+                    <label for="comment">Comment</label>
+                    @if ($errors->has('comment'))
+                        <span class="error">
+                            {{ $errors->first('comment') }}
+                        </span>
+                    @endif
+                    <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
+                    <button type="submit">Comment</button>
+                </form>
+            </div>
+        @endif
     </div>
 @endsection

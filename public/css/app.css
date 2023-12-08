@@ -136,9 +136,9 @@ p {
   margin-top: 0
 }
 
-a.logo,
-a.small-logo {
-  margin-left: 0px;
+a.logo {
+    margin-left: 0px;
+    margin-right: auto;
 }
 
 a.user {
@@ -665,7 +665,6 @@ form#searchForm {
 
 .event-container .comment {
   display: flex;
-  align-items: center;
 }
 
 .event-container .comment> :not(:first-child) {
@@ -735,11 +734,10 @@ form#searchForm {
   font-size: 1.6vw;
 }
 
-
-
-form.nothome#searchForm {
+form.searchBar#searchForm {
   display: flex;
   flex-direction: row;
+  min-width: 35%;
   width: 18%;
   border-color: #e8ecf8;
   border-radius: 2rem;
@@ -755,7 +753,7 @@ form.nothome#searchForm {
 }
 
 
-form.nothome#searchForm input.search-event {
+form.searchBar#searchForm input.search-event {
   border: none;
   color: white;
   margin: 0;
@@ -765,7 +763,7 @@ form.nothome#searchForm input.search-event {
   width: 80%;
 }
 
-form.nothome#searchForm #searchButton {
+form.searchBar#searchForm #searchButton {
   border: none;
   color: white;
   background-color: #00172b;
@@ -887,11 +885,6 @@ form#searchForm div.input_field select {
     padding-left: 0px;
   }
 
-  form.nothome#searchForm {
-    min-width: 35%;
-
-  }
-
   .event-manage-div button {
     scale: 0.8;
   }
@@ -926,62 +919,4 @@ form#searchForm div.input_field select {
     z-index: 2;
     /* Ensure the hidden status is on top of the event image and pin */
   }
-
-
-
-  .event-card .event-info h3 {
-    font-size: 1.1em;
-  }
-
-  .event-card .event-info p {
-    font-size: 0.9em;
-  }
-
-
-  .background-image .overlay-text h1 {
-    font-size: 2.8em;
-    width: max-content;
-  }
-
-  .background-image .overlay-text h2 {
-    font-size: 1.5em;
-    width: max-content;
-  }
-
-  .background-image .overlay-text h3 {
-    font-size: 1.5em;
-    top: 55%;
-    width: max-content;
-
-  }
-
-
-  .background-image .overlay-text h4 {
-    font-size: 1.3em;
-    width: max-content;
-    top: 99%;
-  }
-
-  .check-all a {
-    width: 30%;
-  }
-
-
-  .profile {
-    padding-right: 20px;
-    padding-left: 20px;
-  }
-
-  .profile-events-title-div>h2 {
-    font-size: 2.8rem;
-  }
-
-  a.user {
-    display: none;
-  }
-
-  header img.user {
-    margin-right: 2em;
-  }
-
 }
