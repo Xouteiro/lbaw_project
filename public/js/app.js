@@ -49,7 +49,7 @@ function loadMoreEvents() {
                             eventStatus = 'Today';
                         } else if (eventDate > currentDate) {
                             eventStatus = 'Upcoming';
-    }
+                        }
 
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
@@ -283,14 +283,17 @@ function removeParticipant() {
 
 function deleteAccount() {
     const deleteAccountButton = document.querySelector(".fake.button.delete-account");
-    if(deleteAccountButton) {
-        deleteAccountButton.addEventListener("click", () => {
+    if (deleteAccountButton) {
+        deleteAccountButton.addEventListener("click", (e) => {
             const accountId = deleteAccountButton.id;
             const sureboxExists = deleteAccountButton.parentElement.querySelector(".surebox");
 
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 100).toString() + "px";
+                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) - 250).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -306,13 +309,87 @@ function deleteAccount() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
-                    sendAjaxRequest('DELETE', `/user/${accountId}/delete`, null, function() {
+                    sendAjaxRequest('DELETE', `/user/${accountId}/delete`, null, function () {
                         window.location.href = "/logout";
                     });
                 });
             }
         });
     }
+    closeSureOptions()
+}
+
+function deleteEvent() {
+    const deleteEventButton = document.querySelector(".fake.button.delete-event");
+    if (deleteEventButton) {
+        deleteEventButton.addEventListener("click", (e) => {
+            const eventId = deleteEventButton.id;
+            const sureboxExists = deleteEventButton.parentElement.querySelector(".surebox");
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 80).toString() + "px";
+                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) + 50).toString() + "px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                deleteEventButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {
+                        window.location.href = "/events";
+                    });
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
+
+function deleteComment() {
+    const deleteCommentButtons = document.querySelectorAll(".fake.button.delete-comment");
+    deleteCommentButtons.forEach((deleteCommentButton) => {
+        deleteCommentButton.addEventListener("click", (e) => {
+            const commentId = deleteCommentButton.id;
+            const sureboxExists = deleteCommentButton.parentElement.querySelector(".surebox");
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) + 100).toString() + "px";
+                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) - 20).toString() + "px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                deleteCommentButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () {
+                        window.location.reload();
+                    });
+                });
+            }
+        });
+    });
     closeSureOptions()
 }
 
@@ -323,3 +400,5 @@ closeOptions();
 switchEvents();
 removeParticipant();
 deleteAccount();
+deleteEvent();
+deleteComment();

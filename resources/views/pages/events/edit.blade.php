@@ -8,9 +8,9 @@
                 <label for="name">Name</label>
                 <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $event->name) }}" required/>
                 @if ($errors->has('name'))
-                <span class="error">
-                    {{ $errors->first('name') }}
-                </span>
+                    <span class="error">
+                        {{ $errors->first('name') }}
+                    </span>
                 @endif
 
 
@@ -26,18 +26,18 @@
                 <label for="description">Description</label>
                 <textarea class="form-control" id="description" name="description" required>{{ $event->description }}</textarea>
                 @if ($errors->has('description'))
-                <span class="error">
-                    {{ $errors->first('description') }}
-                </span>
+                    <span class="error">
+                        {{ $errors->first('description') }}
+                    </span>
                 @endif
 
             
                 <label for="price">Price</label>
                 <input type="number" class="form-control" id="price" name="price" value="{{ $event->price }}" required>
                 @if ($errors->has('price'))
-                <span class="error">
-                    {{ $errors->first('price') }}
-                </span>
+                    <span class="error">
+                        {{ $errors->first('price') }}
+                    </span>
                 @endif
 
             
@@ -52,9 +52,9 @@
                 <label for="capacity">Capacity</label>
                 <input type="number" class="form-control" id="capacity" name="capacity" value="{{ $event->capacity }}" required>
                 @if ($errors->has('capacity'))
-                <span class="error">
-                    {{ $errors->first('capacity') }}
-                </span>
+                    <span class="error">
+                        {{ $errors->first('capacity') }}
+                    </span>
                 @endif
 
             

@@ -7,9 +7,9 @@ use App\Models\User;
 
 class CommentPolicy
 {
-    public function create(User $user): bool
+    public function store(User $auth, Comment $comment)
     {
-        return ($user != NULL);
+        return $auth->id == $comment->id_user;
     }
 
     /**

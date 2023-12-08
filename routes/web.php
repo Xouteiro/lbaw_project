@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\InviteController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +48,7 @@ Route::controller(EventController::class)->group(function () {
     Route::post('/event/{id}/participants/{id_p}/remove', 'removeparticipant')->name('event.removeparticipant');
     Route::get('/event/{id}/participants/{id_p}/remove', 'removeDummy');
     Route::get('/event/{id}/delete', 'deleteDummy');
-    Route::post('/event/{id}/delete', 'delete')->name('event.delete');
+    Route::delete('/event/{id}/delete', 'delete')->name('event.delete');
     Route::post('/event/{id}/join', 'joinEvent')->name('event.join');
 });
 
@@ -74,7 +75,15 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/api/events-ajax', 'indexAjax');
 });
 
+// Invite
 Route::controller(InviteController::class)->group(function(){
     Route::post('/api/send-invite', 'sendInvite')->name('invite.send');
     Route::post('/api/accept-invite', 'acceptInvite')->name('invite.accept');
+});
+
+// Comment
+Route::controller(CommentController::class)->group(function(){
+    Route::post('/comment', 'store')->name('comment.store');
+    Route::post('/comment/{id}', 'update')->name('comment.update');
+    Route::delete('/comment/{id}/delete', 'delete')->name('comment.delete');
 });
