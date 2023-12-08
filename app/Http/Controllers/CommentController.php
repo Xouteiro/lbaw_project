@@ -53,7 +53,7 @@ class CommentController extends Controller
         $comment->text = $request->comment;
 
         $comment->save();
-        return redirect(url()->previous() . '#' . $comment->id)->with('success', 'You have successfully updated your comment!');
+        return response()->json(['message' => 'You have successfully updated the comment!'], 200);
     }
 
     public function delete(string $id)
@@ -63,7 +63,6 @@ class CommentController extends Controller
         // $this->authorize('delete', $comment);
 
         $comment->delete();
-        return redirect()->route('event.show', ['id' => $comment->id_event])
-        ->withSuccess('You have successfully deleted your comment!');
+        return response()->json(['message' => 'You have successfully deleted the comment!'], 200);
     }
 }

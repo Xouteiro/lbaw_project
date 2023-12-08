@@ -84,6 +84,6 @@ Route::controller(InviteController::class)->group(function(){
 // Comment
 Route::controller(CommentController::class)->group(function(){
     Route::post('/comment', 'store')->name('comment.store');
-    Route::post('/comment/{id}', 'update')->name('comment.update');
+    Route::put('/comment/{id}/update', 'update')->name('comment.update');
     Route::delete('/comment/{id}/delete', 'delete')->name('comment.delete');
 });

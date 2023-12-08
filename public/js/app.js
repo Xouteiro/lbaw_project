@@ -383,14 +383,62 @@ function deleteComment() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
-                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () {
-                        window.location.reload();
-                    });
+                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () {});
+                    surebox.remove();
+                    deleteCommentButton.parentElement.parentElement.parentElement.remove();
                 });
             }
         });
     });
     closeSureOptions()
+}
+
+function editComment() {
+    const editCommentButtons = document.querySelectorAll(".fake.button.edit-comment");
+    editCommentButtons.forEach((editCommentButton) => {
+        editCommentButton.addEventListener("click", (e) => {
+            const commentId = editCommentButton.id;
+            const eventId = window.location.href.split("/")[4].split("#")[0];
+            console.log(eventId);
+            console.log(commentId);
+            editCommentButton.parentElement.style.display = "none";
+            const mainCommentDiv = editCommentButton.parentElement.parentElement;
+            const commentText = mainCommentDiv.querySelector("p");
+            commentText.style.display = "none";
+            const commentTextValue = commentText.textContent;
+
+            const editCommentDiv = document.createElement("div");
+            editCommentDiv.classList.add("edit-comment-form");
+            editCommentDiv.action = `/comment/${commentId}/update`;
+            editCommentDiv.method = "PUT";
+            editCommentDiv.innerHTML = `
+                <textarea name="comment" class="edit-comment-textarea" required>${commentTextValue}</textarea>
+                <button type="button" class="cancel-edit-comment-button">Cancel</button>
+                <button type="button" class="save-edit-comment-button">Save</button>
+            `;
+            mainCommentDiv.insertBefore(editCommentDiv, mainCommentDiv.querySelector(".comment-actions"));
+
+            const cancelEditCommentButton = editCommentDiv.querySelector(".cancel-edit-comment-button");
+            cancelEditCommentButton.addEventListener("click", () => {
+                editCommentDiv.remove();
+                editCommentButton.parentElement.style.display = "flex";
+                commentText.style.display = "block";
+            });
+
+            const saveEditCommentButton = editCommentDiv.querySelector(".save-edit-comment-button");
+            saveEditCommentButton.addEventListener("click", () => {
+                editCommentDiv.addEventListener("click", () => {
+                    const editCommentTextArea = editCommentDiv.querySelector(".edit-comment-textarea");
+                    const comment = editCommentTextArea.value;
+                    sendAjaxRequest('PUT', `/comment/${commentId}/update`, {comment: comment}, function () {});
+                    editCommentDiv.remove();
+                    editCommentButton.parentElement.style.display = "flex";
+                    commentText.style.display = "block";
+                    commentText.textContent = comment;
+                });
+            });
+        });
+    });
 }
 
 
@@ -402,3 +450,4 @@ removeParticipant();
 deleteAccount();
 deleteEvent();
 deleteComment();
+editComment();

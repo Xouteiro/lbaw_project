@@ -6,6 +6,7 @@
             Anonymous
         @endif
         <p>{{ $comment->text }}</p>
+        <p>{{ $comment->date }}</p>
         @if (Auth::check() && (Auth::user()->id === $comment->id_user || Auth::user()->admin))
             <div class="comment-actions">
                 <button class="fake button edit-comment" id="{{ $comment->id }}">
