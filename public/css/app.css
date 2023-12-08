@@ -49,8 +49,12 @@ section#content {
   flex: 1;
   background-color: #dee6ff;
   padding-bottom: 3em;
-  padding-top: 120px;
+  padding-top: 100px;
 
+}
+
+section#content.home {
+  padding-top: 0;
 }
 
 header a {
@@ -162,7 +166,10 @@ main>header {
   align-items: center;
   padding: 0.7em;
   background-color: #00172b;
-  height: 120px;
+}
+
+main>header.home {
+  position: unset;
 }
 
 main>header h1 {
@@ -334,7 +341,7 @@ input[type='radio'] {
 }
 
 .container-events {
-  margin: 2em auto 2em 2em;
+  margin: 3em auto 2em 2em;
   max-width: 112.0rem;
   position: relative;
   width: 100%;
@@ -569,7 +576,7 @@ form#searchForm {
 .event-container {
   width: 80%;
   margin: 0 auto;
-  margin-top: 2rem;
+  margin-top: 5rem;
   background-color: #fff;
   padding: 20px;
   box-shadow: 0 4px 8px 4px rgba(0, 0, 0, 0.1);
