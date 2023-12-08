@@ -123,7 +123,7 @@
                 </ul>
             @endif
         </div>
-        @if (Auth::check() && Auth::user()->events->contains($event))
+        @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div>
                 <form class="general" action="{{ route('comment.store') }}" method="POST">
                     @csrf
