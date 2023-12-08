@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,4 +87,10 @@ Route::controller(CommentController::class)->group(function(){
     Route::post('/comment', 'store')->name('comment.store');
     Route::put('/comment/{id}/update', 'update')->name('comment.update');
     Route::delete('/comment/{id}/delete', 'delete')->name('comment.delete');
+});
+
+// File
+Route::controller(FileController::class)->group(function () {
+    Route::post('/file/upload', 'upload')->name('file.upload');
+    Route::post('/file/delete', 'deleteProfilePicture')->name('file.deleteProfilePicture');
 });

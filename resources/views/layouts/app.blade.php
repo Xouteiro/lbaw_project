@@ -21,9 +21,13 @@
     </head>
     <body>
         <main>
+            @if( url()->current() == url('/home') )
+            <header class="home">
+                <a href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>  
+            @else  
             <header>
-                <a href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>    
-                                     
+                <a href={{url('/home')}}><img class="small-logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a> 
+                @endif               
                 <form class="nothome" id="searchForm" action="{{ route('events.search') }}" method="GET">
                     <input name="search" value="" placeholder="Search event" class="search-event"/>
                     <button type="submit" id="searchButton"></button>
@@ -31,11 +35,16 @@
 
                 @if (Auth::check())
                 <a class="user" href="{{ url('/user/' . Auth::user()->id) }}"><span>{{ Auth::user()->name }}</span></a>
+                <a href="{{ url('/user/' . Auth::user()->id) }}"><img class="user" src="{{ Auth::user()->getProfileImage() }}"></a>
                 @elseif (request()->path() !== 'login')
                     <a class="button user" href="{{ url('/login') }}"> Login </a> 
                 @endif
             </header>
+            @if( url()->current() == url('/home') )
+            <section id="content" class="home">
+            @else
             <section id="content">
+            @endif
                 @yield('content')
             </section>
             <footer>
