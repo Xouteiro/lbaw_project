@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Comment;
+use App\Models\Event;
+use App\Models\Invite;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -16,6 +19,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         User::class => UserPolicy::class,
+        //Event::class => EventPolicy::class,
+        //Comment::class => CommentPolicy::class,
+        //Invite::class => InvitePolicy::class,
     ];
 
     /**

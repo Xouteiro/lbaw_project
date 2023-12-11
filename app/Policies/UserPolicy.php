@@ -34,6 +34,17 @@ class UserPolicy
         }
     }
 
+    public function deleteEventPicture(User $auth, User $user)
+    {   
+        if (!Auth::check()) {
+            return false;
+        } else if ($auth->id == $user->id || $auth->admin) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function delete(User $auth, User $user)
     {
         return $auth->id == $user->id || $auth->admin;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use App\Models\Event;
 use Illuminate\Support\Facades\Auth;
 
 class FileController extends Controller
@@ -13,7 +14,7 @@ class FileController extends Controller
 
     static $systemTypes = [
         'profile' => ['png', 'jpg', 'jpeg', 'gif'],
-        'post' => ['mp3', 'mp4', 'gif', 'png', 'jpg', 'jpeg'],
+        'event' => ['mp3', 'mp4', 'gif', 'png', 'jpg', 'jpeg'],
     ];
 
     private static function getDefaultExtension(String $type) {
@@ -41,8 +42,8 @@ class FileController extends Controller
             case 'profile':
                 $fileName = User::find($id)->profile_image; // can be null as well
                 break;
-            case 'post':
-                // other models
+            case 'event':
+                $fileName =  Event::find($id)->event_image;
                 break;
             default:
                 return null;
@@ -62,8 +63,10 @@ class FileController extends Controller
                     $user->profile_image = null;
                     $user->save();
                     break;
-                case 'post':
-                    // other models
+                case 'event':
+                    $event = Event::find($id);
+                    $event->event_image = null;
+                    $event->save();
                     break;
             }
         }
@@ -105,8 +108,14 @@ class FileController extends Controller
                 }
                 break;
 
-            case 'post':
-                // other models
+            case 'event':
+                $event = Event::findOrFail($request->id);
+                if ($event) {
+                    $event->event_image = $fileName;
+                    $event->save();
+                } else {
+                    $error = "unknown event";
+                }
                 break;
 
             default:
@@ -144,6 +153,16 @@ class FileController extends Controller
         $this->authorize('deleteProfilePicture',$auth, $user);
         $userId = $request->id;
         $this->delete('profile', $userId);
+        return redirect()->back()->with('success', 'Success: profile picture deleted!');
+    }
+
+    public function deleteEventPicture(Request $request) {
+        $event = Event::find($request->id);
+        $owner = User::find($event->id_owner);
+        $auth = Auth::user();
+        $this->authorize('deleteEventPicture',$auth, $owner);
+        $eventId = $request->id;
+        $this->delete('event', $eventId);
         return redirect()->back()->with('success', 'Success: profile picture deleted!');
     }
 
