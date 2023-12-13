@@ -19,3 +19,5 @@ yarn-error.log
 /.vscode
 public/profile/
 !public/profile/default.jpg
+public/event/
+!public/event/default.jpg

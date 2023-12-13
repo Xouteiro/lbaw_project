@@ -102,7 +102,6 @@ CREATE TABLE event_update (
 
 CREATE TABLE request_to_join (
     id_eventnotification INTEGER REFERENCES event_notification(id),
-    response TEXT,
     id_user INTEGER REFERENCES users(id),
     PRIMARY KEY (id_eventnotification, id_user)
 );
