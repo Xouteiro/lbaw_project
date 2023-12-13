@@ -520,6 +520,10 @@ input.search-event {
     flex-direction: row;
 }
 
+.pending_request_to_join h4 {
+    padding: 0 1em;
+}
+
 .comment-list {
     list-style: none;
     margin: 0;
