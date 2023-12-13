@@ -7,7 +7,7 @@
             @if ($event->hide_owner)
             <p class="event-hidden">Hidden</p>
             @endif
-            <img src="/images/event_default.png" alt="Event Image" class="event-image" />
+            <img src="{{ $event->getEventImage($event->id) }}" alt="Event Image" class="event-image">
             <div class="event-info">
                 <h3>{{ $event->name }}</h3>
                 <p> {{ $event->description }}</p>

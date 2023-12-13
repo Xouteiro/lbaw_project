@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\FileController;
+use GuzzleHttp\Cookie\FileCookieJar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Event extends Model
 {
@@ -24,7 +27,8 @@ class Event extends Model
         'id_owner',
         'id_location',
         'highlight_owner',
-        'hide_owner'
+        'hide_owner',
+        'event_image'
     ];
 
     protected static function boot()
@@ -77,4 +81,7 @@ class Event extends Model
         return $this->hasMany(Notification::class);
     }
     
+    public function getEventImage(int $id){
+        return FileController::get('event', $id);
+    }
 }

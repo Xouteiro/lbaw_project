@@ -3,6 +3,23 @@
 @section('content')
     <div class="container">
         <h1 style="text-align: center">Edit Event</h1>
+            <div class="profile-picture">
+                <img src="{{ $event->getEventImage($event->id) }}">
+            <div class="profile-picture-buttons">
+            <form method="POST" action="{{ route('file.upload') }}" enctype="multipart/form-data">
+                @csrf
+                <input name="file" type="file" required>
+                <input name="id" type="number" value="{{ $event->id }}" hidden>
+                <input name="type" type="text" value="event" hidden>
+                <button type="submit">Submit</button>
+            </form>   
+            <form method="POST" action="{{ route('file.deleteEventPicture') }}" enctype="multipart/form-data">
+                @csrf
+                <input name="id" type="number" value="{{ $event->id }}" hidden>
+                <button type="submit">Remove</button>
+            </form>
+            </div>
+            </div>  
         <form class="general" action="{{ route('event.update', ['id' => $event->id]) }}" method="POST">
             @csrf
                 <label for="name">Name</label>

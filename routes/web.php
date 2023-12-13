@@ -92,5 +92,7 @@ Route::controller(CommentController::class)->group(function(){
 // File
 Route::controller(FileController::class)->group(function () {
     Route::post('/file/upload', 'upload')->name('file.upload');
-    Route::post('/file/delete', 'deleteProfilePicture')->name('file.deleteProfilePicture');
+    Route::post('/file/deleteProfilePicture', 'deleteProfilePicture')->name('file.deleteProfilePicture');
+    Route::post('/file/deleteEventPicture', 'deleteEventPicture')->name('file.deleteEventPicture');
+
 });
