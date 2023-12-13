@@ -41,9 +41,17 @@
             <p>Description: {{ $event->description }}</p>
             <p>Event date: {{ $event->eventdate }}</p>
             @if ($event->capacity == 0)
-                <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
+                @if(Auth::user()->events->contains($event))
+                    <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
+                @else
+                <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
+                @endif 
             @else
-                <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
+                @if(Auth::user()->events->contains($event))
+                    <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
+                @else
+                <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
+                @endif
             @endif
             @if ($event->price == 0)
                 <p>Free Event</p>
