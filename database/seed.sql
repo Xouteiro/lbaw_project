@@ -53,11 +53,6 @@ CREATE TABLE event (
     hide_owner BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE tags (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
-);
-
 CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
@@ -114,12 +109,6 @@ CREATE TABLE joined (
     highlighted BOOLEAN DEFAULT false,
     hidden BOOLEAN DEFAULT false,
     PRIMARY KEY (id_event, id_user)
-);
-
-CREATE TABLE events_tags (
-    id_tag INTEGER REFERENCES tags(id),
-    id_event INTEGER REFERENCES event(id),
-    PRIMARY KEY (id_tag, id_event)
 );
 
 CREATE TABLE user_option (

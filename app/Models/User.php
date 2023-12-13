@@ -60,11 +60,6 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class, 'id_user');
     }
 
-    public function files()
-    {
-        return $this->hasMany(File::class, 'id_user');
-    }
-
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'id_user');

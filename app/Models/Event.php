@@ -66,16 +66,6 @@ class Event extends Model
         return $this->belongsTo(Location::class, 'id_location');
     }
 
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class, 'events_tags', 'id_event', 'id_tag');
-    }
-
-    public function files()
-    {
-        return $this->hasMany(File::class);
-    }
-
     public function notifications()
     {
         return $this->hasMany(Notification::class);
