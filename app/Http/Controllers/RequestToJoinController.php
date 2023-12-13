@@ -73,16 +73,18 @@ class RequestToJoinController extends Controller
     }
 
     public function acceptRequestToJoin(Request $request) {
-        $requestToJoin = Notification::findOrFail($request->id_requestToJoin);
-        //$this->authorize('acceptRequestToJoin', $requestToJoin);
-        $event = $requestToJoin->event->id;
-        RequestToJoin::where('id_eventnotification', $requestToJoin->id)->delete();
-        $requestToJoin->delete();
+        $requestToJoinNotification = Notification::findOrFail($request->id_requestToJoin);
+        //$this->authorize('acceptRequestToJoin', $requestToJoinNotification);
+        $event = $requestToJoinNotification->event->id;
+        $requestToJoin = RequestToJoin::findOrFail($requestToJoinNotification->id);
 
         $user = User::find($requestToJoin->id_user);
-        $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
+        $user->events()->attach($event, ['date' => date('Y-m-d H:i:s')]);
 
-        return redirect()->route('event.show', ['id' => $event->id]);
+        $requestToJoin->delete();
+        $requestToJoinNotification->delete();
+
+        return redirect()->route('event.show', ['id' => $event]);
     }
 
     public function denyRequestToJoin(Request $request){

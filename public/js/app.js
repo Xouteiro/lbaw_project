@@ -441,11 +441,23 @@ function editComment() {
     });
 }
 
+function closeDecisionBox() {
+    document.addEventListener("click", (e) => {
+        const decisionBoxes = document.querySelectorAll(".decision_box");
+        decisionBoxes.forEach((decisionBox) => {
+            if (e.target.parentElement == decisionBox.parentElement || e.target.classList.contains("decision_box")) {
+                return;
+            }
+            decisionBox.remove();
+        });
+    });
+}
+
 function requestToJoin(){
     const requestsToJoin = document.querySelectorAll(".pending_request_to_join");
     requestsToJoin.forEach((requestToJoin) => {
         requestToJoin.addEventListener("click", () => {
-            const eventId = requestToJoin.id;
+            const requestToJoinId = requestToJoin.id;
             const decisionBox = requestToJoin.querySelector(".decision_box");
             if(!decisionBox){
                 const decisionBox = document.createElement("div");
@@ -458,35 +470,34 @@ function requestToJoin(){
 
                 const acceptRequestToJoin = decisionBox.querySelector(".accept_request_to_join");
                 acceptRequestToJoin.addEventListener("click", () => {
-                    sendAjaxRequest('POST', `/api/accept-request-to-join`, null, function () {
-                        window.location.href = `/event/${eventId}`;
+                    sendAjaxRequest('POST', `/api/accept-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {
+                        const requestsToJoinDiv = requestToJoin.parentElement;
+                        requestToJoin.remove();
+                        if(!requestsToJoinDiv.childElementCount){
+                            const noRequestsToJoin = document.createElement("h4");
+                            noRequestsToJoin.textContent = "No Requests To Join";
+                            requestsToJoinDiv.appendChild(noRequestsToJoin);
+                        }
                     });
                 });
 
                 const declineRequestToJoin = decisionBox.querySelector(".decline_request_to_join");
                 declineRequestToJoin.addEventListener("click", () => {
-                    sendAjaxRequest('POST', `/api/decline-request-to-join`, null, function () {
-                        window.location.href = `/event/${eventId}`;
+                    sendAjaxRequest('POST', `/api/deny-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {
+                        const requestsToJoinDiv = requestToJoin.parentElement;
+                        requestToJoin.remove();
+                        if(!requestsToJoinDiv.childElementCount){
+                            const noRequestsToJoin = document.createElement("h4");
+                            noRequestsToJoin.textContent = "No Requests To Join";
+                            requestsToJoinDiv.appendChild(noRequestsToJoin);
+                        }
                     });
                 });
             }
 
         });
-    }
-    );
-}
-
-function closeDecisionBox() {
-    document.addEventListener("click", (e) => {
-        if (e.target.classList.contains("decision_box")) {
-            return;
-        }
-        const options = document.querySelectorAll(".decision_box");
-
-        options.forEach((option) => {
-            option.remove();
-        });
     });
+    closeDecisionBox();
 }
 
 addEventListeners();
@@ -498,5 +509,4 @@ deleteAccount();
 deleteEvent();
 deleteComment();
 editComment();
-closeDecisionBox();
 requestToJoin();
