@@ -544,8 +544,15 @@ input.search-event {
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
 }
 
+.participant-card form{
+    display: flex;
+    align-self: end;
+}
 
 img.back-button {
     margin: 1em 0;
@@ -856,6 +863,16 @@ form#searchForm div.input_field select {
     border-style: solid;
     border-radius: 1rem;
 
+}
+
+.participants{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 1em 0;
+}
+.participants a{
+    padding-left: 10px;
 }
 
 @media (max-width: 1050px) {

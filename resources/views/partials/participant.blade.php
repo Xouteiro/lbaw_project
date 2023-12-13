@@ -1,21 +1,8 @@
 <div class="participant-card" id="{{$participant->id}}">
-    @if($event->id_owner == $participant->id)
-    <h2>{{ $participant->name }} - Owner</h2>
-    @else
-    <h2>{{ $participant->name }} </h2>
-    @endif
-    <h3>{{ $participant->username }}</h3>
-    <p>{{ $participant->description }}</p>
-    <a href="{{ route('user.show', ['id' => $participant->id]) }}">
-        <button class="button" type="button">
-            View Profile
-        </button>
-    </a>
-    <a>
-        <button class="button" type="button">
-            Send Message
-        </button>
-    </a>
+    <div>
+        <h2><a href="{{ route('user.show', ['id' => $participant->id]) }}">{{ $participant->name }}</a></h2>
+        <h3><a href="{{ route('user.show', ['id' => $participant->id]) }}">{{ $participant->username }}</a></h3>
+    </div>
     <form action="{{ route('event.removeparticipant', ['id' => $event->id, 'id_p' => $participant->id]) }}" method="POST">
         @csrf
         <div class="fake button remove" id="{{$participant->id}}">
