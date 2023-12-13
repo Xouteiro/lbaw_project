@@ -81,14 +81,26 @@
                     Join Event
                 </button>
             </form>
-        @elseif(
-            !$event->opentojoin &&
-                Auth::check() &&
+        @elseif(!$event->opentojoin && Auth::check() &&
                 Auth::user()->id != $event->id_owner &&
                 !Auth::user()->events->contains($event))
-            <form action="" method="POST">
+
+            @if(session('success'))
+                <span class="success">
+                    {{ session('success') }}
+                </span>
+            @endif
+            @if ($errors->has('requestToJoin'))
+                <span class="error">
+                    {{ $errors->first('requestToJoin') }}
+                </span>
+            @endif
+            <form action="{{ route('requestToJoin.send') }}" method="POST">
                 @csrf
-                <button class="button" type="submit">Request to join</button>
+                <input type="hidden" name="id_event" value="{{ $event->id }}">
+                <button class="button" type="submit">
+                    Request to join
+                </button>
             </form>
         @endif
         @if (Auth::check() && Auth::user()->id == $event->id_owner)
@@ -109,7 +121,9 @@
                     @csrf
                     <input type="text" name="email" placeholder="Enter user's email">
                     <input type="hidden" name="id_event" value="{{ $event->id }}">
-                    <button type="submit">Send Invitation</button>
+                    <button type="submit">
+                        Send Invitation
+                    </button>
                 </form>
             </div>
         @endif

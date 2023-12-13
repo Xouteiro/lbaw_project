@@ -97,7 +97,7 @@ function openOptions() {
     let topElement;
     if (options) {
         options.forEach((option) => {
-            option.addEventListener("click", (e) => {
+            option.addEventListener("click", () => {
                 const alreadyOpen = document.querySelector(".event-manage-div");
                 if (!alreadyOpen) {
                     const id_event = option.parentElement.id.split("-")[1];
@@ -441,6 +441,53 @@ function editComment() {
     });
 }
 
+function requestToJoin(){
+    const requestsToJoin = document.querySelectorAll(".pending_request_to_join");
+    requestsToJoin.forEach((requestToJoin) => {
+        requestToJoin.addEventListener("click", () => {
+            const eventId = requestToJoin.id;
+            const decisionBox = requestToJoin.querySelector(".decision_box");
+            if(!decisionBox){
+                const decisionBox = document.createElement("div");
+                decisionBox.classList.add("decision_box");
+                decisionBox.innerHTML = `
+                    <button type="button" class="accept_request_to_join">&check;</button>
+                    <button type="button" class="decline_request_to_join">&#10060;</button>
+                `;
+                requestToJoin.appendChild(decisionBox);
+
+                const acceptRequestToJoin = decisionBox.querySelector(".accept_request_to_join");
+                acceptRequestToJoin.addEventListener("click", () => {
+                    sendAjaxRequest('POST', `/api/accept-request-to-join`, null, function () {
+                        window.location.href = `/event/${eventId}`;
+                    });
+                });
+
+                const declineRequestToJoin = decisionBox.querySelector(".decline_request_to_join");
+                declineRequestToJoin.addEventListener("click", () => {
+                    sendAjaxRequest('POST', `/api/decline-request-to-join`, null, function () {
+                        window.location.href = `/event/${eventId}`;
+                    });
+                });
+            }
+
+        });
+    }
+    );
+}
+
+function closeDecisionBox() {
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("decision_box")) {
+            return;
+        }
+        const options = document.querySelectorAll(".decision_box");
+
+        options.forEach((option) => {
+            option.remove();
+        });
+    });
+}
 
 addEventListeners();
 openOptions();
@@ -451,3 +498,5 @@ deleteAccount();
 deleteEvent();
 deleteComment();
 editComment();
+closeDecisionBox();
+requestToJoin();

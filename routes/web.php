@@ -11,6 +11,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\RequestToJoinController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +81,12 @@ Route::controller(EventController::class)->group(function () {
 Route::controller(InviteController::class)->group(function(){
     Route::post('/api/send-invite', 'sendInvite')->name('invite.send');
     Route::post('/api/accept-invite', 'acceptInvite')->name('invite.accept');
+});
+
+Route::controller(RequestToJoinController::class)->group(function(){
+    Route::post('/api/send-request-to-join', 'sendRequestToJoin')->name('requestToJoin.send');
+    Route::post('/api/accept-request-to-join', 'acceptRequestToJoin')->name('requestToJoin.accept');
+    Route::post('/api/deny-request-to-join', 'denyRequestToJoin')->name('requestToJoin.deny');
 });
 
 // Comment

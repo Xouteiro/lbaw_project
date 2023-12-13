@@ -212,11 +212,13 @@ main>header span {
 }
 
 #content .container>form .error {
+    display: block;
     font-weight: bold;
     color: #ff3333;
 }
 
 #content .container>form .success {
+    display: block;
     font-weight: bold;
     color: #30a33a;
 }
@@ -513,6 +515,11 @@ input.search-event {
     margin: 2em 0;
 }
 
+.pending_request_to_join {
+    display: flex;
+    flex-direction: row;
+}
+
 .comment-list {
     list-style: none;
     margin: 0;
@@ -657,10 +664,12 @@ form#searchForm {
 
 .event-container .error {
     display: block;
+    color: #ff3333;
 }
 
 .event-container .success {
     display: block;
+    color: #30a33a;
 }
 
 .event-container .comment {
