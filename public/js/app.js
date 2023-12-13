@@ -470,28 +470,26 @@ function requestToJoin(){
 
                 const acceptRequestToJoin = decisionBox.querySelector(".accept_request_to_join");
                 acceptRequestToJoin.addEventListener("click", () => {
-                    sendAjaxRequest('POST', `/api/accept-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {
-                        const requestsToJoinDiv = requestToJoin.parentElement;
-                        requestToJoin.remove();
-                        if(!requestsToJoinDiv.childElementCount){
-                            const noRequestsToJoin = document.createElement("h4");
-                            noRequestsToJoin.textContent = "No Requests To Join";
-                            requestsToJoinDiv.appendChild(noRequestsToJoin);
-                        }
-                    });
+                    const requestsToJoinDiv = requestToJoin.parentElement;
+                    requestToJoin.remove();
+                    if(!requestsToJoinDiv.childElementCount){
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No Requests To Join";
+                        requestsToJoinDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/api/accept-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {});
                 });
 
                 const declineRequestToJoin = decisionBox.querySelector(".decline_request_to_join");
                 declineRequestToJoin.addEventListener("click", () => {
-                    sendAjaxRequest('POST', `/api/deny-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {
-                        const requestsToJoinDiv = requestToJoin.parentElement;
-                        requestToJoin.remove();
-                        if(!requestsToJoinDiv.childElementCount){
-                            const noRequestsToJoin = document.createElement("h4");
-                            noRequestsToJoin.textContent = "No Requests To Join";
-                            requestsToJoinDiv.appendChild(noRequestsToJoin);
-                        }
-                    });
+                    const requestsToJoinDiv = requestToJoin.parentElement;
+                    requestToJoin.remove();
+                    if(!requestsToJoinDiv.childElementCount){
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No Requests To Join";
+                        requestsToJoinDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/api/deny-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {});
                 });
             }
 
