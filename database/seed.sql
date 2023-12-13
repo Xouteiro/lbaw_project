@@ -56,7 +56,9 @@ CREATE TABLE comment (
     text TEXT NOT NULL,
     date TIMESTAMP CHECK (date > current_date),
     id_event INTEGER REFERENCES event(id),
-    id_user INTEGER REFERENCES users(id)
+    id_user INTEGER REFERENCES users(id),
+    likes INTEGER NOT NULL DEFAULT 0,
+    dislikes INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE poll (

@@ -678,6 +678,31 @@ form#searchForm {
 
 .event-container .comment {
     display: flex;
+    flex-direction: column;
+}
+
+.event-container .comment .comment-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.event-container .comment .comment-header .comment-header-title-likes{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 20%;
+}
+
+.event-container .comment .comment-header .comment-like {
+    height: 30px;
+    width: 30px;
+}
+
+.event-container .comment .comment-header .comment-dislike {
+    height: 30px;
+    width: 30px;
+    transform: rotate(180deg);
 }
 
 .event-container .comment> :not(:first-child) {
