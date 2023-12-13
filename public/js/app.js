@@ -97,7 +97,7 @@ function openOptions() {
     let topElement;
     if (options) {
         options.forEach((option) => {
-            option.addEventListener("click", (e) => {
+            option.addEventListener("click", () => {
                 const alreadyOpen = document.querySelector(".event-manage-div");
                 if (!alreadyOpen) {
                     const id_event = option.parentElement.id.split("-")[1];
@@ -441,6 +441,62 @@ function editComment() {
     });
 }
 
+function closeDecisionBox() {
+    document.addEventListener("click", (e) => {
+        const decisionBoxes = document.querySelectorAll(".decision_box");
+        decisionBoxes.forEach((decisionBox) => {
+            if (e.target.parentElement == decisionBox.parentElement || e.target.classList.contains("decision_box")) {
+                return;
+            }
+            decisionBox.remove();
+        });
+    });
+}
+
+function requestToJoin(){
+    const requestsToJoin = document.querySelectorAll(".pending_request_to_join");
+    requestsToJoin.forEach((requestToJoin) => {
+        requestToJoin.addEventListener("click", () => {
+            const requestToJoinId = requestToJoin.id;
+            const decisionBox = requestToJoin.querySelector(".decision_box");
+            if(!decisionBox){
+                const decisionBox = document.createElement("div");
+                decisionBox.classList.add("decision_box");
+                decisionBox.innerHTML = `
+                    <button type="button" class="accept_request_to_join">&check;</button>
+                    <button type="button" class="decline_request_to_join">&#10060;</button>
+                `;
+                requestToJoin.appendChild(decisionBox);
+
+                const acceptRequestToJoin = decisionBox.querySelector(".accept_request_to_join");
+                acceptRequestToJoin.addEventListener("click", () => {
+                    const requestsToJoinDiv = requestToJoin.parentElement;
+                    requestToJoin.remove();
+                    if(!requestsToJoinDiv.childElementCount){
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No Requests To Join";
+                        requestsToJoinDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/api/accept-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {});
+                });
+
+                const declineRequestToJoin = decisionBox.querySelector(".decline_request_to_join");
+                declineRequestToJoin.addEventListener("click", () => {
+                    const requestsToJoinDiv = requestToJoin.parentElement;
+                    requestToJoin.remove();
+                    if(!requestsToJoinDiv.childElementCount){
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No Requests To Join";
+                        requestsToJoinDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/api/deny-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {});
+                });
+            }
+
+        });
+    });
+    closeDecisionBox();
+}
 
 addEventListeners();
 openOptions();
@@ -451,3 +507,4 @@ deleteAccount();
 deleteEvent();
 deleteComment();
 editComment();
+requestToJoin();

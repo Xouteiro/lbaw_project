@@ -91,6 +91,11 @@ class EventController extends Controller
             return view('pages.events.show', ['event' => $event, 'invite' => $invite]);
         }
 
+        if($request->id_requestToJoin) {
+            $requestToJoin = Notification::findOrFail($request->id_requestToJoin);
+            return view('pages.events.show', ['event' => $event, 'requestToJoin' => $requestToJoin]);
+        }
+
         if (!Auth::check() && $event->public == false) { //por mensagem de erro dizer que é preciso estar logado para ver o evento
             return redirect()->route('login');
         }

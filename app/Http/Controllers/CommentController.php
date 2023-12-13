@@ -34,7 +34,7 @@ class CommentController extends Controller
 
         // $this->authorize('store');
 
-        return redirect(url()->previous() . '#' . $comment->id)->with('success', 'You have successfully created a comment!');
+        return redirect(url()->previous() . '#' . $comment->id);
     }
 
     public function update(Request $request, $id)
