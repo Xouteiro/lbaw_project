@@ -898,3 +898,74 @@ form#searchForm div.input_field input#date, form#searchForm div.input_field sele
     font-size: 2.8rem;
   }
 }
+
+.about-page{
+  margin: 0;
+  max-width: 100%; 
+}
+
+.about-page .background-image .overlay-text h4{
+  top: 100%;
+}
+
+.about-page .main{
+  margin-top: 5rem;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.about-page .call-to-action,.contact-us{
+  margin:auto;
+  max-width: 75%;
+  text-align: center;
+}
+
+.about-card {
+  position: relative;
+  background-color: #fff;
+  border-radius: 5%;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  width: 21em;
+  scale: 0.95;
+  transition: scale 0.9s;
+}
+
+
+.about-page a{
+  color: blue;
+}
+
+.mainFeatures-page {
+  margin: 0;
+  max-width: 100%;
+}
+
+.mainFeatures-page .background-image .overlay-text h4 {
+  top: 100%;
+}
+
+.mainFeatures-page .main {
+  display: flex;
+  justify-content: space-evenly;
+  width: 90%;
+  margin:auto;
+  margin-top: 5rem;
+}
+
+.mainFeatures-page .main .feature{
+  width: 20%;
+  text-align: center;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 5%;
+}
+
+.mainFeatures-page .main .feature h3{
+  font-size: 3rem;
+}
+
+.mainFeatures-page .main .feature p{
+  font-size: 2.1rem;
+}
