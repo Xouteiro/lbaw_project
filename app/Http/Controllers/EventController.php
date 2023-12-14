@@ -251,4 +251,16 @@ class EventController extends Controller
         return redirect()->route('event.show', ['id' => $event->id])
             ->withSuccess('You have successfully joined the event!');
     }
+
+    public function leaveEvent(string $id)
+    {
+        $user = User::find(Auth::user()->id);
+        $event = Event::findOrFail($id);
+
+        //$this->authorize('leaveEvent', $event);
+
+        $event->participants()->detach($user->id);
+        return redirect()->route('event.show', ['id' => $event->id])
+            ->withSuccess('You have successfully leaved the event!');
+    }
 }
