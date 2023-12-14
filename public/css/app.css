@@ -969,3 +969,17 @@ form#searchForm div.input_field input#date, form#searchForm div.input_field sele
 .mainFeatures-page .main .feature p{
   font-size: 2.1rem;
 }
+
+footer{
+  display: flex;
+}
+
+footer a{
+  color: white;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+footer a:hover{
+  color: #0056b3;
+}
