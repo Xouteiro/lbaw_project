@@ -1,4 +1,5 @@
 <div class="participant-card" id="{{$participant->id}}">
+    <img class="user" src="{{ $participant->getProfileImage() }}">
     <div>
         <h2><a href="{{ route('user.show', ['id' => $participant->id]) }}">{{ $participant->name }}</a></h2>
         <h3><a href="{{ route('user.show', ['id' => $participant->id]) }}">{{ $participant->username }}</a></h3>

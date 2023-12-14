@@ -39,6 +39,13 @@ header img.user {
     border-radius: 25%;
 }
 
+img.user {
+    max-height: 5.5em;
+    margin-right: 1em;
+    margin-left: 1em;
+    border-radius: 25%;
+}
+
 
 
 section#content {
@@ -558,6 +565,7 @@ input.search-event {
     width: 100%;
     display: flex;
     flex-direction: row;
+    padding-top: 25px;
 }
 
 .participant-card p{
