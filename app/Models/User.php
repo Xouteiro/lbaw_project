@@ -75,6 +75,11 @@ class User extends Authenticatable
         return $this->hasMany(RequestToJoin::class, 'id_user');
     }
 
+    public function likesDislikes()
+    {
+        return $this->hasMany(LikesDislikes::class, 'id_user');
+    }
+
     public function getProfileImage() {
         return FileController::get('profile', $this->id);
     }

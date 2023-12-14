@@ -65,4 +65,22 @@ class CommentController extends Controller
         $comment->delete();
         return response()->json(['message' => 'You have successfully deleted the comment!'], 200);
     }
+
+    public function likeComment(Request $request)
+    {
+        $comment = Comment::find($request->id_comment);
+
+        $comment->likes++;
+        $comment->save();
+        return response()->json(['message' => 'You have successfully liked the comment!'], 200);
+    }
+
+    public function dislikeComment(Request $request)
+    {
+        $comment = Comment::find($request->id_comment);
+
+        $comment->dislikes++;
+        $comment->save();
+        return response()->json(['message' => 'You have successfully disliked the comment!'], 200);
+    }
 }

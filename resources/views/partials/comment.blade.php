@@ -8,8 +8,10 @@
                     Anonymous
                 @endif
                 <div class="likes-dislikes">
-                    <img class="comment-like" src="{{ url('icons/like.png') }}" alt="like">
-                    <img class="comment-dislike" src="{{ url('icons/like.png') }}" alt="dislike">
+                    <p class="comment-likes">{{ $comment->likes }}</p>
+                    <img id="{{ Auth::user()->id }}" class="comment-like" src="{{ url('icons/like.png') }}" alt="like">
+                    <p class="comment-dislikes">{{ $comment->dislikes }}</p>
+                    <img id="{{ Auth::user()->id }}" class="comment-dislike" src="{{ url('icons/like.png') }}" alt="dislike">
                 </div>
             </div>
             @if (Auth::check() && (Auth::user()->id === $comment->id_user || Auth::user()->admin))

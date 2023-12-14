@@ -498,6 +498,48 @@ function requestToJoin(){
     closeDecisionBox();
 }
 
+function likeComment(){
+    const likes = document.querySelectorAll(".comment-like");
+    likes.forEach((like) => {
+        like.addEventListener("click", () => {
+            const commentId = like.parentElement.parentElement.parentElement.parentElement.id;
+            const userId = like.id;
+            const dislike = like.parentElement.querySelector(".comment-dislike");
+            if(like.classList.contains("comment-like-active")){
+                like.classList.remove("comment-like-active");
+                dislike.classList.remove("comment-dislike-active");
+                //sendAjaxRequest('POST', `/api/comment/${commentId}/like`, {action: 'remove', id_comment: commentId, id_user: userId}, function () {});
+            }
+            else {
+                like.classList.add("comment-like-active");
+                dislike.classList.remove("comment-dislike-active");
+                //sendAjaxRequest('POST', `/api/comment/${commentId}/like`, {action: 'add', id_comment: commentId, id_user: userId}, function () {});
+            }
+        });
+    });
+}
+
+function dislikeComment(){
+    const dislikes = document.querySelectorAll(".comment-dislike");
+    dislikes.forEach((dislike) => {
+        dislike.addEventListener("click", () => {
+            const commentId = dislike.parentElement.parentElement.parentElement.parentElement.id;
+            const userId = dislike.id;
+            const like = dislike.parentElement.querySelector(".comment-like");
+            if(dislike.classList.contains("comment-dislike-active")){
+                dislike.classList.remove("comment-dislike-active");
+                like.classList.remove("comment-like-active");
+                //sendAjaxRequest('POST', `/api/comment/${commentId}/dislike`, {action: 'remove', id_comment: commentId, id_user: userId}, function () {});
+            }
+            else {
+                dislike.classList.add("comment-dislike-active");
+                like.classList.remove("comment-like-active");
+                //sendAjaxRequest('POST', `/api/comment/${commentId}/dislike`, {action: 'add', id_comment: commentId, id_user: userId}, function () {});
+            }
+        });
+    });
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -508,3 +550,5 @@ deleteEvent();
 deleteComment();
 editComment();
 requestToJoin();
+likeComment();
+dislikeComment();

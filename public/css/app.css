@@ -691,7 +691,15 @@ form#searchForm {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 20%;
+    width: 35%;
+}
+
+.event-container .comment .comment-header .likes-dislikes {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 30%;
+    margin: 0em 2em;
 }
 
 .event-container .comment .comment-header .comment-like {
@@ -705,10 +713,17 @@ form#searchForm {
     transform: rotate(180deg);
 }
 
+.comment-like-active {
+    color: #0056b3;
+}
+
+.comment-dislike-active {
+    color: #0056b3;
+}
+
 .event-container .comment> :not(:first-child) {
     margin-left: 1.5rem;
 }
-
 
 .background-image {
     position: relative;

@@ -14,6 +14,8 @@ DROP TABLE IF EXISTS comment CASCADE;
 DROP TABLE IF EXISTS location CASCADE;
 DROP TABLE IF EXISTS event CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS password_recovers CASCADE;
+DROP TABLE IF EXISTS likes_dislikes CASCADE;
 
 
 CREATE TABLE users (
@@ -123,6 +125,15 @@ CREATE TABLE password_recovers
     email VARCHAR(255) NOT NULL UNIQUE,
     date TIMESTAMP,
     PRIMARY KEY (token)
+);
+
+CREATE TABLE likes_dislikes (
+    id SERIAL PRIMARY KEY,
+    id_comment INT NOT NULL,
+    id_user INT NOT NULL,
+    liked BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (id_comment) REFERENCES comment(id),
+    FOREIGN KEY (id_user) REFERENCES users(id)
 );
 
 --Indexes
