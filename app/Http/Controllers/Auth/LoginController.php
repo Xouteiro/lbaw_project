@@ -124,7 +124,9 @@ class LoginController extends Controller
             ->where('token', $request->token)->first();
 
         if (!$passwordRecover) {
-            return back()->with('error', "Invalid token");
+            return back()->withErrors([
+                'error' => 'Invalid token',
+            ])->onlyInput('error');
         }
 
         $user = User::where('email', $passwordRecover->email)->first();

@@ -70,7 +70,13 @@ class CommentController extends Controller
     {
         $comment = Comment::find($request->id_comment);
 
-        $comment->likes++;
+        if($request->action == 'like'){
+            $comment->likes++;
+        }
+        else{
+            $comment->dislikes++;
+        }
+        
         $comment->save();
         return response()->json(['message' => 'You have successfully liked the comment!'], 200);
     }

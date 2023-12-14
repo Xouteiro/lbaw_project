@@ -8,9 +8,9 @@
                     Anonymous
                 @endif
                 <div class="likes-dislikes">
-                    <p class="comment-likes">{{ $comment->likes }}</p>
+                    <p class="comment-like-number">{{ $comment->likes }}</p>
                     <img id="{{ Auth::user()->id }}" class="comment-like" src="{{ url('icons/like.png') }}" alt="like">
-                    <p class="comment-dislikes">{{ $comment->dislikes }}</p>
+                    <p class="comment-dislike-number">{{ $comment->dislikes }}</p>
                     <img id="{{ Auth::user()->id }}" class="comment-dislike" src="{{ url('icons/like.png') }}" alt="dislike">
                 </div>
             </div>

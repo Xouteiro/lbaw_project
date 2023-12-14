@@ -713,14 +713,6 @@ form#searchForm {
     transform: rotate(180deg);
 }
 
-.comment-like-active {
-    color: #0056b3;
-}
-
-.comment-dislike-active {
-    color: #0056b3;
-}
-
 .event-container .comment> :not(:first-child) {
     margin-left: 1.5rem;
 }
