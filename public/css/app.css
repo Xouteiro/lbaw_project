@@ -705,11 +705,13 @@ form#searchForm {
 .event-container .comment .comment-header .comment-like {
     height: 30px;
     width: 30px;
+    max-width: 100%;
 }
 
 .event-container .comment .comment-header .comment-dislike {
     height: 30px;
     width: 30px;
+    max-width: 100%;
     transform: rotate(180deg);
 }
 

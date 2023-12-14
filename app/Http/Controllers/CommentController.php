@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comment;
+use App\Models\LikesDislikes;
 
 class CommentController extends Controller
 {
@@ -69,14 +70,26 @@ class CommentController extends Controller
     public function likeComment(Request $request)
     {
         $comment = Comment::find($request->id_comment);
-
-        if($request->action == 'like'){
-            $comment->likes++;
-        }
-        else{
-            $comment->dislikes++;
-        }
+        $likesDislikes = LikesDislikes::where('id_comment', $request->id_comment)->where('id_user', $request->id_user)->first();
         
+        if($request->action == 'add'){
+            $comment->likes++;
+            if($likesDislikes == null){
+                $likesDislikes = new LikesDislikes();
+                $likesDislikes->id_comment = $request->id_comment;
+                $likesDislikes->id_user = $request->id_user;
+            }
+            else if($likesDislikes->liked == 0){
+                $comment->dislikes--;
+            }
+            $likesDislikes->liked = 1;
+            $likesDislikes->save();
+        }
+        else {
+            $comment->likes--;
+            $likesDislikes->delete();
+        }
+
         $comment->save();
         return response()->json(['message' => 'You have successfully liked the comment!'], 200);
     }
@@ -84,8 +97,26 @@ class CommentController extends Controller
     public function dislikeComment(Request $request)
     {
         $comment = Comment::find($request->id_comment);
+        $likesDislikes = LikesDislikes::where('id_comment', $request->id_comment)->where('id_user', $request->id_user)->first();
 
-        $comment->dislikes++;
+        if($request->action == 'add'){
+            $comment->dislikes++;
+            if($likesDislikes == null){
+                $likesDislikes = new LikesDislikes();
+                $likesDislikes->id_comment = $request->id_comment;
+                $likesDislikes->id_user = $request->id_user;
+            }
+            else if($likesDislikes->liked == 1){
+                $comment->likes--;
+            }
+            $likesDislikes->liked = 0;
+            $likesDislikes->save();
+        }
+        else {
+            $comment->dislikes--;
+            $likesDislikes->delete();
+        }
+
         $comment->save();
         return response()->json(['message' => 'You have successfully disliked the comment!'], 200);
     }
