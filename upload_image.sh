@@ -13,3 +13,4 @@ php artisan optimize
 
 docker buildx build --push --platform linux/amd64 -t $IMAGE_NAME .
 docker push $IMAGE_NAME
+
