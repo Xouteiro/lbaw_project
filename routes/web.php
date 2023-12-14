@@ -94,6 +94,8 @@ Route::controller(CommentController::class)->group(function(){
     Route::post('/comment', 'store')->name('comment.store');
     Route::put('/comment/{id}/update', 'update')->name('comment.update');
     Route::delete('/comment/{id}/delete', 'delete')->name('comment.delete');
+    Route::post('/api/comment/like', 'likeComment')->name('comment.like');
+    Route::post('/api/comment/dislike', 'dislikeComment')->name('comment.dislike');
 });
 
 // File

@@ -3,7 +3,6 @@ create schema if not exists lbaw2354;
 SET search_path TO lbaw2354;
 
 DROP TABLE IF EXISTS joined CASCADE;
-DROP TABLE IF EXISTS events_tags CASCADE;
 DROP TABLE IF EXISTS user_option CASCADE;
 DROP TABLE IF EXISTS request_to_join CASCADE;
 DROP TABLE IF EXISTS event_update CASCADE;
@@ -12,10 +11,11 @@ DROP TABLE IF EXISTS event_notification CASCADE;
 DROP TABLE IF EXISTS option CASCADE;
 DROP TABLE IF EXISTS poll CASCADE;
 DROP TABLE IF EXISTS comment CASCADE;
-DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS location CASCADE;
 DROP TABLE IF EXISTS event CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS password_recovers CASCADE;
+DROP TABLE IF EXISTS likes_dislikes CASCADE;
 
 
 CREATE TABLE users (
@@ -53,17 +53,14 @@ CREATE TABLE event (
     hide_owner BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE tags (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
-);
-
 CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
     date TIMESTAMP CHECK (date > current_date),
     id_event INTEGER REFERENCES event(id),
-    id_user INTEGER REFERENCES users(id)
+    id_user INTEGER REFERENCES users(id),
+    likes INTEGER NOT NULL DEFAULT 0,
+    dislikes INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE poll (
@@ -116,12 +113,6 @@ CREATE TABLE joined (
     PRIMARY KEY (id_event, id_user)
 );
 
-CREATE TABLE events_tags (
-    id_tag INTEGER REFERENCES tags(id),
-    id_event INTEGER REFERENCES event(id),
-    PRIMARY KEY (id_tag, id_event)
-);
-
 CREATE TABLE user_option (
     id_user INTEGER REFERENCES users(id),
     id_option INTEGER REFERENCES option(id),
@@ -134,6 +125,15 @@ CREATE TABLE password_recovers
     email VARCHAR(255) NOT NULL UNIQUE,
     date TIMESTAMP,
     PRIMARY KEY (token)
+);
+
+CREATE TABLE likes_dislikes (
+    id SERIAL PRIMARY KEY,
+    id_comment INT NOT NULL,
+    id_user INT NOT NULL,
+    liked BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (id_comment) REFERENCES comment(id),
+    FOREIGN KEY (id_user) REFERENCES users(id)
 );
 
 --Indexes
@@ -235,7 +235,6 @@ EXECUTE FUNCTION delete_user_trigger();
 CREATE OR REPLACE FUNCTION delete_event_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
-    DELETE FROM events_tags WHERE id_event = OLD.id;
     DELETE FROM comment WHERE id_event = OLD.id;
     DELETE FROM joined WHERE id_event = OLD.id;
 
@@ -488,141 +487,6 @@ VALUES
 ('Local Beer Tasting', '2024-11-21 17:30:00', 'Sip and savor a selection of local craft beers.', '2024-12-04 17:30:00', 8.00, true, true, 150, 50, 50);
 
 
-INSERT INTO tags (name) VALUES
-('Music'),
-('Art'),
-('Technology'),
-('Fitness'),
-('Fashion'),
-('Travel'),
-('Science'),
-('Food'),
-('Literature'),
-('Adventure'),
-('Yoga'),
-('Wellness'),
-('Coding'),
-('Startup'),
-('Photography'),
-('Nature'),
-('Movies'),
-('Digital Marketing'),
-('AI'),
-('Culinary'),
-('Blogging'),
-('Social Media'),
-('Health'),
-('Environmentalism'),
-('Museum'),
-('Astronomy'),
-('Design'),
-('Sports'),
-('Education'),
-('Entertainment'),
-('Events'),
-('Networking'),
-('Gaming'),
-('Crafts'),
-('Theater'),
-('History'),
-('Reading'),
-('Writing'),
-('Comedy'),
-('Politics'),
-('Technology Trends'),
-('DIY'),
-('Music Festivals'),
-('Fashion Shows'),
-('Tech Conferences'),
-('Food Festivals'),
-('Art Exhibitions'),
-('Literary Events'),
-('Fitness Challenges'),
-('Nature Walks'),
-('Adventure Tours'),
-('Startup Meetups'),
-('Film Festivals'),
-('Science Fairs'),
-('Culinary Workshops'),
-('Yoga Retreats'),
-('Wellness Retreats'),
-('Coding Bootcamps'),
-('Photography Workshops'),
-('Book Clubs'),
-('Social Media Seminars'),
-('Health Conferences'),
-('Environmental Cleanup'),
-('Museum Tours'),
-('Astronomy Observations'),
-('Design Workshops'),
-('Sports Competitions'),
-('Educational Seminars'),
-('Entertainment Shows'),
-('Networking Events'),
-('Gaming Tournaments'),
-('Crafting Workshops'),
-('Theater Performances'),
-('Historical Tours'),
-('Reading Circles'),
-('Writing Workshops'),
-('Comedy Nights'),
-('Political Debates'),
-('Tech Talks'),
-('DIY Workshops');
-
-
-INSERT INTO events_tags (id_event, id_tag) VALUES (1, 3),
-(2, 2),
-(3, 8),
-(4, 7),
-(5, 1),
-(6, 2),
-(7, 4),
-(8, 8),
-(9, 7),
-(10, 5),
-(11, 11),
-(12, 2),
-(13, 9),
-(14, 6),
-(15, 15),
-(16, 3),
-(17, 2),
-(18, 9),
-(19, 1),
-(20, 7),
-(21, 15),
-(22, 1),
-(23, 6),
-(24, 4),
-(25, 9),
-(26, 7),
-(27, 16),
-(28, 17),
-(29, 5),
-(30, 8),
-(31, 7),
-(32, 20),
-(33, 8),
-(34, 17),
-(35, 9),
-(36, 1),
-(37, 15),
-(38, 2),
-(39, 4),
-(40, 2),
-(41, 15),
-(42, 9),
-(43, 2),
-(44, 15),
-(45, 9),
-(46, 3),
-(47, 9),
-(48, 2),
-(49, 1),
-(50, 8);
-
-
 INSERT INTO comment (text, date, id_event, id_user) VALUES
   ('Great event!', '2024-11-15', 1, 1),
   ('I enjoyed every moment!', '2024-11-16', 2, 2),
@@ -860,20 +724,6 @@ INSERT INTO joined (id_event, id_user, date, ticket) VALUES
   (20, 21, '2024-01-17', NULL),
   (20, 22, '2024-01-18', NULL),
   (20, 23, '2024-01-19', NULL);
-/*
-INSERT INTO invite (id_eventnotification, id_user)
-VALUES
-  (1, 1),
-  (2, 2),
-  (3, 3),
-  (4, 4),
-  (5, 5),
-  (6, 6),
-  (7, 7),
-  (8, 8),
-  (9, 9),
-  (10, 10);
-  */
 
 INSERT INTO user_option (id_user, id_option) VALUES
   (1, 1),

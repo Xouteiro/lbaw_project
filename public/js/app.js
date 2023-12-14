@@ -498,6 +498,70 @@ function requestToJoin(){
     closeDecisionBox();
 }
 
+function likeComment(){
+    const likes = document.querySelectorAll(".comment-like");
+    likes.forEach((like) => {
+        like.addEventListener("click", () => {
+            const commentId = like.parentElement.parentElement.parentElement.parentElement.id;
+            const userId = like.id;
+            const dislike = like.parentElement.querySelector(".comment-dislike");
+            const likesNumber = like.parentElement.querySelector(".comment-like-number");
+            const dislikesNumber = dislike.parentElement.querySelector(".comment-dislike-number");
+            if(like.classList.contains("comment-like-active")){
+                like.src = "/icons/like.png";
+                dislike.src = "/icons/like.png";
+                likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) - 1 : null;
+                like.classList.remove("comment-like-active");
+                dislike.classList.remove("comment-dislike-active");
+                sendAjaxRequest('POST', '/api/comment/like', {action: 'remove', id_comment: commentId, id_user: userId}, function () {});
+            }
+            else {
+                like.src = "/icons/blue_like.png";
+                dislike.src = "/icons/like.png";
+                likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) + 1 : null;
+                if(dislike.classList.contains("comment-dislike-active")){
+                    dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) - 1 : null;
+                }
+                like.classList.add("comment-like-active");
+                dislike.classList.remove("comment-dislike-active");
+                sendAjaxRequest('POST', '/api/comment/like', {action: 'add', id_comment: commentId, id_user: userId}, function () {});
+            }
+        });
+    });
+}
+
+function dislikeComment(){
+    const dislikes = document.querySelectorAll(".comment-dislike");
+    dislikes.forEach((dislike) => {
+        dislike.addEventListener("click", () => {
+            const commentId = dislike.parentElement.parentElement.parentElement.parentElement.id;
+            const userId = dislike.id;
+            const like = dislike.parentElement.querySelector(".comment-like");
+            const dislikesNumber = dislike.parentElement.querySelector(".comment-dislike-number");
+            const likesNumber = like.parentElement.querySelector(".comment-like-number");
+            if(dislike.classList.contains("comment-dislike-active")){
+                dislike.src = "/icons/like.png";
+                like.src = "/icons/like.png";
+                dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) - 1 : null;
+                dislike.classList.remove("comment-dislike-active");
+                like.classList.remove("comment-like-active");
+                sendAjaxRequest('POST', `/api/comment/dislike`, {action: 'remove', id_comment: commentId, id_user: userId}, function () {});
+            }
+            else {
+                dislike.src = "/icons/blue_like.png";
+                like.src = "/icons/like.png";
+                dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) + 1 : null;
+                if(like.classList.contains("comment-like-active")){
+                    likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) - 1 : null;
+                }
+                dislike.classList.add("comment-dislike-active");
+                like.classList.remove("comment-like-active");
+                sendAjaxRequest('POST', `/api/comment/dislike`, {action: 'add', id_comment: commentId, id_user: userId}, function () {});
+            }
+        });
+    });
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -508,3 +572,5 @@ deleteEvent();
 deleteComment();
 editComment();
 requestToJoin();
+likeComment();
+dislikeComment();

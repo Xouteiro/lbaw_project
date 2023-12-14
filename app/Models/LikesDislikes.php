@@ -5,17 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class File extends Model
+class LikesDislikes extends Model
 {
     use HasFactory;
 
-    // Don't add create and update timestamps in database.
     public $timestamps = false;
-    protected $table = 'file';
+    protected $table = 'likes_dislikes';
+    protected $fillable = [
+        'liked'
+    ];
 
-    public function event()
+    public function comment()
     {
-        return $this->belongsTo(Event::class, 'id_event');
+        return $this->belongsTo(Comment::class, 'id_comment');
     }
 
     public function user()

@@ -60,11 +60,6 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class, 'id_user');
     }
 
-    public function files()
-    {
-        return $this->hasMany(File::class, 'id_user');
-    }
-
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'id_user');
@@ -78,6 +73,11 @@ class User extends Authenticatable
     public function joinRequests()
     {
         return $this->hasMany(RequestToJoin::class, 'id_user');
+    }
+
+    public function likesDislikes()
+    {
+        return $this->hasMany(LikesDislikes::class, 'id_user');
     }
 
     public function getProfileImage() {

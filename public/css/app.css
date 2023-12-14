@@ -691,12 +691,46 @@ form#searchForm {
 
 .event-container .comment {
     display: flex;
+    flex-direction: column;
+}
+
+.event-container .comment .comment-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.event-container .comment .comment-header .comment-header-title-likes{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 35%;
+}
+
+.event-container .comment .comment-header .likes-dislikes {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 30%;
+    margin: 0em 2em;
+}
+
+.event-container .comment .comment-header .comment-like {
+    height: 30px;
+    width: 30px;
+    max-width: 100%;
+}
+
+.event-container .comment .comment-header .comment-dislike {
+    height: 30px;
+    width: 30px;
+    max-width: 100%;
+    transform: rotate(180deg);
 }
 
 .event-container .comment> :not(:first-child) {
     margin-left: 1.5rem;
 }
-
 
 .background-image {
     position: relative;

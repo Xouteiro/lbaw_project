@@ -25,4 +25,9 @@ class Comment extends Model
     {
         return $this->belongsTo(Event::class, 'id_event');
     }
+
+    public function likesDislikes()
+    {
+        return $this->hasMany(LikesDislikes::class, 'id_comment');
+    }
 }
