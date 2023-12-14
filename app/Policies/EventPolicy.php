@@ -72,4 +72,8 @@ class EventPolicy
         }
         return false;
     }
+
+    public function leave(User $user, Event $event) : bool {
+        return $user->events->contains($event);
+    }
 }

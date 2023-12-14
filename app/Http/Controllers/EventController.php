@@ -257,7 +257,7 @@ class EventController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
-        //$this->authorize('leaveEvent', $event);
+        $this->authorize('leave', $event);
 
         $event->participants()->detach($user->id);
         return redirect()->route('event.show', ['id' => $event->id])
