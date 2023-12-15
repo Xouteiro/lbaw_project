@@ -5,6 +5,7 @@
         <h1>{{$event->name}} Participants</h1>
         <div class="participants">
             <div class="participant-card" id="owner">
+                <img class='user' src="{{ $event->owner->getProfileImage() }}">
                 <div class="participant-info">
                 <h2><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->name }} - Owner</a></h2>
                 <h3><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->username }}</a></h3>
