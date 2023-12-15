@@ -41,13 +41,13 @@
             <p>Description: {{ $event->description }}</p>
             <p>Event date: {{ $event->eventdate }}</p>
             @if ($event->capacity == 0)
-                @if(Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner)
+                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                 <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
                 @endif 
             @else
-                @if(Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner)
+                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                 <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
@@ -135,6 +135,7 @@
                 </form>
             </div>
         @endif
+        @if(Auth::check())
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)
@@ -145,6 +146,7 @@
                 </ul>
             @endif
         </div>
+        @endif
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div>
                 <form class="general" action="{{ route('comment.store') }}" method="POST">
@@ -160,6 +162,18 @@
                     <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
                     <button type="submit">Comment</button>
                 </form>
+            </div>
+        @endif
+        @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
+            <div class="polls">
+                <h3>Polls</h3>
+                @if($event->polls->count() == 0)
+                    <p>No polls yet</p>
+                @else
+                    <ul class="poll-list">
+                        @each('partials.poll', $event->polls, 'poll')
+                    </ul>
+                @endif
             </div>
         @endif
     </div>
