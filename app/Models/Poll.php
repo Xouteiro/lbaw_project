@@ -16,7 +16,17 @@ class Poll extends Model
         'title',
         'id_event',
         'id_user',
+        'creationdate',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($poll) {
+            $poll->creationdate = now();
+        });
+    }
 
     public function event()
     {

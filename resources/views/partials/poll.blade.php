@@ -1,15 +1,13 @@
-<li>
+<li class="poll">
     <h3>{{ $poll->title }}</h3>
-    <ul>
+    <ul class='poll-options'>
         @foreach ($poll->options as $option)
-            <li>
+            <li class='poll-option'>
                 <label>
                     <input type="radio" name="poll_option" value="{{ $option->id }}">
-                    {{ $option->name }} -
-                    {{ $option->voters->count() }}
+                    <p> {{ $option->name }} - {{ $option->voters->count() }} </p>
                 </label>
             </li>
         @endforeach
     </ul>
-    <button type="submit">Vote</button>
 </li>

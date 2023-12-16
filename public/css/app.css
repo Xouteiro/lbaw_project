@@ -936,6 +936,11 @@ form#searchForm div.input_field select {
     padding-left: 10px;
 }
 
+li.poll-option label{
+    display: flex;
+    flex-direction: row;
+}
+
 @media (max-width: 1050px) {
     .search-container {
         flex-direction: column;

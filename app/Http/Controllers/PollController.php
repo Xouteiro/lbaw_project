@@ -26,12 +26,13 @@ class PollController extends Controller
             'id_user' => Auth::user()->id,
         ]);
 
+        $poll=Poll::where('title', $request->input('title'))->where('id_event', $request->input('eventId'))->first()->id;
         foreach ($options as $option) {
             //need vaalidation
             //nao permitir criar opções com o mesmo nome no mesmo poll
             //nao permitir criar mais que x polls
             Option::create([
-                'id_poll' => Poll::where('id_event', $request->input('eventId'))->first()->id,
+                'id_poll' => $poll,
                 'name' => $option,
             ]);
         }

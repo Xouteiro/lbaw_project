@@ -347,7 +347,7 @@ function deleteEvent() {
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
                     sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {
-                        window.location.href = "/events";
+                       
                     });
                 });
             }
@@ -588,6 +588,7 @@ function createPoll() {
             const addOptionButton = createPollOptions.querySelector(".add-option-button");
                 addOptionButton.addEventListener("click", () => {
                     if(optionNumber < 10){
+                        optionNumber++;
                         const fullOption = document.createElement("div");
                         fullOption.classList.add("full-option");
                         fullOption.style.display = "flex";
@@ -595,7 +596,7 @@ function createPoll() {
                         fullOption.style.flexDirection = "row";
                         const option = document.createElement("input");
                         option.type = "text";
-                        option.name = `option${++optionNumber}`;
+                        option.name = `option${optionNumber}`;
                         option.placeholder = `Option ${optionNumber}`;
                         option.required = true;
                         const removeOptionButton = document.createElement("button");
@@ -608,6 +609,7 @@ function createPoll() {
                         });
                         fullOption.appendChild(option);
                         fullOption.appendChild(removeOptionButton);
+                        createPollForm.appendChild(fullOption);
                         createPollForm.insertBefore(fullOption, createPollOptions);
                     }
                     if(optionNumber == 10){
@@ -630,6 +632,7 @@ function createPoll() {
             const createPollButton = createPollButtons.querySelector(".create-poll-button");
             createPollButton.addEventListener("click", () => {
                     const title = createPollForm.querySelector("input[name='title']").value;
+                    console.log(title);
                     if(!title){
                         createPollForm.remove();
                         createPollFake.style.display = "block";
@@ -648,30 +651,33 @@ function createPoll() {
                     }
                     createPollForm.remove();
                     createPollFake.style.display = "block";
-                    const poll = document.createElement("div");
+                    const poll = document.createElement("li");
+                    poll.style.listStyleType = "none";
                     poll.classList.add("poll");
                     poll.innerHTML = `
                         <h3>${title}</h3>
-                        <div class="poll-options">
-                        </div>
-                        <div class="poll-actions">
-                            <button type="button" class="poll-button">Vote</button>
-                            <button type="button" class="poll-button">Results</button>
-                        </div>
+                        <ul class="poll-options">
+                        </ul>
                     `;
                     createPollFake.parentElement.appendChild(poll);
                     const pollOptions = poll.querySelector(".poll-options");
                     options.forEach((option) => {
-                        const pollOption = document.createElement("div");
+                        const pollOption = document.createElement("li");
                         pollOption.classList.add("poll-option");
-                        pollOption.innerHTML = `
+                        const pollOptionLabel = document.createElement("label");
+                        pollOptionLabel.style.display = "flex";
+                        pollOptionLabel.style.flexDirection = "row";    
+                        pollOptionLabel.innerHTML = `
                             <input type="radio" name="poll-option" value="${option}">
-                            <p>${option}</p>
+                            <p>${option} - 0</p>
                         `;
+                        pollOption.appendChild(pollOptionLabel);
                         pollOptions.appendChild(pollOption);
                     }
-                    );  
+                    ); 
+                    const noPolls = document.querySelector(".no-polls"); 
                     sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () {});
+                    optionNumber = 2;
             });
         });
     }
