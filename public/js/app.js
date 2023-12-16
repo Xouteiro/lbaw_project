@@ -560,6 +560,40 @@ function dislikeComment(){
     });
 }
 
+function closeNotifications(){
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("user-notifications-container") 
+        || e.target.classList.contains("user-notifications") 
+        || e.target.classList.contains("notifications-icon")
+        || e.target.classList.contains("notification")) {
+            return;
+        }
+        const notifications = document.querySelector(".user-notifications-container");
+        if(notifications){
+            notifications.style.display = "none";
+        }
+    });
+}
+
+function openNotificaitons(){
+    const notificationsIconDiv = document.querySelector(".notifications-icon");
+    const notifications = document.querySelector(".user-notifications-container");
+    if(notificationsIconDiv && notifications){
+        notificationsIconDiv.addEventListener("click", () => {
+            if(notifications.style.display == "none"){
+                notifications.style.display = "block";
+                notifications.style.position = "absolute";
+                notifications.style.left = "1300px";
+                notifications.style.top = "120px";
+            }
+            else {
+                notifications.style.display = "none";
+            }
+        });
+    }
+    closeNotifications();
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -572,3 +606,4 @@ editComment();
 requestToJoin();
 likeComment();
 dislikeComment();
+openNotificaitons();

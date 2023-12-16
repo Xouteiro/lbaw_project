@@ -32,6 +32,35 @@ header h1 a {
     margin-left: 50px;
 }
 
+header img.notifications-icon {
+    height: 2.5em;
+    margin-right: 2em;
+    margin-left: 2em;
+}
+
+.user-notifications-container {
+    background-color: #00172b;
+    margin-right: 1em;
+    margin-left: 1em;
+    border-radius: 15px;
+}
+
+.user-notifications {
+    margin: 1em;
+}
+
+.user-notifications h2 {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: white;
+}
+
+.user-notifications h4 {
+    font-size: 1.2em;
+    font-weight: 400;
+    color: white;
+}
+
 header img.user {
     max-height: 5.5em;
     max-width: 3.5em;
@@ -175,10 +204,6 @@ main>header {
     background-color: #00172b;
 }
 
-main>header.home {
-    position: unset;
-}
-
 main>header h1 {
     margin: 0;
 }
@@ -209,6 +234,7 @@ main>header span {
     display: flex;
     flex-direction: column;
     max-width: fit-content;
+    top: 180px;
 }
 
 #content .container>form.general {
