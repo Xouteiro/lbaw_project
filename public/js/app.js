@@ -396,14 +396,11 @@ function deleteComment() {
 function editComment() {
     const editCommentButtons = document.querySelectorAll(".fake.button.edit-comment");
     editCommentButtons.forEach((editCommentButton) => {
-        editCommentButton.addEventListener("click", (e) => {
+        editCommentButton.addEventListener("click", () => {
             const commentId = editCommentButton.id;
-            const eventId = window.location.href.split("/")[4].split("#")[0];
-            console.log(eventId);
-            console.log(commentId);
             editCommentButton.parentElement.style.display = "none";
-            const mainCommentDiv = editCommentButton.parentElement.parentElement;
-            const commentText = mainCommentDiv.querySelector("p");
+            const mainCommentDiv = editCommentButton.parentElement.parentElement.parentElement;
+            const commentText = mainCommentDiv.querySelector(".comment-text");
             commentText.style.display = "none";
             const commentTextValue = commentText.textContent;
 
@@ -416,7 +413,7 @@ function editComment() {
                 <button type="button" class="cancel-edit-comment-button">Cancel</button>
                 <button type="button" class="save-edit-comment-button">Save</button>
             `;
-            mainCommentDiv.insertBefore(editCommentDiv, mainCommentDiv.querySelector(".comment-actions"));
+            mainCommentDiv.insertBefore(editCommentDiv, mainCommentDiv.querySelector(".comment-date"));
 
             const cancelEditCommentButton = editCommentDiv.querySelector(".cancel-edit-comment-button");
             cancelEditCommentButton.addEventListener("click", () => {

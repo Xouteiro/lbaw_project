@@ -42,7 +42,7 @@
                 </div>
             @endif
         </div>
-        <p>{{ $comment->text }}</p>
-        <p>{{ $comment->date }}</p>
+        <p class="comment-text">{{ $comment->text }}</p>
+        <p class="comment-date">{{ $comment->date }}</p>
     </div>
 </li>
