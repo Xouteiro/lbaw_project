@@ -284,7 +284,7 @@ function removeParticipant() {
 function deleteAccount() {
     const deleteAccountButton = document.querySelector(".fake.button.delete-account");
     if (deleteAccountButton) {
-        deleteAccountButton.addEventListener("click", (e) => {
+        deleteAccountButton.addEventListener("click", () => {
             const accountId = deleteAccountButton.id;
             const sureboxExists = deleteAccountButton.parentElement.querySelector(".surebox");
 
@@ -292,8 +292,8 @@ function deleteAccount() {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
-                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 100).toString() + "px";
-                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) - 250).toString() + "px";
+                surebox.style.left = "600px";
+                surebox.style.top = "400px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -322,15 +322,15 @@ function deleteAccount() {
 function deleteEvent() {
     const deleteEventButton = document.querySelector(".fake.button.delete-event");
     if (deleteEventButton) {
-        deleteEventButton.addEventListener("click", (e) => {
+        deleteEventButton.addEventListener("click", () => {
             const eventId = deleteEventButton.id;
             const sureboxExists = deleteEventButton.parentElement.querySelector(".surebox");
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
-                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 80).toString() + "px";
-                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) + 50).toString() + "px";
+                surebox.style.left = "880px";
+                surebox.style.top = "250px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -359,15 +359,16 @@ function deleteEvent() {
 function deleteComment() {
     const deleteCommentButtons = document.querySelectorAll(".fake.button.delete-comment");
     deleteCommentButtons.forEach((deleteCommentButton) => {
-        deleteCommentButton.addEventListener("click", (e) => {
+        deleteCommentButton.addEventListener("click", () => {
             const commentId = deleteCommentButton.id;
             const sureboxExists = deleteCommentButton.parentElement.querySelector(".surebox");
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
-                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) + 100).toString() + "px";
-                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) - 20).toString() + "px";
+                var buttonPositions = deleteCommentButton.getBoundingClientRect();
+                surebox.style.left = (buttonPositions.left + parseInt(window.scrollX)).toString() + "px";
+                surebox.style.top = (buttonPositions.top + parseInt(window.scrollY) - 100).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
