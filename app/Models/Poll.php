@@ -13,7 +13,9 @@ class Poll extends Model
     public $timestamps = false;
     protected $table = 'poll';
     protected $fillable = [
-        'title'
+        'title',
+        'id_event',
+        'id_user',
     ];
 
     public function event()

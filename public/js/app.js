@@ -562,6 +562,121 @@ function dislikeComment(){
     });
 }
 
+function createPoll() {
+    const createPollFake = document.querySelector(".fake-poll-create-button");
+    const eventId = createPollFake.id;
+    let optionNumber = 2;
+    if (createPollFake) {
+        createPollFake.addEventListener("click", () => {
+            createPollFake.style.display = "none";
+            const createPollForm = document.createElement("div");
+            createPollForm.classList.add("create-poll-form");
+            createPollForm.action = `/poll/store`;
+            createPollForm.method = "POST";
+            createPollForm.innerHTML = `
+                    <input type="text" name="title" placeholder="Title" required>
+                    <input type="text" name="option1" placeholder="Option 1" required>
+                    <input type="text" name="option2" placeholder="Option 2" required>
+            `;
+            createPollFake.parentElement.appendChild(createPollForm);
+            const createPollOptions = document.createElement("div");
+            createPollOptions.classList.add("add-poll-options");
+            createPollOptions.innerHTML = `
+                    <button type="button" class="add-option-button">Add Option</button>
+            `;
+            createPollForm.appendChild(createPollOptions);
+            const addOptionButton = createPollOptions.querySelector(".add-option-button");
+                addOptionButton.addEventListener("click", () => {
+                    if(optionNumber < 10){
+                        const fullOption = document.createElement("div");
+                        fullOption.classList.add("full-option");
+                        fullOption.style.display = "flex";
+                        fullOption.style.justifyContent = "space-between";
+                        fullOption.style.flexDirection = "row";
+                        const option = document.createElement("input");
+                        option.type = "text";
+                        option.name = `option${++optionNumber}`;
+                        option.placeholder = `Option ${optionNumber}`;
+                        option.required = true;
+                        const removeOptionButton = document.createElement("button");
+                        removeOptionButton.type = "button";
+                        removeOptionButton.classList.add("remove-option-button");
+                        removeOptionButton.textContent = "Remove Option";
+                        removeOptionButton.addEventListener("click", () => {
+                            fullOption.remove();
+                            optionNumber--;
+                        });
+                        fullOption.appendChild(option);
+                        fullOption.appendChild(removeOptionButton);
+                        createPollForm.insertBefore(fullOption, createPollOptions);
+                    }
+                    if(optionNumber == 10){
+                            addOptionButton.disabled = true;
+                            addOptionButton.style.display = "none";
+                        }
+            });
+            const createPollButtons = document.createElement("div");
+            createPollButtons.classList.add("create-poll-buttons");
+            createPollButtons.innerHTML = `
+                    <button type="button" class="cancel-create-poll-button">Cancel</button>
+                    <button type="submit" class="create-poll-button">Create</button>
+            `;
+            createPollForm.appendChild(createPollButtons);
+            const cancelCreatePollButton = createPollButtons.querySelector(".cancel-create-poll-button");
+            cancelCreatePollButton.addEventListener("click", () => {
+                createPollForm.remove();
+                createPollFake.style.display = "block";
+            });
+            const createPollButton = createPollButtons.querySelector(".create-poll-button");
+            createPollButton.addEventListener("click", () => {
+                    const title = createPollForm.querySelector("input[name='title']").value;
+                    if(!title){
+                        createPollForm.remove();
+                        createPollFake.style.display = "block";
+                        //TODO: add error message
+                        return;
+                    }
+                    const options = [];
+                    for (let i = 1; i <= optionNumber; i++) {
+                        options.push(createPollForm.querySelector(`input[name='option${i}']`).value);
+                        if(!options[i-1]){
+                            createPollForm.remove();
+                            createPollFake.style.display = "block";
+                            //TODO: add error message
+                            return;
+                        }
+                    }
+                    createPollForm.remove();
+                    createPollFake.style.display = "block";
+                    const poll = document.createElement("div");
+                    poll.classList.add("poll");
+                    poll.innerHTML = `
+                        <h3>${title}</h3>
+                        <div class="poll-options">
+                        </div>
+                        <div class="poll-actions">
+                            <button type="button" class="poll-button">Vote</button>
+                            <button type="button" class="poll-button">Results</button>
+                        </div>
+                    `;
+                    createPollFake.parentElement.appendChild(poll);
+                    const pollOptions = poll.querySelector(".poll-options");
+                    options.forEach((option) => {
+                        const pollOption = document.createElement("div");
+                        pollOption.classList.add("poll-option");
+                        pollOption.innerHTML = `
+                            <input type="radio" name="poll-option" value="${option}">
+                            <p>${option}</p>
+                        `;
+                        pollOptions.appendChild(pollOption);
+                    }
+                    );  
+                    sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () {});
+            });
+        });
+    }
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -574,3 +689,4 @@ editComment();
 requestToJoin();
 likeComment();
 dislikeComment();
+createPoll();

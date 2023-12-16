@@ -11,7 +11,9 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\PollController;
 use App\Http\Controllers\RequestToJoinController;
+use App\Models\Poll;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,5 +105,8 @@ Route::controller(FileController::class)->group(function () {
     Route::post('/file/upload', 'upload')->name('file.upload');
     Route::post('/file/deleteProfilePicture', 'deleteProfilePicture')->name('file.deleteProfilePicture');
     Route::post('/file/deleteEventPicture', 'deleteEventPicture')->name('file.deleteEventPicture');
+});
 
+Route::controller(PollController::class)->group(function () {
+    Route::post('api/poll/store', 'store')->name('poll.store');
 });

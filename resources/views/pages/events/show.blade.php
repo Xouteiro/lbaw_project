@@ -166,14 +166,21 @@
         @endif
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div class="polls">
+                <div>
                 <h3>Polls</h3>
-                @if($event->polls->count() == 0)
-                    <p>No polls yet</p>
-                @else
-                    <ul class="poll-list">
-                        @each('partials.poll', $event->polls, 'poll')
-                    </ul>
+                @if (Auth::check() && Auth::user()->id == $event->id_owner)
+                    <button class="fake-poll-create-button" id="{{$event->id}}">
+                        Create Poll
+                    </button>
                 @endif
+                </div>
+                    <ul class="poll-list">
+                    @if($event->polls->count() == 0)
+                        <p>No polls yet</p>
+                    @else
+                        @each('partials.poll', $event->polls, 'poll')
+                    @endif
+                    </ul>
             </div>
         @endif
     </div>
