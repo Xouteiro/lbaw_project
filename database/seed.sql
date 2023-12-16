@@ -27,7 +27,8 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     blocked BOOLEAN DEFAULT FALSE,
     admin BOOLEAN DEFAULT FALSE,
-    remember_token VARCHAR(100)
+    remember_token VARCHAR(100),
+    profile_image VARCHAR(100)
 );
 
 CREATE TABLE location (
@@ -50,13 +51,14 @@ CREATE TABLE event (
     id_owner INTEGER REFERENCES users(id),
     id_location INTEGER REFERENCES location(id),
     highlight_owner BOOLEAN DEFAULT FALSE,
-    hide_owner BOOLEAN DEFAULT FALSE
+    hide_owner BOOLEAN DEFAULT FALSE,
+    event_image VARCHAR(100)
 );
 
 CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
-    date TIMESTAMP CHECK (date > current_date),
+    date TIMESTAMP,
     id_event INTEGER REFERENCES event(id),
     id_user INTEGER REFERENCES users(id),
     likes INTEGER NOT NULL DEFAULT 0,
@@ -130,7 +132,7 @@ CREATE TABLE password_recovers
 CREATE TABLE likes_dislikes (
     id SERIAL PRIMARY KEY,
     id_comment INT NOT NULL,
-    id_user INT NOT NULL,
+    id_user INT,
     liked BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (id_comment) REFERENCES comment(id),
     FOREIGN KEY (id_user) REFERENCES users(id)
@@ -203,6 +205,7 @@ BEGIN
     UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE poll SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE user_option SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE likes_dislikes SET id_user = NULL WHERE id_user = OLD.id;
     DELETE FROM joined WHERE id_user = OLD.id;
     DELETE FROM password_recovers WHERE email = OLD.email;
 
@@ -262,6 +265,20 @@ FOR EACH ROW
 EXECUTE FUNCTION delete_event_trigger();
 
 --04
+
+CREATE OR REPLACE FUNCTION delete_comment_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM likes_dislikes WHERE id_comment = OLD.id;
+    return OLD;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER comment_deletion_trigger
+BEFORE DELETE ON comment
+FOR EACH ROW
+EXECUTE FUNCTION delete_comment_trigger();
+
+--05
 
 CREATE OR REPLACE FUNCTION check_event_happened()
 RETURNS TRIGGER AS $$
