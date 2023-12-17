@@ -986,6 +986,26 @@ form#searchForm div.input_field select {
     padding-left: 10px;
 }
 
+li.poll-option label{
+    display: flex;
+    flex-direction: row;
+}
+
+.poll-header{
+    display: flex;
+    flex-direction: row;
+}
+
+.poll-header button.fake-poll-delete-button{
+    margin-left: 10px;
+}
+
+
+.poll-header h3{
+    margin-bottom: 0px;
+    align-self: center;
+}
+
 @media (max-width: 1050px) {
     .search-container {
         flex-direction: column;

@@ -13,7 +13,8 @@ class Option extends Model
     public $timestamps = false;
     protected $table = 'option';
     protected $fillable = [
-        'name'
+        'name',
+        'id_poll',
     ];
 
     public function poll()
