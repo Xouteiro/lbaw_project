@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Notification;
+use App\Mail\Email;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -246,6 +248,15 @@ class EventController extends Controller
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
+        $data = array(
+            'type' => 'join-event',
+            'name' => $user->name,
+            'event' => $event->name,
+            'eventId' => $event->id
+        );
+
+        Mail::to($user->email, $user->name)->send(new Email($data));
+
         return back();
     }
 
@@ -257,6 +268,16 @@ class EventController extends Controller
         $this->authorize('leave', $event);
 
         $event->participants()->detach($user->id);
+
+        $data = array(
+            'type' => 'leave-event',
+            'name' => $user->name,
+            'event' => $event->name,
+            'eventId' => $event->id
+        );
+
+        Mail::to($user->email, $user->name)->send(new Email($data));
+
         return back();
     }
 }

@@ -13,6 +13,8 @@ class Email extends Mailable
     use Queueable, SerializesModels;
 
     private $data = [];
+    private $view = '';
+    private $subject = '';
 
     /**
      * Create a new message instance.
@@ -20,15 +22,49 @@ class Email extends Mailable
     public function __construct($data)
     {
         $this->data = $data;
+        if($this->data['type'] == 'password-recover'){
+            $this->view = 'partials.mail.password-recover';
+            $this->subject = 'Recover your password!';
+        }
+        else if($this->data['type'] == 'leave-event'){
+            $this->view = 'partials.mail.leave-event';
+            $eventName = $this->data['event'];
+            $this->subject = "You left $eventName!";
+        }
+        else if($this->data['type'] == 'join-event'){
+            $this->view = 'partials.mail.join-event';
+            $eventName = $this->data['event'];
+            $this->subject = "Welcome to $eventName!";
+        }
+        else if($this->data['type'] == 'invite-event'){
+            $this->view = 'partials.mail.invite-event';
+            $eventName = $this->data['event'];
+            $this->subject = "You have been invited to $eventName!";
+        }
+        else if($this->data['type'] == 'request-to-join-event'){
+            $this->view = 'partials.mail.request-to-join-event';
+            $eventName = $this->data['event'];
+            $this->subject = "You have a request to join $eventName!";
+        }
+        else if($this->data['type'] == 'event-update'){
+            $this->view = 'partials.mail.event-update';
+            $eventName = $this->data['event'];
+            $this->subject = "$eventName was updated!";
+        }
+        else if($this->data['type'] == 'cancel-event'){
+            $this->view = 'partials.mail.cancel-event';
+            $eventName = $this->data['event'];
+            $this->subject = "$eventName was cancelled!";
+        }
     }
 
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
-    {
+    {   
         return new Envelope(
-            subject: 'Recover your password!',
+            subject: $this->subject
         );
     }
 
@@ -38,7 +74,7 @@ class Email extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'partials.mail',
+            view: $this->view,
             with: $this->data
         );
     }

@@ -6,9 +6,11 @@ use App\Models\Invite;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\Event;
+use App\Mail\Email;
 use App\Http\Controllers\EventController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class InviteController extends Controller
 {
@@ -70,6 +72,16 @@ class InviteController extends Controller
         $invite->save();
 
         $user->pendingInvites()->save($invite);
+
+        $data = array(
+            'type' => 'invite-event',
+            'name' => $user->name,
+            'event' => $event->name,
+            'eventId' => $event->id,
+            'inviteId' => $invite->id
+        );
+
+        Mail::to($userToInvite->email, $userToInvite->name)->send(new Email($data));
 
         return back()->with('success', 'Invitation sent successfully!');
     }

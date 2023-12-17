@@ -86,6 +86,7 @@ class LoginController extends Controller
         ]);
 
         $data = array(
+            'type' => 'password-recover',
             'name' => $user->name,
             'token' => $token
         );
