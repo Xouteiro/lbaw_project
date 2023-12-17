@@ -6,8 +6,10 @@ use App\Models\RequestToJoin;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Notification;
+use App\Mail\Email;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class RequestToJoinController extends Controller
 {
@@ -69,6 +71,14 @@ class RequestToJoinController extends Controller
 
         $user->joinRequests()->save($requestToJoin);
 
+        $data = array(
+            'type' => 'request-to-join-event',
+            'name' => $user->name,
+            'event' => $event->name,
+        );
+
+        Mail::to($userToRequest->email, $userToRequest->name)->send(new Email($data));
+
         return back()->with('success', 'Request to join sent successfully!');
     }
 
@@ -81,10 +91,18 @@ class RequestToJoinController extends Controller
         $user = User::find($requestToJoin->id_user);
         $user->events()->attach($event, ['date' => date('Y-m-d H:i:s')]);
 
+        $data = array(
+            'type' => 'accept-request-to-join-event',
+            'name' => $user->name,
+            'event' => $event->name,
+        );
+
+        Mail::to($user->email, $user->name)->send(new Email($data));
+
         $requestToJoin->delete();
         $requestToJoinNotification->delete();
 
-        return redirect()->route('event.show', ['id' => $event]);
+        return response()->json('You have successfully accepted the request to join!', 200);
     }
 
     public function denyRequestToJoin(Request $request){

@@ -46,6 +46,11 @@ class Email extends Mailable
             $eventName = $this->data['event'];
             $this->subject = "You have a request to join $eventName!";
         }
+        else if($this->data['type'] == 'accept-request-to-join-event'){
+            $this->view = 'partials.mail.accept-request';
+            $eventName = $this->data['event'];
+            $this->subject = "$eventName was created!";
+        }
         else if($this->data['type'] == 'event-update'){
             $this->view = 'partials.mail.event-update';
             $eventName = $this->data['event'];
