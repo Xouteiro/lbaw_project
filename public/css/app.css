@@ -89,7 +89,9 @@ section#content {
 
 }
 
-section#content.home {
+section#content.home,
+section#content.about,
+section#content.mainFeatures {
     padding-top: 0;
 }
 

@@ -45,7 +45,7 @@
     </head>
     <body>
         <main>
-            @if( url()->current() == url('/home') )
+            @if( url()->current() == url('/home') || url()->current() == url('/about') || url()->current() == url('/mainFeatures') )
             <header class="home">
                 <a href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>  
             @else  
@@ -103,6 +103,10 @@
             </header>
             @if( url()->current() == url('/home') )
             <section id="content" class="home">
+            @elseif( url()->current() == url('/about') )
+            <section id="content" class="about">
+            @elseif( url()->current() == url('/mainFeatures') )
+            <section id="content" class="mainFeatures">
             @else
             <section id="content">
             @endif
