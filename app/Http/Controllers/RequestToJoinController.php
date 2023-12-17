@@ -48,7 +48,7 @@ class RequestToJoinController extends Controller
             ])->onlyInput('requestToJoin');
         }
 
-        $checkIfAlreadyExists = Notification::where([['id_user', $user->id], ['id_event', $event->id]])->first();
+        $checkIfAlreadyExists = Notification::where([['id_user', $userToRequest->id], ['id_event', $event->id]])->first();
         if($checkIfAlreadyExists) {
             return back()->withErrors([
                 'requestToJoin' => 'You already requested to join this event!',
@@ -74,7 +74,7 @@ class RequestToJoinController extends Controller
         $data = array(
             'type' => 'request-to-join-event',
             'name' => $user->name,
-            'event' => $event->name,
+            'event' => $event->name
         );
 
         Mail::to($userToRequest->email, $userToRequest->name)->send(new Email($data));
@@ -85,16 +85,16 @@ class RequestToJoinController extends Controller
     public function acceptRequestToJoin(Request $request) {
         $requestToJoinNotification = Notification::findOrFail($request->id_requestToJoin);
         //$this->authorize('acceptRequestToJoin', $requestToJoinNotification);
-        $event = $requestToJoinNotification->event->id;
+        $event = $requestToJoinNotification->event;
         $requestToJoin = RequestToJoin::findOrFail($requestToJoinNotification->id);
 
         $user = User::find($requestToJoin->id_user);
-        $user->events()->attach($event, ['date' => date('Y-m-d H:i:s')]);
+        $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
         $data = array(
             'type' => 'accept-request-to-join-event',
             'name' => $user->name,
-            'event' => $event->name,
+            'event' => $event->name
         );
 
         Mail::to($user->email, $user->name)->send(new Email($data));
@@ -106,10 +106,23 @@ class RequestToJoinController extends Controller
     }
 
     public function denyRequestToJoin(Request $request){
-        $requestToJoin = Notification::findOrFail($request->id_requestToJoin);
+        $requestToJoinNotification = Notification::findOrFail($request->id_requestToJoin);
         //$this->authorize('denyRequestToJoin', $requestToJoin);
-        RequestToJoin::where('id_eventnotification', $requestToJoin->id)->delete();
+        $requestToJoin = RequestToJoin::findOrFail($requestToJoinNotification->id);
+        $event = $requestToJoinNotification->event;
+        $user = User::find($requestToJoin->id_user);
+
+        $data = array(
+            'type' => 'deny-request-to-join-event',
+            'name' => $user->name,
+            'event' => $event->name
+        );
+
+        Mail::to($user->email, $user->name)->send(new Email($data));
+
         $requestToJoin->delete();
+        $requestToJoinNotification->delete();
+
         return response()->json('You have successfully denied the request to join!', 200);
     }
 }

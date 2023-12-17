@@ -49,7 +49,12 @@ class Email extends Mailable
         else if($this->data['type'] == 'accept-request-to-join-event'){
             $this->view = 'partials.mail.accept-request';
             $eventName = $this->data['event'];
-            $this->subject = "$eventName was created!";
+            $this->subject = "Your request to join $eventName was accepted!";
+        }
+        else if($this->data['type'] == 'deny-request-to-join-event'){
+            $this->view = 'partials.mail.deny-request';
+            $eventName = $this->data['event'];
+            $this->subject = "Your request to join $eventName was denied!";
         }
         else if($this->data['type'] == 'event-update'){
             $this->view = 'partials.mail.event-update';
