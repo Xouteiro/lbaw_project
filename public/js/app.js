@@ -346,7 +346,7 @@ function deleteEvent() {
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
                     sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {
-                       
+
                     });
                 });
             }
@@ -382,7 +382,7 @@ function deleteComment() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
-                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () {});
+                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () { });
                     surebox.remove();
                     deleteCommentButton.parentElement.parentElement.parentElement.remove();
                 });
@@ -427,7 +427,7 @@ function editComment() {
                 editCommentDiv.addEventListener("click", () => {
                     const editCommentTextArea = editCommentDiv.querySelector(".edit-comment-textarea");
                     const comment = editCommentTextArea.value;
-                    sendAjaxRequest('PUT', `/comment/${commentId}/update`, {comment: comment}, function () {});
+                    sendAjaxRequest('PUT', `/comment/${commentId}/update`, { comment: comment }, function () { });
                     editCommentDiv.remove();
                     editCommentButton.parentElement.style.display = "flex";
                     commentText.style.display = "block";
@@ -450,13 +450,13 @@ function closeDecisionBox() {
     });
 }
 
-function requestToJoin(){
+function requestToJoin() {
     const requestsToJoin = document.querySelectorAll(".pending_request_to_join");
     requestsToJoin.forEach((requestToJoin) => {
         requestToJoin.addEventListener("click", () => {
             const requestToJoinId = requestToJoin.id;
             const decisionBox = requestToJoin.querySelector(".decision_box");
-            if(!decisionBox){
+            if (!decisionBox) {
                 const decisionBox = document.createElement("div");
                 decisionBox.classList.add("decision_box");
                 decisionBox.innerHTML = `
@@ -469,24 +469,24 @@ function requestToJoin(){
                 acceptRequestToJoin.addEventListener("click", () => {
                     const requestsToJoinDiv = requestToJoin.parentElement;
                     requestToJoin.remove();
-                    if(!requestsToJoinDiv.childElementCount){
+                    if (!requestsToJoinDiv.childElementCount) {
                         const noRequestsToJoin = document.createElement("h4");
                         noRequestsToJoin.textContent = "No Requests To Join";
                         requestsToJoinDiv.appendChild(noRequestsToJoin);
                     }
-                    sendAjaxRequest('POST', `/api/accept-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {});
+                    sendAjaxRequest('POST', `/api/accept-request-to-join`, { id_requestToJoin: requestToJoinId }, function () { });
                 });
 
                 const declineRequestToJoin = decisionBox.querySelector(".decline_request_to_join");
                 declineRequestToJoin.addEventListener("click", () => {
                     const requestsToJoinDiv = requestToJoin.parentElement;
                     requestToJoin.remove();
-                    if(!requestsToJoinDiv.childElementCount){
+                    if (!requestsToJoinDiv.childElementCount) {
                         const noRequestsToJoin = document.createElement("h4");
                         noRequestsToJoin.textContent = "No Requests To Join";
                         requestsToJoinDiv.appendChild(noRequestsToJoin);
                     }
-                    sendAjaxRequest('POST', `/api/deny-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {});
+                    sendAjaxRequest('POST', `/api/deny-request-to-join`, { id_requestToJoin: requestToJoinId }, function () { });
                 });
             }
 
@@ -495,7 +495,7 @@ function requestToJoin(){
     closeDecisionBox();
 }
 
-function likeComment(){
+function likeComment() {
     const likes = document.querySelectorAll(".comment-like");
     likes.forEach((like) => {
         like.addEventListener("click", () => {
@@ -504,30 +504,30 @@ function likeComment(){
             const dislike = like.parentElement.querySelector(".comment-dislike");
             const likesNumber = like.parentElement.querySelector(".comment-like-number");
             const dislikesNumber = dislike.parentElement.querySelector(".comment-dislike-number");
-            if(like.classList.contains("comment-like-active")){
+            if (like.classList.contains("comment-like-active")) {
                 like.src = "/icons/like.png";
                 dislike.src = "/icons/like.png";
                 likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) - 1 : null;
                 like.classList.remove("comment-like-active");
                 dislike.classList.remove("comment-dislike-active");
-                sendAjaxRequest('POST', '/api/comment/like', {action: 'remove', id_comment: commentId, id_user: userId}, function () {});
+                sendAjaxRequest('POST', '/api/comment/like', { action: 'remove', id_comment: commentId, id_user: userId }, function () { });
             }
             else {
                 like.src = "/icons/blue_like.png";
                 dislike.src = "/icons/like.png";
                 likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) + 1 : null;
-                if(dislike.classList.contains("comment-dislike-active")){
+                if (dislike.classList.contains("comment-dislike-active")) {
                     dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) - 1 : null;
                 }
                 like.classList.add("comment-like-active");
                 dislike.classList.remove("comment-dislike-active");
-                sendAjaxRequest('POST', '/api/comment/like', {action: 'add', id_comment: commentId, id_user: userId}, function () {});
+                sendAjaxRequest('POST', '/api/comment/like', { action: 'add', id_comment: commentId, id_user: userId }, function () { });
             }
         });
     });
 }
 
-function dislikeComment(){
+function dislikeComment() {
     const dislikes = document.querySelectorAll(".comment-dislike");
     dislikes.forEach((dislike) => {
         dislike.addEventListener("click", () => {
@@ -536,24 +536,24 @@ function dislikeComment(){
             const like = dislike.parentElement.querySelector(".comment-like");
             const dislikesNumber = dislike.parentElement.querySelector(".comment-dislike-number");
             const likesNumber = like.parentElement.querySelector(".comment-like-number");
-            if(dislike.classList.contains("comment-dislike-active")){
+            if (dislike.classList.contains("comment-dislike-active")) {
                 dislike.src = "/icons/like.png";
                 like.src = "/icons/like.png";
                 dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) - 1 : null;
                 dislike.classList.remove("comment-dislike-active");
                 like.classList.remove("comment-like-active");
-                sendAjaxRequest('POST', `/api/comment/dislike`, {action: 'remove', id_comment: commentId, id_user: userId}, function () {});
+                sendAjaxRequest('POST', `/api/comment/dislike`, { action: 'remove', id_comment: commentId, id_user: userId }, function () { });
             }
             else {
                 dislike.src = "/icons/blue_like.png";
                 like.src = "/icons/like.png";
                 dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) + 1 : null;
-                if(like.classList.contains("comment-like-active")){
+                if (like.classList.contains("comment-like-active")) {
                     likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) - 1 : null;
                 }
                 dislike.classList.add("comment-dislike-active");
                 like.classList.remove("comment-like-active");
-                sendAjaxRequest('POST', `/api/comment/dislike`, {action: 'add', id_comment: commentId, id_user: userId}, function () {});
+                sendAjaxRequest('POST', `/api/comment/dislike`, { action: 'add', id_comment: commentId, id_user: userId }, function () { });
             }
         });
     });
@@ -563,10 +563,11 @@ function createPoll() {
     const createPollFake = document.querySelector(".fake-poll-create-button");
     const eventId = createPollFake.id;
     let optionNumber = 2;
+    let provisionalId = 1;
     if (createPollFake) {
         createPollFake.addEventListener("click", () => {
-            const noPolls = document.querySelector(".no-polls"); 
-            noPolls ? noPolls.style.display = "none" : null; 
+            const noPolls = document.querySelector(".no-polls");
+            noPolls ? noPolls.style.display = "none" : null;
             createPollFake.style.display = "none";
             const createPollForm = document.createElement("div");
             createPollForm.classList.add("create-poll-form");
@@ -585,36 +586,36 @@ function createPoll() {
             `;
             createPollForm.appendChild(createPollOptions);
             const addOptionButton = createPollOptions.querySelector(".add-option-button");
-                addOptionButton.addEventListener("click", () => {
-                    if(optionNumber < 10){
-                        optionNumber++;
-                        const fullOption = document.createElement("div");
-                        fullOption.classList.add("full-option");
-                        fullOption.style.display = "flex";
-                        fullOption.style.justifyContent = "space-between";
-                        fullOption.style.flexDirection = "row";
-                        const option = document.createElement("input");
-                        option.type = "text";
-                        option.name = `option${optionNumber}`;
-                        option.placeholder = `Option ${optionNumber}`;
-                        option.required = true;
-                        const removeOptionButton = document.createElement("button");
-                        removeOptionButton.type = "button";
-                        removeOptionButton.classList.add("remove-option-button");
-                        removeOptionButton.textContent = "Remove Option";
-                        removeOptionButton.addEventListener("click", () => {
-                            fullOption.remove();
-                            optionNumber--;
-                        });
-                        fullOption.appendChild(option);
-                        fullOption.appendChild(removeOptionButton);
-                        createPollForm.appendChild(fullOption);
-                        createPollForm.insertBefore(fullOption, createPollOptions);
-                    }
-                    if(optionNumber == 10){
-                            addOptionButton.disabled = true;
-                            addOptionButton.style.display = "none";
-                        }
+            addOptionButton.addEventListener("click", () => {
+                if (optionNumber < 10) {
+                    optionNumber++;
+                    const fullOption = document.createElement("div");
+                    fullOption.classList.add("full-option");
+                    fullOption.style.display = "flex";
+                    fullOption.style.justifyContent = "space-between";
+                    fullOption.style.flexDirection = "row";
+                    const option = document.createElement("input");
+                    option.type = "text";
+                    option.name = `option${optionNumber}`;
+                    option.placeholder = `Option ${optionNumber}`;
+                    option.required = true;
+                    const removeOptionButton = document.createElement("button");
+                    removeOptionButton.type = "button";
+                    removeOptionButton.classList.add("remove-option-button");
+                    removeOptionButton.textContent = "Remove Option";
+                    removeOptionButton.addEventListener("click", () => {
+                        fullOption.remove();
+                        optionNumber--;
+                    });
+                    fullOption.appendChild(option);
+                    fullOption.appendChild(removeOptionButton);
+                    createPollForm.appendChild(fullOption);
+                    createPollForm.insertBefore(fullOption, createPollOptions);
+                }
+                if (optionNumber == 10) {
+                    addOptionButton.disabled = true;
+                    addOptionButton.style.display = "none";
+                }
             });
             const createPollButtons = document.createElement("div");
             createPollButtons.classList.add("create-poll-buttons");
@@ -631,30 +632,30 @@ function createPoll() {
             });
             const createPollButton = createPollButtons.querySelector(".create-poll-button");
             createPollButton.addEventListener("click", () => {
-                    const title = createPollForm.querySelector("input[name='title']").value;
-                    if(!title){
+                const title = createPollForm.querySelector("input[name='title']").value;
+                if (!title) {
+                    createPollForm.remove();
+                    createPollFake.style.display = "block";
+                    //TODO: add error message
+                    return;
+                }
+                const options = [];
+                for (let i = 1; i <= optionNumber; i++) {
+                    options.push(createPollForm.querySelector(`input[name='option${i}']`).value);
+                    if (!options[i - 1]) {
                         createPollForm.remove();
                         createPollFake.style.display = "block";
                         //TODO: add error message
                         return;
                     }
-                    const options = [];
-                    for (let i = 1; i <= optionNumber; i++) {
-                        options.push(createPollForm.querySelector(`input[name='option${i}']`).value);
-                        if(!options[i-1]){
-                            createPollForm.remove();
-                            createPollFake.style.display = "block";
-                            //TODO: add error message
-                            return;
-                        }
-                    }
-                    const copyCreatePollForm = createPollForm.cloneNode(true);
-                    createPollForm.remove();
-                    createPollFake.style.display = "block";
-                    const poll = document.createElement("li");
-                    poll.style.listStyleType = "none";
-                    poll.classList.add("poll");
-                    poll.innerHTML = `
+                }
+                const copyCreatePollForm = createPollForm.cloneNode(true);
+                createPollForm.remove();
+                createPollFake.style.display = "block";
+                const poll = document.createElement("li");
+                poll.style.listStyleType = "none";
+                poll.classList.add("poll");
+                poll.innerHTML = `
                         <div class="poll-header">
                         <h3>${title}</h3>
                         <button type="button" class="fake-poll-delete-button">&#10060;</button>
@@ -662,42 +663,43 @@ function createPoll() {
                         <ul class="poll-options">
                         </ul>
                     `;
-                    poll.querySelector(".poll-header").style.display = "flex";
-                    poll.querySelector(".fake-poll-delete-button").addEventListener("click", () => {
-                        poll.remove();
-                        createPollFake.style.display = "block";
-                        const checkPolls = document.querySelectorAll(".poll");
-                        if(!checkPolls.length){
-                            const noPolls = document.createElement("p");
-                            noPolls.classList.add("no-polls");
-                            noPolls.textContent = "No Polls";
-                            createPollFake.parentElement.appendChild(noPolls);
-                        }
-                        sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () {});
-                        noPolls ? noPolls.style.display = "block" : null;
-                    });
-          
-                    createPollFake.parentElement.appendChild(poll);
-                    const pollOptions = poll.querySelector(".poll-options");
-                    options.forEach((option) => {
-                        const pollOption = document.createElement("li");
-                        pollOption.classList.add("poll-option");
-                        const pollOptionLabel = document.createElement("label");
-                        pollOptionLabel.style.display = "flex";
-                        pollOptionLabel.style.flexDirection = "row";    
-                        pollOptionLabel.innerHTML = `
-                            <input type="radio" name="poll-option" value="${option}">
+                poll.querySelector(".poll-header").style.display = "flex";
+                poll.querySelector(".fake-poll-delete-button").addEventListener("click", () => {
+                    poll.remove();
+                    createPollFake.style.display = "block";
+                    const checkPolls = document.querySelectorAll(".poll");
+                    if (!checkPolls.length) {
+                        const noPolls = document.createElement("p");
+                        noPolls.classList.add("no-polls");
+                        noPolls.textContent = "No Polls";
+                        createPollFake.parentElement.appendChild(noPolls);
+                    }
+                    sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
+                    noPolls ? noPolls.style.display = "block" : null;
+                });
+
+                createPollFake.parentElement.appendChild(poll);
+                const pollOptions = poll.querySelector(".poll-options");
+                options.forEach((option) => {
+                    const pollOption = document.createElement("li");
+                    pollOption.classList.add("poll-option");
+                    const pollOptionLabel = document.createElement("label");
+                    pollOptionLabel.style.display = "flex";
+                    pollOptionLabel.style.flexDirection = "row";
+                    pollOptionLabel.innerHTML = `
+                            <input type="radio" name="poll-option ${provisionalId}" value="${option}">
                             <p>${option} - 0</p>
                         `;
-                        pollOption.appendChild(pollOptionLabel);
-                        pollOptions.appendChild(pollOption);
-                    }
-                    ); 
-                    if(noPolls){
-                        noPolls.remove();
-                    }
-                    sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () {});
-                    optionNumber = 2;
+                    pollOption.appendChild(pollOptionLabel);
+                    pollOptions.appendChild(pollOption);
+                }
+                );
+                if (noPolls) {
+                    noPolls.remove();
+                }
+                sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () { });
+                optionNumber = 2;
+                provisionalId++;
             });
         });
     }
@@ -712,24 +714,53 @@ function deletePoll() {
             const eventId = document.querySelector(".fake-poll-create-button").id;
             const title = deletePollButton.parentElement.querySelector("h3").textContent;
             poll.remove();
-            sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () {});
+            sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
         });
     });
 }
 
-function anwserPoll(){
-    const pollOptions = document.querySelectorAll(".poll-option");
-    pollOptions.forEach((pollOption) => {
-        pollOption.addEventListener("click", () => {
-            const poll = pollOption.parentElement.parentElement;
-            const eventId = document.querySelector(".fake-poll-create-button").id;
-            const title = poll.querySelector("h3").textContent;
-            const option = pollOption.querySelector("input").value;
-            const votes = pollOption.querySelector("p").textContent.split(" ")[3];
-            sendAjaxRequest('POST', `/api/poll/answer`, { eventId: eventId, title: title, option: option, votes: votes }, function () {});
+function answerPoll() {
+    const polls = document.querySelectorAll(".poll");
+    polls.forEach((poll) => {
+        const pollOptions = poll.querySelectorAll(".poll-option input[type='radio']");
+        pollOptions.forEach((pollOptionInput) => {
+            pollOptionInput.checked = false;
+        });
+        const pollOptionsChecked = poll.querySelectorAll(".poll-option input[type='radio']:checked");
+        let checkedBefore = pollOptionsChecked[0] ? pollOptionsChecked[0] : null;
+        pollOptions.forEach((pollOptionInput) => {
+            pollOptionInput.addEventListener("click", (event) => {
+                event.stopPropagation();
+                const eventId = document.querySelector(".fake-poll-create-button").id;
+                const title = poll.querySelector("h3").textContent;
+                const option = pollOptionInput.parentElement.querySelector("p").textContent.substring(0, pollOptionInput.parentElement.querySelector("p").textContent.indexOf(" - "));
+                let votes = parseInt(pollOptionInput.parentElement.querySelector("p").textContent.split(" - ")[1]);
+                const beforeOption = checkedBefore ? checkedBefore.parentElement.querySelector("p").textContent.substring(0, checkedBefore.parentElement.querySelector("p").textContent.indexOf(" - ")): null;
+                let beforeVotes = checkedBefore ? parseInt(checkedBefore.parentElement.querySelector("p").textContent.split(" - ")[1]) : null;
+                if (checkedBefore && checkedBefore.value == pollOptionInput.value) {
+                    votes -= 1;
+                    pollOptionInput.checked = false;
+                    checkedBefore = null;
+                } else if ( checkedBefore && checkedBefore.value != pollOptionInput.value) {
+                    votes += 1;
+                    beforeVotes -= 1;
+                    checkedBefore.parentElement.querySelector("p").textContent = `${beforeOption} - ${beforeVotes}`;
+                    checkedBefore = pollOptionInput;
+                    sendAjaxRequest('PUT', `/api/poll/answer`, { eventId, title, beforeOption, beforeVotes }, function () { });
+                }else{
+                    votes += 1;
+                    checkedBefore = pollOptionInput;
+                }                
+                pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                sendAjaxRequest('PUT', `/api/poll/answer`, { eventId, title, option, votes }, function () { });
+                
+            });
+
+
         });
     });
 }
+
 
 
 
@@ -747,4 +778,4 @@ likeComment();
 dislikeComment();
 createPoll();
 deletePoll();
-anwserPoll();
+answerPoll();
