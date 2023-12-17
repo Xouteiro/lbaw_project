@@ -560,6 +560,24 @@ input.search-event {
     padding: 0 1em;
 }
 
+.pending_event_update {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.pending_event_update:hover {
+    background-color: rgb(88, 89, 94);
+}
+
+.pending_event_update:hover .close_event_update {
+    display: block;
+    border-radius: 5px;
+    padding: 0 1em;
+    color: white;
+    font-weight: 500;
+}
+
 .comment-list {
     list-style: none;
     margin: 0;

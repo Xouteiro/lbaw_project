@@ -92,6 +92,6 @@ class RequestToJoinController extends Controller
         //$this->authorize('denyRequestToJoin', $requestToJoin);
         RequestToJoin::where('id_eventnotification', $requestToJoin->id)->delete();
         $requestToJoin->delete();
-        return response()->json('You have successfully denied the requestToJoin!', 200);
+        return response()->json('You have successfully denied the request to join!', 200);
     }
 }

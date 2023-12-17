@@ -499,6 +499,44 @@ function requestToJoin(){
     closeDecisionBox();
 }
 
+function eventUpdate(){
+    const eventUpdates = document.querySelectorAll(".pending_event_update");
+    eventUpdates.forEach((eventUpdate) => {
+        eventUpdate.addEventListener("mouseover", () => {
+            const eventUpdateId = eventUpdate.id;
+            const closeEventUpdateButton = eventUpdate.querySelector(".close_event_update");
+            if(!closeEventUpdateButton){
+                const closeEventUpdateButton = document.createElement("p");
+                closeEventUpdateButton.classList.add("close_event_update");
+                closeEventUpdateButton.classList.add("notification");
+                closeEventUpdateButton.textContent = "X";
+                eventUpdate.appendChild(closeEventUpdateButton);
+                closeEventUpdateButton.addEventListener("click", () => {
+                    const eventUpdatesDiv = eventUpdate.parentElement;
+                    eventUpdate.remove();
+                    if(!eventUpdatesDiv.childElementCount){
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No Event Updates";
+                        eventUpdatesDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/api/clear-event-update`, {id_eventUpdate: eventUpdateId}, function () {});
+                });
+            }
+        });
+
+        eventUpdate.firstElementChild.addEventListener("click", () => {
+            window.location.href = `/event/${eventUpdate.firstElementChild.id}`;
+        });
+
+        eventUpdate.addEventListener("mouseleave", () => {
+            const closeEventUpdateButton = eventUpdate.querySelector(".close_event_update");
+            if(closeEventUpdateButton){
+                closeEventUpdateButton.remove();
+            }
+        });
+    });
+}
+
 function likeComment(){
     const likes = document.querySelectorAll(".comment-like");
     likes.forEach((like) => {
@@ -608,6 +646,7 @@ deleteEvent();
 deleteComment();
 editComment();
 requestToJoin();
+eventUpdate();
 likeComment();
 dislikeComment();
 openNotificaitons();

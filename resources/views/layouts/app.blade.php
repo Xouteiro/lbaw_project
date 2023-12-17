@@ -88,9 +88,9 @@
                                     <h4 class="notification">No Event Updates</h4>
                                 @endif
                                 @foreach($notifications[1] as $eventUpdate)
-                                <a class="pending_event_update notification" href="{{ url($eventUpdate->link) . '?id_eventUpdate=' . $eventUpdate->id}}">
-                                    <h4 class="notification">- {{$eventUpdate->text}}</h4>
-                                </a>
+                                <div class="pending_event_update notification" id="{{ $eventUpdate->id_eventnotification }}">
+                                    <h4 class="notification" id="{{ $eventUpdate->id_event }}">- {{$eventUpdate->text}}</h4>
+                                </div>
                                 @endforeach
                             </div>
                         </div>
