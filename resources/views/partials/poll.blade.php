@@ -1,5 +1,8 @@
 <li class="poll">
-    <h3>{{ $poll->title }}</h3>
+    <div class="poll-header">
+        <h3>{{ $poll->title }}</h3>
+        <button type="button" class="fake-poll-delete-button">&#10060;</button>
+    </div>
     <ul class='poll-options'>
         @foreach ($poll->options as $option)
             <li class='poll-option'>

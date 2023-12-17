@@ -655,10 +655,20 @@ function createPoll() {
                     poll.style.listStyleType = "none";
                     poll.classList.add("poll");
                     poll.innerHTML = `
+                        <div class="poll-header">
                         <h3>${title}</h3>
+                        <button type="button" class="fake-poll-delete-button">&#10060;</button>
+                        </div>
                         <ul class="poll-options">
                         </ul>
                     `;
+                    poll.querySelector(".poll-header").style.display = "flex";
+                    poll.querySelector(".fake-poll-delete-button").addEventListener("click", () => {
+                        poll.remove();
+                        sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () {});
+                        createPollFake.style.display = "block";
+                    }
+                    );
                     createPollFake.parentElement.appendChild(poll);
                     const pollOptions = poll.querySelector(".poll-options");
                     options.forEach((option) => {
@@ -683,6 +693,21 @@ function createPoll() {
     }
 }
 
+
+function deletePoll() {
+    const deletePollButtons = document.querySelectorAll(".fake-poll-delete-button");
+    deletePollButtons.forEach((deletePollButton) => {
+        deletePollButton.addEventListener("click", () => {
+            const poll = deletePollButton.parentElement.parentElement;
+            const eventId = document.querySelector(".fake-poll-create-button").id;
+            console.log(eventId);
+            const title = deletePollButton.parentElement.querySelector("h3").textContent;
+            poll.remove();
+            sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () {});
+        });
+    });
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -696,3 +721,4 @@ requestToJoin();
 likeComment();
 dislikeComment();
 createPoll();
+deletePoll();

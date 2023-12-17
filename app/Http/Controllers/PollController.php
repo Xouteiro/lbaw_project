@@ -59,8 +59,12 @@ class PollController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Poll $poll)
-    {
-        //
+    public function delete(Request $request)
+    {   
+        $pollid=Poll::where('title', $request->input('title'))->where('id_event', $request->input('eventId'))->first()->id;
+        $poll=Poll::findOrFail($pollid);
+        $poll->options()->delete();
+        $poll->delete();
+        return response()->json(['message' => 'Poll deletion successful'], 200);
     }
 }
