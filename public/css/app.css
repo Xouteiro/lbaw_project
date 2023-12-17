@@ -204,6 +204,10 @@ main>header {
     background-color: #00172b;
 }
 
+main>header.home {
+    position: unset;
+}
+
 main>header h1 {
     margin: 0;
 }
@@ -234,7 +238,6 @@ main>header span {
     display: flex;
     flex-direction: column;
     max-width: fit-content;
-    top: 180px;
 }
 
 #content .container>form.general {
@@ -550,7 +553,7 @@ input.search-event {
 
 .pending_request_to_join {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 .pending_request_to_join h4 {
@@ -713,12 +716,12 @@ form#searchForm {
     padding-bottom: 10px;
 }
 
-.event-container .error {
+.error {
     display: block;
     color: #ff3333;
 }
 
-.event-container .success {
+.success {
     display: block;
     color: #30a33a;
 }

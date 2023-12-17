@@ -2,23 +2,25 @@
     use Illuminate\Support\Facades\Auth;
     use App\Models\Notification;
 
-    $id = Auth::user()->id;
-    // get all types of notifications
-    $invites = Notification::where('event_notification.id_user', $id)
-    ->join('invite', 
-    'invite.id_eventnotification', '=', 'event_notification.id')
-    ->get();
-    $eventUpdates = Notification::where('event_notification.id_user', $id)
-    ->join('event_update', 
-    'event_update.id_eventnotification', '=', 'event_notification.id')
-    ->get();
-    $requestsToJoin = Notification::where('event_notification.id_user', $id)
-    ->join('request_to_join',
-    'request_to_join.id_eventnotification', '=', 'event_notification.id')
-    ->get();
+    if(Auth::check()){
+        $id = Auth::user()->id;
+        // get all types of notifications
+        $invites = Notification::where('event_notification.id_user', $id)
+        ->join('invite',
+        'invite.id_eventnotification', '=', 'event_notification.id')
+        ->get();
+        $eventUpdates = Notification::where('event_notification.id_user', $id)
+        ->join('event_update',
+        'event_update.id_eventnotification', '=', 'event_notification.id')
+        ->get();
+        $requestsToJoin = Notification::where('event_notification.id_user', $id)
+        ->join('request_to_join',
+        'request_to_join.id_eventnotification', '=', 'event_notification.id')
+        ->get();
 
-    // join all notifications
-    $notifications = [$invites, $eventUpdates, $requestsToJoin];
+        // join all notifications
+        $notifications = [$invites, $eventUpdates, $requestsToJoin];
+    }
 ?>
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">

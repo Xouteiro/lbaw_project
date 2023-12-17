@@ -292,8 +292,9 @@ function deleteAccount() {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
-                surebox.style.left = "600px";
-                surebox.style.top = "400px";
+                var position = deleteAccountButton.getBoundingClientRect();
+                surebox.style.left = (position.left + parseInt(window.scrollX) - 150).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) - 150).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -329,8 +330,9 @@ function deleteEvent() {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
-                surebox.style.left = "880px";
-                surebox.style.top = "250px";
+                var positions = deleteEventButton.getBoundingClientRect();
+                surebox.style.left = (positions.left + parseInt(window.scrollX) - 10).toString() + "px";
+                surebox.style.top = (positions.top + parseInt(window.scrollY) + 50).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -460,9 +462,10 @@ function requestToJoin(){
             if(!decisionBox){
                 const decisionBox = document.createElement("div");
                 decisionBox.classList.add("decision_box");
+                decisionBox.classList.add("notification");
                 decisionBox.innerHTML = `
-                    <button type="button" class="accept_request_to_join">&check;</button>
-                    <button type="button" class="decline_request_to_join">&#10060;</button>
+                    <button type="button" class="accept_request_to_join notification">&check;</button>
+                    <button type="button" class="decline_request_to_join notification">&#10060;</button>
                 `;
                 requestToJoin.appendChild(decisionBox);
 
@@ -580,11 +583,12 @@ function openNotificaitons(){
     const notifications = document.querySelector(".user-notifications-container");
     if(notificationsIconDiv && notifications){
         notificationsIconDiv.addEventListener("click", () => {
+            const position = notificationsIconDiv.getBoundingClientRect();
             if(notifications.style.display == "none"){
                 notifications.style.display = "block";
                 notifications.style.position = "absolute";
-                notifications.style.left = "1300px";
-                notifications.style.top = "120px";
+                notifications.style.left = (position.left - 150).toString() + "px";
+                notifications.style.top = (position.top + 80).toString() + "px";
             }
             else {
                 notifications.style.display = "none";
