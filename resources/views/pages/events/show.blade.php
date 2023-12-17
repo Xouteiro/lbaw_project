@@ -44,13 +44,13 @@
                 @if(Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner)
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
-                <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
+                    <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
                 @endif 
             @else
                 @if(Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner)
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
-                <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
+                    <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
                 @endif
             @endif
             @if ($event->price == 0)

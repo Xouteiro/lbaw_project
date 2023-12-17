@@ -257,7 +257,7 @@ class EventController extends Controller
 
         Mail::to($user->email, $user->name)->send(new Email($data));
 
-        return back();
+        return redirect()->route('event.show', ['id' => $event->id]);
     }
 
     public function leaveEvent(string $id)
@@ -278,6 +278,6 @@ class EventController extends Controller
 
         Mail::to($user->email, $user->name)->send(new Email($data));
 
-        return back();
+        return redirect()->route('event.show', ['id' => $event->id]);
     }
 }

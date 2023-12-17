@@ -78,7 +78,7 @@ class InviteController extends Controller
             'name' => $user->name,
             'event' => $event->name,
             'eventId' => $event->id,
-            'inviteId' => $invite->id
+            'inviteId' => $invite->id_eventnotification,
         );
 
         Mail::to($userToInvite->email, $userToInvite->name)->send(new Email($data));
