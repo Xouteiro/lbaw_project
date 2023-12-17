@@ -724,7 +724,12 @@ function answerPoll() {
     polls.forEach((poll) => {
         const pollOptions = poll.querySelectorAll(".poll-option input[type='radio']");
         pollOptions.forEach((pollOptionInput) => {
-            pollOptionInput.checked = false;
+            console.log(pollOptionInput);
+            if(!pollOptionInput.classList.length){
+                pollOptionInput.checked = false;
+            }else{
+                pollOptionInput.checked = true;
+            }
         });
         const pollOptionsChecked = poll.querySelectorAll(".poll-option input[type='radio']:checked");
         let checkedBefore = pollOptionsChecked[0] ? pollOptionsChecked[0] : null;
@@ -741,18 +746,22 @@ function answerPoll() {
                     votes -= 1;
                     pollOptionInput.checked = false;
                     checkedBefore = null;
+                    pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                    sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
                 } else if ( checkedBefore && checkedBefore.value != pollOptionInput.value) {
                     votes += 1;
                     beforeVotes -= 1;
                     checkedBefore.parentElement.querySelector("p").textContent = `${beforeOption} - ${beforeVotes}`;
                     checkedBefore = pollOptionInput;
-                    sendAjaxRequest('PUT', `/api/poll/answer`, { eventId, title, beforeOption, beforeVotes }, function () { });
+                    sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: beforeOption, votes: beforeVotes }, function () { });
+                    pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                    sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
                 }else{
                     votes += 1;
                     checkedBefore = pollOptionInput;
-                }                
-                pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
-                sendAjaxRequest('PUT', `/api/poll/answer`, { eventId, title, option, votes }, function () { });
+                    pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                    sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
+                }
                 
             });
 

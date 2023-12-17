@@ -110,4 +110,6 @@ Route::controller(FileController::class)->group(function () {
 Route::controller(PollController::class)->group(function () {
     Route::post('api/poll/store', 'store')->name('poll.store');
     Route::delete('api/poll/delete', 'delete')->name('poll.delete');
+    Route::put('api/poll/vote', 'vote')->name('poll.vote');
+    Route::delete('api/poll/unvote', 'unvote')->name('poll.unvote');
 });
