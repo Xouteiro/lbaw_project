@@ -558,7 +558,6 @@ function dislikeComment() {
         });
     });
 }
-
 function createPoll() {
     const createPollFake = document.querySelector(".fake-poll-create-button");
     const eventId = createPollFake.id;
@@ -579,6 +578,7 @@ function createPoll() {
                     <input type="text" name="option2" placeholder="Option 2" required>
             `;
             createPollFake.parentElement.appendChild(createPollForm);
+            createPollFake.parentElement.insertBefore(createPollForm, createPollFake);
             const createPollOptions = document.createElement("div");
             createPollOptions.classList.add("add-poll-options");
             createPollOptions.innerHTML = `
@@ -649,7 +649,6 @@ function createPoll() {
                         return;
                     }
                 }
-                const copyCreatePollForm = createPollForm.cloneNode(true);
                 createPollForm.remove();
                 createPollFake.style.display = "block";
                 const poll = document.createElement("li");
@@ -700,9 +699,49 @@ function createPoll() {
                 sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () { });
                 optionNumber = 2;
                 provisionalId++;
+                const pollOptionsInputs = poll.querySelectorAll(".poll-option input[type='radio']");
+                const pollOptionsChecked = poll.querySelectorAll(".poll-option input[type='radio']:checked");
+                let checkedBefore = pollOptionsChecked[0] ? pollOptionsChecked[0] : null;
+                pollOptionsInputs.forEach((pollOptionInput) => {
+                    pollOptionInput.addEventListener("click", (event) => {
+                        event.stopPropagation();
+                        const eventId = document.querySelector(".fake-poll-create-button").id;
+                        const title = poll.querySelector("h3").textContent;
+                        const option = pollOptionInput.parentElement.querySelector("p").textContent.substring(0, pollOptionInput.parentElement.querySelector("p").textContent.indexOf(" - "));
+                        let votes = parseInt(pollOptionInput.parentElement.querySelector("p").textContent.split(" - ")[1]);
+                        const beforeOption = checkedBefore ? checkedBefore.parentElement.querySelector("p").textContent.substring(0, checkedBefore.parentElement.querySelector("p").textContent.indexOf(" - ")): null;
+                        let beforeVotes = checkedBefore ? parseInt(checkedBefore.parentElement.querySelector("p").textContent.split(" - ")[1]) : null;
+                        if (checkedBefore && checkedBefore.value == pollOptionInput.value) {
+                            votes -= 1;
+                            pollOptionInput.checked = false;
+                            checkedBefore = null;
+                            pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                            sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
+                        } else if ( checkedBefore && checkedBefore.value != pollOptionInput.value) {
+                            votes += 1;
+                            beforeVotes -= 1;
+                            checkedBefore.parentElement.querySelector("p").textContent = `${beforeOption} - ${beforeVotes}`;
+                            checkedBefore = pollOptionInput;
+                            sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: beforeOption, votes: beforeVotes }, function () { });
+                            pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                            sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
+                            pollOptionInput.classList.add("user_vote");
+                            pollOptionInput.checked = true;
+                        }else{
+                            votes += 1;
+                            checkedBefore = pollOptionInput;
+                            pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                            sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
+                            pollOptionInput.classList.add("user_vote");
+                            pollOptionInput.checked = true;
+                        }
+                    });
+                }
+                );
             });
         });
     }
+   
 }
 
 
@@ -756,11 +795,15 @@ function answerPoll() {
                     sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: beforeOption, votes: beforeVotes }, function () { });
                     pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
                     sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
+                    pollOptionInput.classList.add("user_vote");
+                    pollOptionInput.checked = true;
                 }else{
                     votes += 1;
                     checkedBefore = pollOptionInput;
                     pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
                     sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
+                    pollOptionInput.classList.add("user_vote");
+                    pollOptionInput.checked = true;
                 }
                 
             });
