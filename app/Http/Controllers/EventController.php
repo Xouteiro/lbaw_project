@@ -155,8 +155,7 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
         $this->authorize('removeparticipant', $event);
         $event->participants()->detach($id_participant);
-        return redirect()->route('event.participants', ['id' => $event->id])
-            ->withSuccess('You have successfully removed the participant!');
+        return back();
     }
 
     public function delete(string $id)
@@ -247,7 +246,7 @@ class EventController extends Controller
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
-        return back()->withSuccess('You have successfully joined the event!');
+        return back();
     }
 
     public function leaveEvent(string $id)
@@ -258,6 +257,6 @@ class EventController extends Controller
         $this->authorize('leave', $event);
 
         $event->participants()->detach($user->id);
-        return back()->withSuccess('You have successfully left the event!');
+        return back();
     }
 }

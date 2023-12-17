@@ -737,11 +737,13 @@ form#searchForm {
 .error {
     display: block;
     color: #ff3333;
+    margin: 1em 0;
 }
 
 .success {
     display: block;
     color: #30a33a;
+    margin: 1em 0;
 }
 
 .event-container .comment {
