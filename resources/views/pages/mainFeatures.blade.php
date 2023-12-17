@@ -5,12 +5,11 @@
         <div class= "background-image">
             <img src="{{ url('images/homepage.png') }}" alt="Home page image">
             <div class="overlay-text">
-                <h1> Invents's Main Features </h1>
+                <h1 style="white-space:nowrap">Invents's Main Features</h1>
                 <h2> Here is why you should use Invents </h2>
                 <h4> Checkout the Main Features of our website: </h4>
             </div>
         </div>
-
         <div class="main">
             <div class="feature">
                 <h3>Search Events!</h3>

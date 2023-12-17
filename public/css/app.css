@@ -32,6 +32,35 @@ header h1 a {
     margin-left: 50px;
 }
 
+header img.notifications-icon {
+    height: 2.5em;
+    margin-right: 2em;
+    margin-left: 2em;
+}
+
+.user-notifications-container {
+    background-color: #00172b;
+    margin-right: 1em;
+    margin-left: 1em;
+    border-radius: 15px;
+}
+
+.user-notifications {
+    margin: 1em;
+}
+
+.user-notifications h2 {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: white;
+}
+
+.user-notifications h4 {
+    font-size: 1.2em;
+    font-weight: 400;
+    color: white;
+}
+
 header img.user {
     max-height: 5.5em;
     max-width: 3.5em;
@@ -60,7 +89,9 @@ section#content {
 
 }
 
-section#content.home {
+section#content.home,
+section#content.about,
+section#content.mainFeatures {
     padding-top: 0;
 }
 
@@ -524,11 +555,29 @@ input.search-event {
 
 .pending_request_to_join {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 .pending_request_to_join h4 {
     padding: 0 1em;
+}
+
+.pending_event_update {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.pending_event_update:hover {
+    background-color: rgb(88, 89, 94);
+}
+
+.pending_event_update:hover .close_event_update {
+    display: block;
+    border-radius: 5px;
+    padding: 0 1em;
+    color: white;
+    font-weight: 500;
 }
 
 .comment-list {
@@ -685,12 +734,12 @@ form#searchForm {
     padding-bottom: 10px;
 }
 
-.event-container .error {
+.error {
     display: block;
     color: #ff3333;
 }
 
-.event-container .success {
+.success {
     display: block;
     color: #30a33a;
 }

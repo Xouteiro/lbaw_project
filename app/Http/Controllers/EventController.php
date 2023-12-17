@@ -140,8 +140,7 @@ class EventController extends Controller
         $event->id_owner = $event->id_owner;
         $event->id_location = $request->input('id_location');
         $event->save();
-        return redirect()->route('event.show', ['id' => $event->id])
-            ->withSuccess('You have successfully edited your profile!');
+        return (new EventUpdateController())->sendEventUpdate($id);
     }
 
     public function participants(string $id)
