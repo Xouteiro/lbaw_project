@@ -110,6 +110,8 @@
             </section>
             <footer>
                 <p>© 2023 Invents</p>
+                <p><a href="{{route('about')}}">About Us</a></p>
+                <p><a href="{{route('mainFeatures')}}">Main Features</a></p>
             </footer>
         </main>
     </body>

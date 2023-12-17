@@ -89,7 +89,7 @@ class EventController extends Controller
             return view('pages.events.show', ['event' => $event, 'invite' => $invite]);
         }
 
-        if($request->id_requestToJoin) {
+        if ($request->id_requestToJoin) {
             $requestToJoin = Notification::findOrFail($request->id_requestToJoin);
             return view('pages.events.show', ['event' => $event, 'requestToJoin' => $requestToJoin]);
         }
@@ -185,58 +185,57 @@ class EventController extends Controller
         $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
         $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
 
-        if ($request->get('search') == null && $datefilter == null && $locationfilter == null && $freefilter == null && $finishedfilter == null) { 
+        if ($request->get('search') == null && $datefilter == null && $locationfilter == null && $freefilter == null && $finishedfilter == null) {
             $events = Event::select()->where('eventdate', '>=', Carbon::now())->get();
             return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
 
         if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
             $query = Event::select();
-            
+
             $query->where(function ($query) use ($datefilter, $locationfilter, $input, $freefilter, $finishedfilter) {
-                    if($input !== '\'*\'') {
-                        $query->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
+                if ($input !== '\'*\'') {
+                    $query->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
                         ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
-                    }
-                    if ($datefilter !== null) {
-                        $query->where('eventdate', '>=', $datefilter);
-                    }
-        
-                    if ($locationfilter !== null) {
-                        $query->where('id_location', '=', $locationfilter);
-                    }
-                    if ($freefilter !== null) {
-                        $query->where('price', '=', 0);
-                    }
-                    if ($finishedfilter !== null) {
-                        $query->where('eventdate', '<', Carbon::now());
-                    }
-                });
-        
+                }
+                if ($datefilter !== null) {
+                    $query->where('eventdate', '>=', $datefilter);
+                }
+
+                if ($locationfilter !== null) {
+                    $query->where('id_location', '=', $locationfilter);
+                }
+                if ($freefilter !== null) {
+                    $query->where('price', '=', 0);
+                }
+                if ($finishedfilter !== null) {
+                    $query->where('eventdate', '<', Carbon::now());
+                }
+            });
+
             $events = $query->get();
-        
+
             return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
-        
+
 
         if ($request->get('search') !== null) { //com filtros e pesquisa
             $query = Event::select()
                 ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
                 ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
-        
+
             if ($datefilter !== null) {
                 $query->where('eventdate', '>=', $datefilter);
             }
-        
+
             if ($locationfilter !== null) {
                 $query->where('id_location', '=', $locationfilter);
             }
-        
+
             $events = $query->get();
-        
+
             return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
-        
     }
 
     static public function joinEvent(string $id)
@@ -248,7 +247,17 @@ class EventController extends Controller
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
-        return redirect()->route('event.show', ['id' => $event->id])
-            ->withSuccess('You have successfully joined the event!');
+        return back()->withSuccess('You have successfully joined the event!');
+    }
+
+    public function leaveEvent(string $id)
+    {
+        $user = User::find(Auth::user()->id);
+        $event = Event::findOrFail($id);
+
+        $this->authorize('leave', $event);
+
+        $event->participants()->detach($user->id);
+        return back()->withSuccess('You have successfully left the event!');
     }
 }

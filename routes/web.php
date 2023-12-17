@@ -3,12 +3,14 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\InviteController;
+use App\Http\Controllers\StaticPagesController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\RequestToJoinController;
@@ -27,9 +29,6 @@ use App\Http\Controllers\EventUpdateController;
 
 // Home
 Route::redirect('/', '/login');
-Route::controller(HomeController::class)->group(function () {
-    Route::get('/home', 'index')->name('home');
-});
 
 // User
 Route::controller(UserController::class)->group(function () {
@@ -53,6 +52,7 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/event/{id}/delete', 'deleteDummy');
     Route::delete('/event/{id}/delete', 'delete')->name('event.delete');
     Route::post('/event/{id}/join', 'joinEvent')->name('event.join');
+    Route::post('/event/{id}/leave', 'leaveEvent')->name('event.leave');
 });
 
 // Authentication
@@ -82,6 +82,13 @@ Route::controller(EventController::class)->group(function () {
 Route::controller(InviteController::class)->group(function(){
     Route::post('/api/send-invite', 'sendInvite')->name('invite.send');
     Route::post('/api/accept-invite', 'acceptInvite')->name('invite.accept');
+});
+
+// StaticPages
+Route::controller(StaticPagesController::class)->group(function(){
+    Route::get('/home', 'home')->name('home');
+    Route::get('/about', 'about')->name('about');
+    Route::get('/mainFeatures', 'mainFeatures')->name('mainFeatures');
 });
 
 // RequestToJoin
