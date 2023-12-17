@@ -176,7 +176,7 @@
                 </div>
                     <ul class="poll-list">
                     @if($event->polls->count() == 0)
-                        <p>No polls yet</p>
+                        <p class="no-polls">No polls yet</p>
                     @else
                         @each('partials.poll', $event->polls->reverse(), 'poll')
                     @endif

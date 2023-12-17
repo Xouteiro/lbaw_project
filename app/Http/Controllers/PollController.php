@@ -41,22 +41,6 @@ class PollController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Poll $poll)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Poll $poll)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function delete(Request $request)

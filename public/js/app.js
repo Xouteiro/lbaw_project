@@ -154,7 +154,6 @@ function openOptions() {
                             option.parentElement.firstElementChild.firstElementChild.remove();
                             const findFirstHidden = document.querySelector(`${selectedEvents} .event-hidden`);
                             if (findFirstHidden) {
-                                console.log(findFirstHidden.parentElement.parentElement);
                                 findFirstHidden.parentElement.parentElement.parentElement.insertBefore(topElement, findFirstHidden.parentElement.parentElement.previousSibling);
                             }
                             else {
@@ -399,8 +398,6 @@ function editComment() {
         editCommentButton.addEventListener("click", (e) => {
             const commentId = editCommentButton.id;
             const eventId = window.location.href.split("/")[4].split("#")[0];
-            console.log(eventId);
-            console.log(commentId);
             editCommentButton.parentElement.style.display = "none";
             const mainCommentDiv = editCommentButton.parentElement.parentElement;
             const commentText = mainCommentDiv.querySelector("p");
@@ -568,6 +565,8 @@ function createPoll() {
     let optionNumber = 2;
     if (createPollFake) {
         createPollFake.addEventListener("click", () => {
+            const noPolls = document.querySelector(".no-polls"); 
+            noPolls ? noPolls.style.display = "none" : null; 
             createPollFake.style.display = "none";
             const createPollForm = document.createElement("div");
             createPollForm.classList.add("create-poll-form");
@@ -626,13 +625,13 @@ function createPoll() {
             createPollForm.appendChild(createPollButtons);
             const cancelCreatePollButton = createPollButtons.querySelector(".cancel-create-poll-button");
             cancelCreatePollButton.addEventListener("click", () => {
+                noPolls ? noPolls.style.display = "block" : null;
                 createPollForm.remove();
                 createPollFake.style.display = "block";
             });
             const createPollButton = createPollButtons.querySelector(".create-poll-button");
             createPollButton.addEventListener("click", () => {
                     const title = createPollForm.querySelector("input[name='title']").value;
-                    console.log(title);
                     if(!title){
                         createPollForm.remove();
                         createPollFake.style.display = "block";
@@ -649,6 +648,7 @@ function createPoll() {
                             return;
                         }
                     }
+                    const copyCreatePollForm = createPollForm.cloneNode(true);
                     createPollForm.remove();
                     createPollFake.style.display = "block";
                     const poll = document.createElement("li");
@@ -665,10 +665,18 @@ function createPoll() {
                     poll.querySelector(".poll-header").style.display = "flex";
                     poll.querySelector(".fake-poll-delete-button").addEventListener("click", () => {
                         poll.remove();
-                        sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () {});
                         createPollFake.style.display = "block";
-                    }
-                    );
+                        const checkPolls = document.querySelectorAll(".poll");
+                        if(!checkPolls.length){
+                            const noPolls = document.createElement("p");
+                            noPolls.classList.add("no-polls");
+                            noPolls.textContent = "No Polls";
+                            createPollFake.parentElement.appendChild(noPolls);
+                        }
+                        sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () {});
+                        noPolls ? noPolls.style.display = "block" : null;
+                    });
+          
                     createPollFake.parentElement.appendChild(poll);
                     const pollOptions = poll.querySelector(".poll-options");
                     options.forEach((option) => {
@@ -685,7 +693,9 @@ function createPoll() {
                         pollOptions.appendChild(pollOption);
                     }
                     ); 
-                    const noPolls = document.querySelector(".no-polls"); 
+                    if(noPolls){
+                        noPolls.remove();
+                    }
                     sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () {});
                     optionNumber = 2;
             });
@@ -700,13 +710,28 @@ function deletePoll() {
         deletePollButton.addEventListener("click", () => {
             const poll = deletePollButton.parentElement.parentElement;
             const eventId = document.querySelector(".fake-poll-create-button").id;
-            console.log(eventId);
             const title = deletePollButton.parentElement.querySelector("h3").textContent;
             poll.remove();
             sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () {});
         });
     });
 }
+
+function anwserPoll(){
+    const pollOptions = document.querySelectorAll(".poll-option");
+    pollOptions.forEach((pollOption) => {
+        pollOption.addEventListener("click", () => {
+            const poll = pollOption.parentElement.parentElement;
+            const eventId = document.querySelector(".fake-poll-create-button").id;
+            const title = poll.querySelector("h3").textContent;
+            const option = pollOption.querySelector("input").value;
+            const votes = pollOption.querySelector("p").textContent.split(" ")[3];
+            sendAjaxRequest('POST', `/api/poll/answer`, { eventId: eventId, title: title, option: option, votes: votes }, function () {});
+        });
+    });
+}
+
+
 
 addEventListeners();
 openOptions();
@@ -722,3 +747,4 @@ likeComment();
 dislikeComment();
 createPoll();
 deletePoll();
+anwserPoll();
