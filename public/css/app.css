@@ -32,6 +32,35 @@ header h1 a {
     margin-left: 50px;
 }
 
+header img.notifications-icon {
+    height: 2.5em;
+    margin-right: 2em;
+    margin-left: 2em;
+}
+
+.user-notifications-container {
+    background-color: #00172b;
+    margin-right: 1em;
+    margin-left: 1em;
+    border-radius: 15px;
+}
+
+.user-notifications {
+    margin: 1em;
+}
+
+.user-notifications h2 {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: white;
+}
+
+.user-notifications h4 {
+    font-size: 1.2em;
+    font-weight: 400;
+    color: white;
+}
+
 header img.user {
     max-height: 5.5em;
     max-width: 3.5em;
@@ -60,7 +89,9 @@ section#content {
 
 }
 
-section#content.home {
+section#content.home,
+section#content.about,
+section#content.mainFeatures {
     padding-top: 0;
 }
 
@@ -524,11 +555,29 @@ input.search-event {
 
 .pending_request_to_join {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 .pending_request_to_join h4 {
     padding: 0 1em;
+}
+
+.pending_event_update {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.pending_event_update:hover {
+    background-color: rgb(88, 89, 94);
+}
+
+.pending_event_update:hover .close_event_update {
+    display: block;
+    border-radius: 5px;
+    padding: 0 1em;
+    color: white;
+    font-weight: 500;
 }
 
 .comment-list {
@@ -554,8 +603,6 @@ input.search-event {
     background-color: rgb(148, 170, 236);
 }
 
-
-
 .participant-card {
     background-color: #e8ecf8;
     border: 1px solid rgb(148, 170, 236);
@@ -568,13 +615,13 @@ input.search-event {
     padding-top: 25px;
 }
 
-.participant-card p{
+.participant-card p {
     margin-right: 20px;
     padding-left: 10px;
 
 }
 
-.participant-card form{
+.participant-card form {
     display: flex;
     align-self: end;
 }
@@ -687,14 +734,16 @@ form#searchForm {
     padding-bottom: 10px;
 }
 
-.event-container .error {
+.error {
     display: block;
     color: #ff3333;
+    margin: 1em 0;
 }
 
-.event-container .success {
+.success {
     display: block;
     color: #30a33a;
+    margin: 1em 0;
 }
 
 .event-container .comment {
@@ -708,7 +757,7 @@ form#searchForm {
     justify-content: space-between;
 }
 
-.event-container .comment .comment-header .comment-header-title-likes{
+.event-container .comment .comment-header .comment-header-title-likes {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -926,13 +975,14 @@ form#searchForm div.input_field select {
 
 }
 
-.participants{
+.participants {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     margin: 1em 0;
 }
-.participants a{
+
+.participants a {
     padding-left: 10px;
 }
 
@@ -1017,4 +1067,174 @@ li.poll-option label{
         z-index: 2;
         /* Ensure the hidden status is on top of the event image and pin */
     }
+}
+
+.about-page {
+    margin: 0;
+    max-width: 100%;
+}
+
+.about-page .background-image .overlay-text h4 {
+    top: 100%;
+}
+
+.about-page .main {
+    margin-top: 5rem;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.about-page .call-to-action,
+.contact-us {
+    margin: auto;
+    max-width: 75%;
+    text-align: center;
+}
+
+.about-card {
+    position: relative;
+    background-color: #fff;
+    border-radius: 5%;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    width: 21em;
+    scale: 0.95;
+    transition: scale 0.9s;
+}
+
+.about-page a {
+    color: blue;
+}
+
+.mainFeatures-page {
+    margin: 0;
+    max-width: 100%;
+}
+
+.mainFeatures-page .background-image .overlay-text h4 {
+    top: 100%;
+}
+
+.mainFeatures-page .main {
+    display: flex;
+    justify-content: space-evenly;
+    width: 90%;
+    margin: auto;
+    margin-top: 5rem;
+}
+
+.mainFeatures-page .main .feature {
+    width: 20%;
+    text-align: center;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 5%;
+}
+
+.mainFeatures-page .main .feature h3 {
+    font-size: 3rem;
+}
+
+.mainFeatures-page .main .feature p {
+    font-size: 2.1rem;
+}
+
+footer {
+    display: flex;
+}
+
+footer a {
+    color: white;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+footer a:hover {
+    color: #0056b3;
+}
+
+.about-page {
+    margin: 0;
+    max-width: 100%;
+}
+
+.about-page .background-image .overlay-text h4 {
+    top: 100%;
+}
+
+.about-page .main {
+    margin-top: 5rem;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.about-page .call-to-action,
+.contact-us {
+    margin: auto;
+    max-width: 75%;
+    text-align: center;
+}
+
+.about-card {
+    position: relative;
+    background-color: #fff;
+    border-radius: 5%;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    width: 21em;
+    scale: 0.95;
+    transition: scale 0.9s;
+}
+
+.about-page a {
+    color: blue;
+}
+
+.mainFeatures-page {
+    margin: 0;
+    max-width: 100%;
+}
+
+.mainFeatures-page .background-image .overlay-text h4 {
+    top: 100%;
+}
+
+.mainFeatures-page .main {
+    display: flex;
+    justify-content: space-evenly;
+    width: 90%;
+    margin: auto;
+    margin-top: 5rem;
+}
+
+.mainFeatures-page .main .feature {
+    width: 20%;
+    text-align: center;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 5%;
+}
+
+.mainFeatures-page .main .feature h3 {
+    font-size: 3rem;
+}
+
+.mainFeatures-page .main .feature p {
+    font-size: 2.1rem;
+}
+
+footer {
+    display: flex;
+}
+
+footer a {
+    color: white;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+footer a:hover {
+    color: #0056b3;
 }

@@ -2,18 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\HomeController;
+
 use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\InviteController;
+use App\Http\Controllers\StaticPagesController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\RequestToJoinController;
-use App\Models\Poll;
+use App\Http\Controllers\EventUpdateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,9 +29,6 @@ use App\Models\Poll;
 
 // Home
 Route::redirect('/', '/login');
-Route::controller(HomeController::class)->group(function () {
-    Route::get('/home', 'index')->name('home');
-});
 
 // User
 Route::controller(UserController::class)->group(function () {
@@ -54,6 +52,7 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/event/{id}/delete', 'deleteDummy');
     Route::delete('/event/{id}/delete', 'delete')->name('event.delete');
     Route::post('/event/{id}/join', 'joinEvent')->name('event.join');
+    Route::post('/event/{id}/leave', 'leaveEvent')->name('event.leave');
 });
 
 // Authentication
@@ -85,10 +84,24 @@ Route::controller(InviteController::class)->group(function(){
     Route::post('/api/accept-invite', 'acceptInvite')->name('invite.accept');
 });
 
+// StaticPages
+Route::controller(StaticPagesController::class)->group(function(){
+    Route::get('/home', 'home')->name('home');
+    Route::get('/about', 'about')->name('about');
+    Route::get('/mainFeatures', 'mainFeatures')->name('mainFeatures');
+});
+
+// RequestToJoin
 Route::controller(RequestToJoinController::class)->group(function(){
     Route::post('/api/send-request-to-join', 'sendRequestToJoin')->name('requestToJoin.send');
     Route::post('/api/accept-request-to-join', 'acceptRequestToJoin')->name('requestToJoin.accept');
     Route::post('/api/deny-request-to-join', 'denyRequestToJoin')->name('requestToJoin.deny');
+});
+
+// EventUpdate
+Route::controller(EventUpdateController::class)->group(function(){
+    Route::post('/api/send-event-update', 'sendEventUpdate')->name('eventUpdate.send');
+    Route::post('/api/clear-event-update', 'clearEventUpdate')->name('eventUpdate.clear');
 });
 
 // Comment
@@ -107,9 +120,12 @@ Route::controller(FileController::class)->group(function () {
     Route::post('/file/deleteEventPicture', 'deleteEventPicture')->name('file.deleteEventPicture');
 });
 
+// Poll
 Route::controller(PollController::class)->group(function () {
     Route::post('api/poll/store', 'store')->name('poll.store');
     Route::delete('api/poll/delete', 'delete')->name('poll.delete');
     Route::put('api/poll/vote', 'vote')->name('poll.vote');
     Route::delete('api/poll/unvote', 'unvote')->name('poll.unvote');
 });
+
+

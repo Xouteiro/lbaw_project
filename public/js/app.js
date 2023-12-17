@@ -283,7 +283,7 @@ function removeParticipant() {
 function deleteAccount() {
     const deleteAccountButton = document.querySelector(".fake.button.delete-account");
     if (deleteAccountButton) {
-        deleteAccountButton.addEventListener("click", (e) => {
+        deleteAccountButton.addEventListener("click", () => {
             const accountId = deleteAccountButton.id;
             const sureboxExists = deleteAccountButton.parentElement.querySelector(".surebox");
 
@@ -291,8 +291,9 @@ function deleteAccount() {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
-                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 100).toString() + "px";
-                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) - 250).toString() + "px";
+                var position = deleteAccountButton.getBoundingClientRect();
+                surebox.style.left = (position.left + parseInt(window.scrollX) - 150).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) - 150).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -321,15 +322,16 @@ function deleteAccount() {
 function deleteEvent() {
     const deleteEventButton = document.querySelector(".fake.button.delete-event");
     if (deleteEventButton) {
-        deleteEventButton.addEventListener("click", (e) => {
+        deleteEventButton.addEventListener("click", () => {
             const eventId = deleteEventButton.id;
             const sureboxExists = deleteEventButton.parentElement.querySelector(".surebox");
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
-                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) - 80).toString() + "px";
-                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) + 50).toString() + "px";
+                var positions = deleteEventButton.getBoundingClientRect();
+                surebox.style.left = (positions.left + parseInt(window.scrollX) - 10).toString() + "px";
+                surebox.style.top = (positions.top + parseInt(window.scrollY) + 50).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -358,15 +360,16 @@ function deleteEvent() {
 function deleteComment() {
     const deleteCommentButtons = document.querySelectorAll(".fake.button.delete-comment");
     deleteCommentButtons.forEach((deleteCommentButton) => {
-        deleteCommentButton.addEventListener("click", (e) => {
+        deleteCommentButton.addEventListener("click", () => {
             const commentId = deleteCommentButton.id;
             const sureboxExists = deleteCommentButton.parentElement.querySelector(".surebox");
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
-                surebox.style.left = (parseInt(e.clientX) + parseInt(window.scrollX) + 100).toString() + "px";
-                surebox.style.top = (parseInt(e.clientY) + parseInt(window.scrollY) - 20).toString() + "px";
+                var buttonPositions = deleteCommentButton.getBoundingClientRect();
+                surebox.style.left = (buttonPositions.left + parseInt(window.scrollX)).toString() + "px";
+                surebox.style.top = (buttonPositions.top + parseInt(window.scrollY) - 100).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -395,12 +398,11 @@ function deleteComment() {
 function editComment() {
     const editCommentButtons = document.querySelectorAll(".fake.button.edit-comment");
     editCommentButtons.forEach((editCommentButton) => {
-        editCommentButton.addEventListener("click", (e) => {
+        editCommentButton.addEventListener("click", () => {
             const commentId = editCommentButton.id;
-            const eventId = window.location.href.split("/")[4].split("#")[0];
             editCommentButton.parentElement.style.display = "none";
-            const mainCommentDiv = editCommentButton.parentElement.parentElement;
-            const commentText = mainCommentDiv.querySelector("p");
+            const mainCommentDiv = editCommentButton.parentElement.parentElement.parentElement;
+            const commentText = mainCommentDiv.querySelector(".comment-text");
             commentText.style.display = "none";
             const commentTextValue = commentText.textContent;
 
@@ -413,7 +415,7 @@ function editComment() {
                 <button type="button" class="cancel-edit-comment-button">Cancel</button>
                 <button type="button" class="save-edit-comment-button">Save</button>
             `;
-            mainCommentDiv.insertBefore(editCommentDiv, mainCommentDiv.querySelector(".comment-actions"));
+            mainCommentDiv.insertBefore(editCommentDiv, mainCommentDiv.querySelector(".comment-date"));
 
             const cancelEditCommentButton = editCommentDiv.querySelector(".cancel-edit-comment-button");
             cancelEditCommentButton.addEventListener("click", () => {
@@ -459,9 +461,10 @@ function requestToJoin() {
             if (!decisionBox) {
                 const decisionBox = document.createElement("div");
                 decisionBox.classList.add("decision_box");
+                decisionBox.classList.add("notification");
                 decisionBox.innerHTML = `
-                    <button type="button" class="accept_request_to_join">&check;</button>
-                    <button type="button" class="decline_request_to_join">&#10060;</button>
+                    <button type="button" class="accept_request_to_join notification">&check;</button>
+                    <button type="button" class="decline_request_to_join notification">&#10060;</button>
                 `;
                 requestToJoin.appendChild(decisionBox);
 
@@ -495,7 +498,46 @@ function requestToJoin() {
     closeDecisionBox();
 }
 
-function likeComment() {
+
+function eventUpdate(){
+    const eventUpdates = document.querySelectorAll(".pending_event_update");
+    eventUpdates.forEach((eventUpdate) => {
+        eventUpdate.addEventListener("mouseover", () => {
+            const eventUpdateId = eventUpdate.id;
+            const closeEventUpdateButton = eventUpdate.querySelector(".close_event_update");
+            if(!closeEventUpdateButton){
+                const closeEventUpdateButton = document.createElement("p");
+                closeEventUpdateButton.classList.add("close_event_update");
+                closeEventUpdateButton.classList.add("notification");
+                closeEventUpdateButton.textContent = "X";
+                eventUpdate.appendChild(closeEventUpdateButton);
+                closeEventUpdateButton.addEventListener("click", () => {
+                    const eventUpdatesDiv = eventUpdate.parentElement;
+                    eventUpdate.remove();
+                    if(!eventUpdatesDiv.childElementCount){
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No Event Updates";
+                        eventUpdatesDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/api/clear-event-update`, {id_eventUpdate: eventUpdateId}, function () {});
+                });
+            }
+        });
+
+        eventUpdate.firstElementChild.addEventListener("click", () => {
+            window.location.href = `/event/${eventUpdate.firstElementChild.id}`;
+        });
+
+        eventUpdate.addEventListener("mouseleave", () => {
+            const closeEventUpdateButton = eventUpdate.querySelector(".close_event_update");
+            if(closeEventUpdateButton){
+                closeEventUpdateButton.remove();
+            }
+        });
+    });
+}
+
+function likeComment(){
     const likes = document.querySelectorAll(".comment-like");
     likes.forEach((like) => {
         like.addEventListener("click", () => {
@@ -816,6 +858,41 @@ function answerPoll() {
 
 
 
+function closeNotifications(){
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("user-notifications-container") 
+        || e.target.classList.contains("user-notifications") 
+        || e.target.classList.contains("notifications-icon")
+        || e.target.classList.contains("notification")) {
+            return;
+        }
+        const notifications = document.querySelector(".user-notifications-container");
+        if(notifications){
+            notifications.style.display = "none";
+        }
+    });
+}
+
+function openNotificaitons(){
+    const notificationsIconDiv = document.querySelector(".notifications-icon");
+    const notifications = document.querySelector(".user-notifications-container");
+    if(notificationsIconDiv && notifications){
+        notificationsIconDiv.addEventListener("click", () => {
+            const position = notificationsIconDiv.getBoundingClientRect();
+            if(notifications.style.display == "none"){
+                notifications.style.display = "block";
+                notifications.style.position = "absolute";
+                notifications.style.left = (position.left - 150).toString() + "px";
+                notifications.style.top = (position.top + 80).toString() + "px";
+            }
+            else {
+                notifications.style.display = "none";
+            }
+        });
+    }
+    closeNotifications();
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -826,8 +903,10 @@ deleteEvent();
 deleteComment();
 editComment();
 requestToJoin();
+eventUpdate();
 likeComment();
 dislikeComment();
 createPoll();
 deletePoll();
 answerPoll();
+openNotificaitons();

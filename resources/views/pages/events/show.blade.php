@@ -110,6 +110,13 @@
                     Request to join
                 </button>
             </form>
+        @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event))
+            <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
+                @csrf
+                <button class="button" type="submit">
+                    Leave Event
+                </button>
+            </form>
         @endif
         @if (Auth::check() && Auth::user()->id == $event->id_owner)
             <div class="invite-container">
