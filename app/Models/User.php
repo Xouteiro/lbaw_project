@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Http\Controllers\FileController;
 
 // Added to define Eloquent relationships.
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +23,7 @@ class User extends Authenticatable
         'username', 
         'email',
         'password',
+        'profile_image',
     ];
     protected $hidden = [
         'password'
@@ -58,11 +60,6 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class, 'id_user');
     }
 
-    public function files()
-    {
-        return $this->hasMany(File::class, 'id_user');
-    }
-
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'id_user');
@@ -76,5 +73,14 @@ class User extends Authenticatable
     public function joinRequests()
     {
         return $this->hasMany(RequestToJoin::class, 'id_user');
+    }
+
+    public function likesDislikes()
+    {
+        return $this->hasMany(LikesDislikes::class, 'id_user');
+    }
+
+    public function getProfileImage() {
+        return FileController::get('profile', $this->id);
     }
 }

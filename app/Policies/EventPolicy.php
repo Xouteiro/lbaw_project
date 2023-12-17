@@ -40,6 +40,11 @@ class EventPolicy
 
     public function participants(User $user, Event $event): bool
     {
+
+        $participants = $event->participants()->get();
+        foreach ($participants as $participant) {
+            if ($participant->id === $user->id) return true;
+        }
         if (Auth::check()) {
             if ($event->id_owner === $user->id || $user->admin) return true;
         }
@@ -72,4 +77,7 @@ class EventPolicy
         }
         return false;
     }
+
+    
+    
 }

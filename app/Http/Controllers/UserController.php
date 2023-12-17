@@ -84,15 +84,15 @@ class UserController extends Controller
             ->withSuccess('You have successfully edited your profile!');
     }
 
-    public function delete(string $id) //fazer com que os eventos/comentarios/etc nao sejam apagados
+    public function delete(string $id)
     {
         $user = User::findOrFail($id);
 
-        $this->authorize('update',$user);
+        $this->authorize('delete', $user);
 
         $user->delete();
-        return redirect()->route('home')
-            ->withSuccess('You have successfully deleted your profile!');
+        
+        return response()->json(['message' => 'Delete successful'], 200);
     }
 
     public function manageEvent(Request $request, string $id_event)
@@ -135,4 +135,5 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Update successful'], 200);
     }
+    
 }

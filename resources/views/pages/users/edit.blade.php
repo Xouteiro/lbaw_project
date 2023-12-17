@@ -3,6 +3,23 @@
 @section('content')
     <div class="container">
         <h1 style="text-align: center">Edit Profile</h1>
+            <div class="profile-picture">
+                <img src="{{ $user->getProfileImage() }}">
+            <div class="profile-picture-buttons">
+            <form method="POST" action="{{ route('file.upload') }}" enctype="multipart/form-data">
+                @csrf
+                <input name="file" type="file" required>
+                <input name="id" type="number" value="{{ $user->id }}" hidden>
+                <input name="type" type="text" value="profile" hidden>
+                <button type="submit">Submit</button>
+            </form>   
+            <form method="POST" action="{{ route('file.deleteProfilePicture') }}" enctype="multipart/form-data">
+                @csrf
+                <input name="id" type="number" value="{{ $user->id }}" hidden>
+                <button type="submit">Remove</button>
+            </form>
+            </div>
+            </div>     
         <form class="general" action="{{ route('user.update', ['id' => $user->id]) }}" method="POST">
             @csrf
 
@@ -31,7 +48,7 @@
             @endif
 
             <label for="description">Description</label>
-            <input type="text" name="description" value="{{ $user->description }}">
+            <textarea type="text" name="description">{{ $user->description }}</textarea>
             @if ($errors->has('description'))
                 <span class="error">
                     {{ $errors->first('description') }}

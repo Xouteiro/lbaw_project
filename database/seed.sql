@@ -3,7 +3,6 @@ create schema if not exists lbaw2354;
 SET search_path TO lbaw2354;
 
 DROP TABLE IF EXISTS joined CASCADE;
-DROP TABLE IF EXISTS events_tags CASCADE;
 DROP TABLE IF EXISTS user_option CASCADE;
 DROP TABLE IF EXISTS request_to_join CASCADE;
 DROP TABLE IF EXISTS event_update CASCADE;
@@ -11,12 +10,12 @@ DROP TABLE IF EXISTS invite CASCADE;
 DROP TABLE IF EXISTS event_notification CASCADE; 
 DROP TABLE IF EXISTS option CASCADE;
 DROP TABLE IF EXISTS poll CASCADE;
-DROP TABLE IF EXISTS file CASCADE;
 DROP TABLE IF EXISTS comment CASCADE;
-DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS location CASCADE;
 DROP TABLE IF EXISTS event CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS password_recovers CASCADE;
+DROP TABLE IF EXISTS likes_dislikes CASCADE;
 
 
 CREATE TABLE users (
@@ -28,7 +27,8 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     blocked BOOLEAN DEFAULT FALSE,
     admin BOOLEAN DEFAULT FALSE,
-    remember_token VARCHAR(100)
+    remember_token VARCHAR(100),
+    profile_image VARCHAR(100)
 );
 
 CREATE TABLE location (
@@ -51,28 +51,18 @@ CREATE TABLE event (
     id_owner INTEGER REFERENCES users(id),
     id_location INTEGER REFERENCES location(id),
     highlight_owner BOOLEAN DEFAULT FALSE,
-    hide_owner BOOLEAN DEFAULT FALSE
-);
-
-CREATE TABLE tags (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
+    hide_owner BOOLEAN DEFAULT FALSE,
+    event_image VARCHAR(100)
 );
 
 CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
-    date TIMESTAMP CHECK (date > current_date),
+    date TIMESTAMP,
     id_event INTEGER REFERENCES event(id),
-    id_user INTEGER REFERENCES users(id)
-);
-
-CREATE TABLE file (
-    id SERIAL PRIMARY KEY,
-    type VARCHAR(255) NOT NULL,
-    file VARCHAR(255) NOT NULL,
-    id_event INTEGER REFERENCES event(id),
-    id_user INTEGER REFERENCES users(id)
+    id_user INTEGER REFERENCES users(id),
+    likes INTEGER NOT NULL DEFAULT 0,
+    dislikes INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE poll (
@@ -111,7 +101,6 @@ CREATE TABLE event_update (
 
 CREATE TABLE request_to_join (
     id_eventnotification INTEGER REFERENCES event_notification(id),
-    response TEXT,
     id_user INTEGER REFERENCES users(id),
     PRIMARY KEY (id_eventnotification, id_user)
 );
@@ -124,12 +113,6 @@ CREATE TABLE joined (
     highlighted BOOLEAN DEFAULT false,
     hidden BOOLEAN DEFAULT false,
     PRIMARY KEY (id_event, id_user)
-);
-
-CREATE TABLE events_tags (
-    id_tag INTEGER REFERENCES tags(id),
-    id_event INTEGER REFERENCES event(id),
-    PRIMARY KEY (id_tag, id_event)
 );
 
 CREATE TABLE user_option (
@@ -146,6 +129,15 @@ CREATE TABLE password_recovers
     PRIMARY KEY (token)
 );
 
+CREATE TABLE likes_dislikes (
+    id SERIAL PRIMARY KEY,
+    id_comment INT NOT NULL,
+    id_user INT,
+    liked BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (id_comment) REFERENCES comment(id),
+    FOREIGN KEY (id_user) REFERENCES users(id)
+);
+
 --Indexes
 --01
 CREATE INDEX idx_joined_events ON joined USING btree (id_user);
@@ -159,27 +151,27 @@ ALTER TABLE event
 ADD COLUMN tsvectors TSVECTOR;
 CREATE OR REPLACE FUNCTION events_search_update() RETURNS TRIGGER AS $$
 BEGIN
- IF TG_OP = 'INSERT' THEN
-    NEW.tsvectors = (
-        setweight(to_tsvector('english', NEW.name), 'A') ||
-        setweight(to_tsvector('english', NEW.description), 'B')
-    );
- END IF;
- IF TG_OP = 'UPDATE' THEN
-     IF (NEW.name <> OLD.name OR NEW.description <> OLD.description) THEN
-       NEW.tsvectors = (
-         setweight(to_tsvector('english', NEW.name), 'A') ||
-         setweight(to_tsvector('english', NEW.description), 'B')
-       );
-     END IF;
- END IF;
- RETURN NEW;
+    IF TG_OP = 'INSERT' THEN
+        NEW.tsvectors = (
+            setweight(to_tsvector('english', NEW.name), 'A') ||
+            setweight(to_tsvector('english', NEW.description), 'B')
+        );
+    END IF;
+    IF TG_OP = 'UPDATE' THEN
+        IF (NEW.name <> OLD.name OR NEW.description <> OLD.description) THEN
+        NEW.tsvectors = (
+            setweight(to_tsvector('english', NEW.name), 'A') ||
+            setweight(to_tsvector('english', NEW.description), 'B')
+        );
+        END IF;
+    END IF;
+    RETURN NEW;
 END $$
 LANGUAGE plpgsql;
 CREATE TRIGGER events_search_update
- BEFORE INSERT OR UPDATE ON event
- FOR EACH ROW
- EXECUTE PROCEDURE events_search_update();
+BEFORE INSERT OR UPDATE ON event
+FOR EACH ROW
+EXECUTE PROCEDURE events_search_update();
 CREATE INDEX search_idx ON event USING GIN (tsvectors);
 
 --Triggers
@@ -188,15 +180,15 @@ CREATE INDEX search_idx ON event USING GIN (tsvectors);
 
 CREATE OR REPLACE FUNCTION check_event_capacity()
 RETURNS TRIGGER AS $$
-  DECLARE event_capacity INT;
-  DECLARE event_participants INT;
+    DECLARE event_capacity INT;
+    DECLARE event_participants INT;
 BEGIN
-  SELECT capacity INTO event_capacity FROM Event WHERE id = NEW.id_event;
-  SELECT COUNT(*) INTO event_participants FROM Joined WHERE id_event = NEW.id_event;
-  IF event_participants >= event_capacity AND event_capacity != 0 THEN
-    RAISE EXCEPTION 'Event has reached its capacity. You cannot join this event.';
-  END IF;
-  RETURN NEW;
+    SELECT capacity INTO event_capacity FROM Event WHERE id = NEW.id_event;
+    SELECT COUNT(*) INTO event_participants FROM Joined WHERE id_event = NEW.id_event;
+    IF event_participants >= event_capacity AND event_capacity != 0 THEN
+        RAISE EXCEPTION 'Event has reached its capacity. You cannot join this event.';
+    END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER event_capacity_check
@@ -209,37 +201,94 @@ EXECUTE FUNCTION check_event_capacity();
 CREATE OR REPLACE FUNCTION delete_user_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
-  DELETE FROM Users WHERE id = OLD.id;
-  UPDATE Event SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Comment SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE File SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Poll SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Option SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE EventNotification SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Invite SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE EventUpdate SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE RequestToJoin SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE Joined SET id_User = NULL WHERE id_User = OLD.id;
-  UPDATE UserOption SET id_User = NULL WHERE id_User = OLD.id;
-  RETURN NULL;
+    UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
+    UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE poll SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE user_option SET id_user = NULL WHERE id_user = OLD.id;
+    UPDATE likes_dislikes SET id_user = NULL WHERE id_user = OLD.id;
+    DELETE FROM joined WHERE id_user = OLD.id;
+    DELETE FROM password_recovers WHERE email = OLD.email;
+
+    DELETE FROM event_update WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
+    DELETE FROM invite WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
+    DELETE FROM request_to_join WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_user = OLD.id);
+    DELETE FROM event_notification WHERE id_user = OLD.id;
+
+    DELETE FROM invite WHERE id_user = OLD.id;
+    DELETE FROM event_notification WHERE id IN
+        (SELECT id_eventnotification FROM invite WHERE id_user = OLD.id);
+    
+    DELETE FROM request_to_join WHERE id_user = OLD.id;
+    DELETE FROM event_notification WHERE id IN
+        (SELECT id_eventnotification FROM request_to_join WHERE id_user = OLD.id);
+
+    return OLD;
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER user_deletion_trigger
-BEFORE DELETE ON Users
+BEFORE DELETE ON users
 FOR EACH ROW
 EXECUTE FUNCTION delete_user_trigger();
 
 --03
 
+CREATE OR REPLACE FUNCTION delete_event_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM comment WHERE id_event = OLD.id;
+    DELETE FROM joined WHERE id_event = OLD.id;
+
+    DELETE FROM user_option WHERE id_option IN
+        (SELECT id FROM option WHERE id_poll IN
+            (SELECT id FROM poll WHERE id_event = OLD.id));
+    DELETE FROM option WHERE id_poll IN
+        (SELECT id FROM poll WHERE id_event = OLD.id);
+    DELETE FROM poll WHERE id_event = OLD.id;
+    
+    DELETE FROM event_update WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM invite WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM request_to_join WHERE id_eventnotification IN
+        (SELECT id FROM event_notification WHERE id_event = OLD.id);
+    DELETE FROM event_notification WHERE id_event = OLD.id;
+
+    return OLD;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER event_deletion_trigger
+BEFORE DELETE ON event
+FOR EACH ROW
+EXECUTE FUNCTION delete_event_trigger();
+
+--04
+
+CREATE OR REPLACE FUNCTION delete_comment_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM likes_dislikes WHERE id_comment = OLD.id;
+    return OLD;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER comment_deletion_trigger
+BEFORE DELETE ON comment
+FOR EACH ROW
+EXECUTE FUNCTION delete_comment_trigger();
+
+--05
+
 CREATE OR REPLACE FUNCTION check_event_happened()
 RETURNS TRIGGER AS $$
-  DECLARE event_date DATE;
+DECLARE event_date DATE;
 BEGIN
-  SELECT eventDate INTO event_date FROM Event WHERE id = NEW.id_event;
-  IF event_date < CURRENT_DATE THEN
-    RAISE EXCEPTION 'This event has already happened. You cannot join it.';
-  END IF;
-  RETURN NEW;
+    SELECT eventDate INTO event_date FROM Event WHERE id = NEW.id_event;
+    IF event_date < CURRENT_DATE THEN
+        RAISE EXCEPTION 'This event has already happened. You cannot join it.';
+    END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER event_happened_check
@@ -453,141 +502,6 @@ VALUES
 ('Classic Movie Marathon', '2024-11-28', 'Relive the golden age of cinema with a marathon of classic films.', '2024-12-02 17:30:00 ', 0.00, true, false, 250, 48, 48),
 ('Community Choir Performance', '2024-12-07 17:30:00', 'Enjoy harmonious melodies from a community choir.', '2024-12-03 17:30:00', 5.00, true, false, 200, 49, 49),
 ('Local Beer Tasting', '2024-11-21 17:30:00', 'Sip and savor a selection of local craft beers.', '2024-12-04 17:30:00', 8.00, true, true, 150, 50, 50);
-
-
-INSERT INTO tags (name) VALUES
-('Music'),
-('Art'),
-('Technology'),
-('Fitness'),
-('Fashion'),
-('Travel'),
-('Science'),
-('Food'),
-('Literature'),
-('Adventure'),
-('Yoga'),
-('Wellness'),
-('Coding'),
-('Startup'),
-('Photography'),
-('Nature'),
-('Movies'),
-('Digital Marketing'),
-('AI'),
-('Culinary'),
-('Blogging'),
-('Social Media'),
-('Health'),
-('Environmentalism'),
-('Museum'),
-('Astronomy'),
-('Design'),
-('Sports'),
-('Education'),
-('Entertainment'),
-('Events'),
-('Networking'),
-('Gaming'),
-('Crafts'),
-('Theater'),
-('History'),
-('Reading'),
-('Writing'),
-('Comedy'),
-('Politics'),
-('Technology Trends'),
-('DIY'),
-('Music Festivals'),
-('Fashion Shows'),
-('Tech Conferences'),
-('Food Festivals'),
-('Art Exhibitions'),
-('Literary Events'),
-('Fitness Challenges'),
-('Nature Walks'),
-('Adventure Tours'),
-('Startup Meetups'),
-('Film Festivals'),
-('Science Fairs'),
-('Culinary Workshops'),
-('Yoga Retreats'),
-('Wellness Retreats'),
-('Coding Bootcamps'),
-('Photography Workshops'),
-('Book Clubs'),
-('Social Media Seminars'),
-('Health Conferences'),
-('Environmental Cleanup'),
-('Museum Tours'),
-('Astronomy Observations'),
-('Design Workshops'),
-('Sports Competitions'),
-('Educational Seminars'),
-('Entertainment Shows'),
-('Networking Events'),
-('Gaming Tournaments'),
-('Crafting Workshops'),
-('Theater Performances'),
-('Historical Tours'),
-('Reading Circles'),
-('Writing Workshops'),
-('Comedy Nights'),
-('Political Debates'),
-('Tech Talks'),
-('DIY Workshops');
-
-
-INSERT INTO events_tags (id_event, id_tag) VALUES (1, 3),
-(2, 2),
-(3, 8),
-(4, 7),
-(5, 1),
-(6, 2),
-(7, 4),
-(8, 8),
-(9, 7),
-(10, 5),
-(11, 11),
-(12, 2),
-(13, 9),
-(14, 6),
-(15, 15),
-(16, 3),
-(17, 2),
-(18, 9),
-(19, 1),
-(20, 7),
-(21, 15),
-(22, 1),
-(23, 6),
-(24, 4),
-(25, 9),
-(26, 7),
-(27, 16),
-(28, 17),
-(29, 5),
-(30, 8),
-(31, 7),
-(32, 20),
-(33, 8),
-(34, 17),
-(35, 9),
-(36, 1),
-(37, 15),
-(38, 2),
-(39, 4),
-(40, 2),
-(41, 15),
-(42, 9),
-(43, 2),
-(44, 15),
-(45, 9),
-(46, 3),
-(47, 9),
-(48, 2),
-(49, 1),
-(50, 8);
 
 
 INSERT INTO comment (text, date, id_event, id_user) VALUES
@@ -827,20 +741,6 @@ INSERT INTO joined (id_event, id_user, date, ticket) VALUES
   (20, 21, '2024-01-17', NULL),
   (20, 22, '2024-01-18', NULL),
   (20, 23, '2024-01-19', NULL);
-/*
-INSERT INTO invite (id_eventnotification, id_user)
-VALUES
-  (1, 1),
-  (2, 2),
-  (3, 3),
-  (4, 4),
-  (5, 5),
-  (6, 6),
-  (7, 7),
-  (8, 8),
-  (9, 9),
-  (10, 10);
-  */
 
 INSERT INTO user_option (id_user, id_option) VALUES
   (1, 1),
