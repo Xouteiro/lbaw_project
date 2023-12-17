@@ -602,6 +602,7 @@ function dislikeComment() {
 }
 function createPoll() {
     const createPollFake = document.querySelector(".fake-poll-create-button");
+    if(createPollFake){
     const eventId = createPollFake.id;
     let optionNumber = 2;
     let provisionalId = 1;
@@ -783,6 +784,7 @@ function createPoll() {
             });
         });
     }
+}
    
 }
 
