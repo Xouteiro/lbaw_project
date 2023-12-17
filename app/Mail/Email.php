@@ -13,8 +13,8 @@ class Email extends Mailable
     use Queueable, SerializesModels;
 
     private $data = [];
-    private $view = '';
-    private $subject = '';
+    public $view = '';
+    public $subject = '';
 
     /**
      * Create a new message instance.
