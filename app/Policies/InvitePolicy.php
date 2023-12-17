@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Auth;
 
 class InvitePolicy
 {
@@ -17,4 +18,5 @@ class InvitePolicy
     {
         return $user->id === $invite->recievedBy->id;  // não funciona ??
     }
+
 }

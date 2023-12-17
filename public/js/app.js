@@ -49,7 +49,7 @@ function loadMoreEvents() {
                             eventStatus = 'Today';
                         } else if (eventDate > currentDate) {
                             eventStatus = 'Upcoming';
-    }
+                        }
 
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
@@ -97,7 +97,7 @@ function openOptions() {
     let topElement;
     if (options) {
         options.forEach((option) => {
-            option.addEventListener("click", (e) => {
+            option.addEventListener("click", () => {
                 const alreadyOpen = document.querySelector(".event-manage-div");
                 if (!alreadyOpen) {
                     const id_event = option.parentElement.id.split("-")[1];
@@ -238,7 +238,6 @@ function switchEvents() {
             joinedEventsButton.classList.add("active");
         });
     }
-
 }
 
 function closeSureOptions() {
@@ -251,7 +250,6 @@ function closeSureOptions() {
             surebox.remove();
         });
     });
-
 }
 
 function removeParticipant() {
@@ -266,30 +264,311 @@ function removeParticipant() {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
                 surebox.innerHTML = `
-          <p>Are you sure ?</p>
-          <div class="surebox-buttons">
-          <button type="submit" class="surebox button yes">Yes</button>
-          <button type="button" class="surebox button no">No</button>
-          </div>
-      `;
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <button type="submit" class="surebox button yes">Yes</button>
+                        <button type="button" class="surebox button no">No</button>
+                    </div>
+                `;
                 fakebutton.parentElement.appendChild(surebox);
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
                     surebox.remove();
                 });
-
             }
-
         })
     });
-    closeSureOptions();
+    closeSureOptions()
 }
 
+function deleteAccount() {
+    const deleteAccountButton = document.querySelector(".fake.button.delete-account");
+    if (deleteAccountButton) {
+        deleteAccountButton.addEventListener("click", () => {
+            const accountId = deleteAccountButton.id;
+            const sureboxExists = deleteAccountButton.parentElement.querySelector(".surebox");
 
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                surebox.style.left = "600px";
+                surebox.style.top = "400px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                deleteAccountButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
 
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('DELETE', `/user/${accountId}/delete`, null, function () {
+                        window.location.href = "/logout";
+                    });
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
+
+function deleteEvent() {
+    const deleteEventButton = document.querySelector(".fake.button.delete-event");
+    if (deleteEventButton) {
+        deleteEventButton.addEventListener("click", () => {
+            const eventId = deleteEventButton.id;
+            const sureboxExists = deleteEventButton.parentElement.querySelector(".surebox");
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                surebox.style.left = "880px";
+                surebox.style.top = "250px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                deleteEventButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {
+                        window.location.href = "/events";
+                    });
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
+
+function deleteComment() {
+    const deleteCommentButtons = document.querySelectorAll(".fake.button.delete-comment");
+    deleteCommentButtons.forEach((deleteCommentButton) => {
+        deleteCommentButton.addEventListener("click", () => {
+            const commentId = deleteCommentButton.id;
+            const sureboxExists = deleteCommentButton.parentElement.querySelector(".surebox");
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                var buttonPositions = deleteCommentButton.getBoundingClientRect();
+                surebox.style.left = (buttonPositions.left + parseInt(window.scrollX)).toString() + "px";
+                surebox.style.top = (buttonPositions.top + parseInt(window.scrollY) - 100).toString() + "px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                deleteCommentButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () {});
+                    surebox.remove();
+                    deleteCommentButton.parentElement.parentElement.parentElement.remove();
+                });
+            }
+        });
+    });
+    closeSureOptions()
+}
+
+function editComment() {
+    const editCommentButtons = document.querySelectorAll(".fake.button.edit-comment");
+    editCommentButtons.forEach((editCommentButton) => {
+        editCommentButton.addEventListener("click", () => {
+            const commentId = editCommentButton.id;
+            editCommentButton.parentElement.style.display = "none";
+            const mainCommentDiv = editCommentButton.parentElement.parentElement.parentElement;
+            const commentText = mainCommentDiv.querySelector(".comment-text");
+            commentText.style.display = "none";
+            const commentTextValue = commentText.textContent;
+
+            const editCommentDiv = document.createElement("div");
+            editCommentDiv.classList.add("edit-comment-form");
+            editCommentDiv.action = `/comment/${commentId}/update`;
+            editCommentDiv.method = "PUT";
+            editCommentDiv.innerHTML = `
+                <textarea name="comment" class="edit-comment-textarea" required>${commentTextValue}</textarea>
+                <button type="button" class="cancel-edit-comment-button">Cancel</button>
+                <button type="button" class="save-edit-comment-button">Save</button>
+            `;
+            mainCommentDiv.insertBefore(editCommentDiv, mainCommentDiv.querySelector(".comment-date"));
+
+            const cancelEditCommentButton = editCommentDiv.querySelector(".cancel-edit-comment-button");
+            cancelEditCommentButton.addEventListener("click", () => {
+                editCommentDiv.remove();
+                editCommentButton.parentElement.style.display = "flex";
+                commentText.style.display = "block";
+            });
+
+            const saveEditCommentButton = editCommentDiv.querySelector(".save-edit-comment-button");
+            saveEditCommentButton.addEventListener("click", () => {
+                editCommentDiv.addEventListener("click", () => {
+                    const editCommentTextArea = editCommentDiv.querySelector(".edit-comment-textarea");
+                    const comment = editCommentTextArea.value;
+                    sendAjaxRequest('PUT', `/comment/${commentId}/update`, {comment: comment}, function () {});
+                    editCommentDiv.remove();
+                    editCommentButton.parentElement.style.display = "flex";
+                    commentText.style.display = "block";
+                    commentText.textContent = comment;
+                });
+            });
+        });
+    });
+}
+
+function closeDecisionBox() {
+    document.addEventListener("click", (e) => {
+        const decisionBoxes = document.querySelectorAll(".decision_box");
+        decisionBoxes.forEach((decisionBox) => {
+            if (e.target.parentElement == decisionBox.parentElement || e.target.classList.contains("decision_box")) {
+                return;
+            }
+            decisionBox.remove();
+        });
+    });
+}
+
+function requestToJoin(){
+    const requestsToJoin = document.querySelectorAll(".pending_request_to_join");
+    requestsToJoin.forEach((requestToJoin) => {
+        requestToJoin.addEventListener("click", () => {
+            const requestToJoinId = requestToJoin.id;
+            const decisionBox = requestToJoin.querySelector(".decision_box");
+            if(!decisionBox){
+                const decisionBox = document.createElement("div");
+                decisionBox.classList.add("decision_box");
+                decisionBox.innerHTML = `
+                    <button type="button" class="accept_request_to_join">&check;</button>
+                    <button type="button" class="decline_request_to_join">&#10060;</button>
+                `;
+                requestToJoin.appendChild(decisionBox);
+
+                const acceptRequestToJoin = decisionBox.querySelector(".accept_request_to_join");
+                acceptRequestToJoin.addEventListener("click", () => {
+                    const requestsToJoinDiv = requestToJoin.parentElement;
+                    requestToJoin.remove();
+                    if(!requestsToJoinDiv.childElementCount){
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No Requests To Join";
+                        requestsToJoinDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/api/accept-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {});
+                });
+
+                const declineRequestToJoin = decisionBox.querySelector(".decline_request_to_join");
+                declineRequestToJoin.addEventListener("click", () => {
+                    const requestsToJoinDiv = requestToJoin.parentElement;
+                    requestToJoin.remove();
+                    if(!requestsToJoinDiv.childElementCount){
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No Requests To Join";
+                        requestsToJoinDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/api/deny-request-to-join`, {id_requestToJoin: requestToJoinId}, function () {});
+                });
+            }
+
+        });
+    });
+    closeDecisionBox();
+}
+
+function likeComment(){
+    const likes = document.querySelectorAll(".comment-like");
+    likes.forEach((like) => {
+        like.addEventListener("click", () => {
+            const commentId = like.parentElement.parentElement.parentElement.parentElement.id;
+            const userId = like.id;
+            const dislike = like.parentElement.querySelector(".comment-dislike");
+            const likesNumber = like.parentElement.querySelector(".comment-like-number");
+            const dislikesNumber = dislike.parentElement.querySelector(".comment-dislike-number");
+            if(like.classList.contains("comment-like-active")){
+                like.src = "/icons/like.png";
+                dislike.src = "/icons/like.png";
+                likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) - 1 : null;
+                like.classList.remove("comment-like-active");
+                dislike.classList.remove("comment-dislike-active");
+                sendAjaxRequest('POST', '/api/comment/like', {action: 'remove', id_comment: commentId, id_user: userId}, function () {});
+            }
+            else {
+                like.src = "/icons/blue_like.png";
+                dislike.src = "/icons/like.png";
+                likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) + 1 : null;
+                if(dislike.classList.contains("comment-dislike-active")){
+                    dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) - 1 : null;
+                }
+                like.classList.add("comment-like-active");
+                dislike.classList.remove("comment-dislike-active");
+                sendAjaxRequest('POST', '/api/comment/like', {action: 'add', id_comment: commentId, id_user: userId}, function () {});
+            }
+        });
+    });
+}
+
+function dislikeComment(){
+    const dislikes = document.querySelectorAll(".comment-dislike");
+    dislikes.forEach((dislike) => {
+        dislike.addEventListener("click", () => {
+            const commentId = dislike.parentElement.parentElement.parentElement.parentElement.id;
+            const userId = dislike.id;
+            const like = dislike.parentElement.querySelector(".comment-like");
+            const dislikesNumber = dislike.parentElement.querySelector(".comment-dislike-number");
+            const likesNumber = like.parentElement.querySelector(".comment-like-number");
+            if(dislike.classList.contains("comment-dislike-active")){
+                dislike.src = "/icons/like.png";
+                like.src = "/icons/like.png";
+                dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) - 1 : null;
+                dislike.classList.remove("comment-dislike-active");
+                like.classList.remove("comment-like-active");
+                sendAjaxRequest('POST', `/api/comment/dislike`, {action: 'remove', id_comment: commentId, id_user: userId}, function () {});
+            }
+            else {
+                dislike.src = "/icons/blue_like.png";
+                like.src = "/icons/like.png";
+                dislikesNumber ? dislikesNumber.textContent = parseInt(dislikesNumber.textContent) + 1 : null;
+                if(like.classList.contains("comment-like-active")){
+                    likesNumber ? likesNumber.textContent = parseInt(likesNumber.textContent) - 1 : null;
+                }
+                dislike.classList.add("comment-dislike-active");
+                like.classList.remove("comment-like-active");
+                sendAjaxRequest('POST', `/api/comment/dislike`, {action: 'add', id_comment: commentId, id_user: userId}, function () {});
+            }
+        });
+    });
+}
 
 addEventListeners();
 openOptions();
 closeOptions();
 switchEvents();
 removeParticipant();
+deleteAccount();
+deleteEvent();
+deleteComment();
+editComment();
+requestToJoin();
+likeComment();
+dislikeComment();

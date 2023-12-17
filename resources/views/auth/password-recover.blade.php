@@ -15,12 +15,12 @@
         <label for="password">Password</label>
         <input id="password" type="password" name="password" required>
 
-        <label for="confirm-password">Password</label>
+        <label for="confirm-password">Confirm Password</label>
         <input id="confirm-password" type="password" name="password_confirmation" required>
-        @if ($errors->has('password'))
-                <span class="error">
-                {{ $errors->first('password') }}
-                </span>
+        @if ($errors->has('error'))
+            <span class="error">
+                {{ $errors->first('error') }}
+            </span>
         @endif
         <button type="submit">Change Password</button>
     </form>

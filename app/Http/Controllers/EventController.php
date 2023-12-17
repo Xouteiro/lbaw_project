@@ -46,7 +46,7 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $id = Auth::user()->id;
-        $user = User::findOrFail($id);
+        User::findOrFail($id);
         $request->validate([
             'name' => 'required|string|max:100',
             'date' => [
@@ -66,7 +66,7 @@ class EventController extends Controller
         ]);
 
         $eventdate = $request->input('date') . ' ' . $request->input('time') . ':00';
-        $event = Event::create([
+        Event::create([
             'name' => $request->input('name'),
             'eventdate' => $eventdate,
             'description' => $request->input('description'),
@@ -89,6 +89,11 @@ class EventController extends Controller
         if ($request->id_invite) {
             $invite = Notification::findOrFail($request->id_invite);
             return view('pages.events.show', ['event' => $event, 'invite' => $invite]);
+        }
+
+        if($request->id_requestToJoin) {
+            $requestToJoin = Notification::findOrFail($request->id_requestToJoin);
+            return view('pages.events.show', ['event' => $event, 'requestToJoin' => $requestToJoin]);
         }
 
         if (!Auth::check() && $event->public == false) { //por mensagem de erro dizer que é preciso estar logado para ver o evento
@@ -161,10 +166,8 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $this->authorize('delete', $event);
-        $event->participants()->detach();
         $event->delete();
-        return redirect()->route('user.show', ['id' => Auth::user()->id])
-            ->withSuccess('You have successfully deleted your comment!');
+        return response()->json(['message' => 'Delete successful'], 200);
     }
 
     public function deleteDummy()

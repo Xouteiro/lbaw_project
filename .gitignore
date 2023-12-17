@@ -7,7 +7,6 @@
 /vendor
 .env
 .env.backup
-.env.production
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -17,3 +16,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+public/profile/
+!public/profile/default.jpg
+public/event/
+!public/event/default.jpg

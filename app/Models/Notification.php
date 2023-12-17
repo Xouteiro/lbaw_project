@@ -33,13 +33,13 @@ class Notification extends Model
         return $this->belongsTo(Invite::class, 'id_eventnotification');
     }
 
-    public function eventUpdate()
-    {
-        return $this->belongsTo(EventUpdate::class, 'id_eventnotification');
-    }
-
     public function requestToJoin()
     {
         return $this->belongsTo(RequestToJoin::class, 'id_eventnotification');
+    }
+
+    public function eventUpdate()
+    {
+        return $this->belongsTo(EventUpdate::class, 'id_eventnotification');
     }
 }

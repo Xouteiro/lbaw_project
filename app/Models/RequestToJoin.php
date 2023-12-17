@@ -9,7 +9,8 @@ class RequestToJoin extends Model
 {
     use HasFactory;
 
-    // Don't add create and update timestamps in database.
+    protected $primaryKey = 'id_eventnotification';
+    public $incrementing = false;
     public $timestamps = false;
     protected $table = 'request_to_join';
 
