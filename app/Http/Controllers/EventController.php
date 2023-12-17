@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Notification;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
 class EventController extends Controller
@@ -142,8 +140,7 @@ class EventController extends Controller
         $event->id_owner = $event->id_owner;
         $event->id_location = $request->input('id_location');
         $event->save();
-        return redirect()->route('event.show', ['id' => $event->id])
-            ->withSuccess('You have successfully edited your profile!');
+        return (new EventUpdateController())->sendEventUpdate($request, $id);
     }
 
     public function participants(string $id)
