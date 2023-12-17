@@ -51,6 +51,7 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/event/{id}/delete', 'deleteDummy');
     Route::delete('/event/{id}/delete', 'delete')->name('event.delete');
     Route::post('/event/{id}/join', 'joinEvent')->name('event.join');
+    Route::post('/event/{id}/leave', 'leaveEvent')->name('event.leave');
 });
 
 // Authentication
