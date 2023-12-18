@@ -41,13 +41,13 @@
             <p>Description: {{ $event->description }}</p>
             <p>Event date: {{ $event->eventdate }}</p>
             @if ($event->capacity == 0)
-                @if(Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner)
+                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
                 @endif 
             @else
-                @if(Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner)
+                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
@@ -62,7 +62,7 @@
             <p>Address: {{ $event->location->address }}</p>
 
         </div>
-        @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user)
+        @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user && !Auth::user()->admin)
             {{-- Form of invite decision (Accept/Deny) --}}
             <div class="invite-decision">
                 <h3>You have been invited for this event!</h3>
@@ -82,7 +82,9 @@
             $event->opentojoin &&
                 Auth::check() &&
                 Auth::user()->id != $event->id_owner &&
-                !Auth::user()->events->contains($event))
+                !Auth::user()->events->contains($event) &&
+                !Auth::user()->admin
+                )
             <form action="{{ route('event.join', ['id' => $event->id]) }}" method="POST">
                 @csrf
                 <button class="button" type="submit">
@@ -91,7 +93,9 @@
             </form>
         @elseif(!$event->opentojoin && Auth::check() &&
                 Auth::user()->id != $event->id_owner &&
-                !Auth::user()->events->contains($event))
+                !Auth::user()->events->contains($event) &&
+                !Auth::user()->admin
+                )
 
             @if(session('success'))
                 <span class="success">
@@ -110,7 +114,7 @@
                     Request to join
                 </button>
             </form>
-        @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event))
+        @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
             <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
                 @csrf
                 <button class="button" type="submit">
@@ -118,7 +122,7 @@
                 </button>
             </form>
         @endif
-        @if (Auth::check() && Auth::user()->id == $event->id_owner)
+        @if (Auth::check() && Auth::user()->id == $event->id_owner && !Auth::user()->admin)
             <div class="invite-container">
                 <h3>Invite a user to this event</h3>
                 
@@ -142,6 +146,7 @@
                 </form>
             </div>
         @endif
+        @if(Auth::check())
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)
@@ -152,6 +157,7 @@
                 </ul>
             @endif
         </div>
+        @endif
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div>
                 <form class="general" action="{{ route('comment.store') }}" method="POST">
@@ -167,6 +173,25 @@
                     <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
                     <button type="submit">Comment</button>
                 </form>
+            </div>
+        @endif
+        @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
+            <div class="polls">
+                <div>
+                <h3>Polls</h3>
+                @if (Auth::check() && Auth::user()->id == $event->id_owner)
+                    <button class="fake-poll-create-button" id="{{$event->id}}">
+                        Create Poll
+                    </button>
+                @endif
+                </div>
+                    <ul class="poll-list">
+                    @if($event->polls->count() == 0)
+                        <p class="no-polls">No polls yet</p>
+                    @else
+                        @each('partials.poll', $event->polls->reverse(), 'poll')
+                    @endif
+                    </ul>
             </div>
         @endif
     </div>

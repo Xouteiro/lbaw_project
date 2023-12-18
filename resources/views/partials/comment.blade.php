@@ -5,7 +5,7 @@
                 @if(isset($comment->user->username)) 
                     <h3>{{ $comment->user->username }}</h3>
                 @else
-                    Anonymous
+                    <h3>Anonymous</h3>  
                 @endif
                 <div class="likes-dislikes">
                     <?php

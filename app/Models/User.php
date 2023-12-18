@@ -47,7 +47,7 @@ class User extends Authenticatable
     
     public function pollOptions()
     {
-        return $this->belongsToMany(Option::class, 'user_option', 'id_owner', 'id_option');
+        return $this->belongsToMany(Option::class, 'user_option', 'id_user', 'id_option');
     }
 
     public function createdPolls()

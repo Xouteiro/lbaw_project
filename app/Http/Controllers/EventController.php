@@ -15,23 +15,45 @@ class EventController extends Controller
 {
     public function index()
     {
-        if (Auth::check()) {
-            $events = Event::where('hide_owner', '=', false)->inRandomOrder()->paginate(10);
+        $userId = Auth::user()->id;
+        $user = User::findOrFail($userId);
+        if ($user->is_admin) {
+            $events = Event::inRandomOrder()->paginate(10);
             return view('pages.events.index', ['events' => $events]);
         } else {
-            $events = Event::where('public', '=', true)->inRandomOrder()->paginate(10);
+            $events = Event::where(function ($query) use ($userId) {
+                $query->where('hide_owner', false)
+                      ->where('public', true)
+                      ->orWhere(function ($query) use ($userId) {
+                          $query->where('public', false)
+                                ->whereHas('participants', function ($query) use ($userId) {
+                                    $query->where('id_user', $userId);
+                                });
+                      });
+            })->inRandomOrder()->paginate(10);
             return view('pages.events.index', ['events' => $events]);
         }
     }
 
     public function indexAjax()
     {
-        if (Auth::check()) {
-            $events = Event::where('hide_owner', '=', false)->paginate(10);
+        $userId = Auth::user()->id;
+        $user = User::findOrFail($userId);
+        if ($user->is_admin) {
+            $events = Event::inRandomOrder()->paginate(10);
             return response()->json(['events' => $events]);
         } else {
-            $events = Event::where('public', '=', true)->where('hide_owner', '=', false)->paginate(10);
-            return response()->json(['events' => $events]);
+            $events = Event::where(function ($query) use ($userId) {
+                $query->where('hide_owner', false)
+                      ->where('public', true)
+                      ->orWhere(function ($query) use ($userId) {
+                          $query->where('public', false)
+                                ->whereHas('participants', function ($query) use ($userId) {
+                                    $query->where('id_event', $userId);
+                                });
+                      });
+            })->inRandomOrder()->paginate(10);
+            return  response()->json(['events' => $events]);
         }
     }
 
@@ -39,6 +61,9 @@ class EventController extends Controller
     {
         if (!Auth::check()) {
             return redirect()->route('login');
+        }
+        if(Auth::user()->is_admin){
+            return redirect()->route('home');
         }
         return view('pages.events.create');
     }
@@ -198,13 +223,30 @@ class EventController extends Controller
         $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
         $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
 
+        $userId = Auth::user()->id;
+        $user = User::findOrFail($userId);
+        if ($user->is_admin) {
+            $allEvents = Event::get();
+        } else {
+            $allEvents = Event::where(function ($query) use ($userId) {
+                $query->where('hide_owner', false)
+                      ->where('public', true)
+                      ->orWhere(function ($query) use ($userId) {
+                          $query->where('public', false)
+                                ->whereHas('participants', function ($query) use ($userId) {
+                                    $query->where('id_user', $userId);
+                                });
+                      });
+            });
+        }
+
         if ($request->get('search') == null && $datefilter == null && $locationfilter == null && $freefilter == null && $finishedfilter == null) {
-            $events = Event::select()->where('eventdate', '>=', Carbon::now())->get();
+            $events = $allEvents->select()->where('eventdate', '>=', Carbon::now())->get();
             return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
 
         if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
-            $query = Event::select();
+            $query = $allEvents->select();
 
             $query->where(function ($query) use ($datefilter, $locationfilter, $input, $freefilter, $finishedfilter) {
                 if ($input !== '\'*\'') {
@@ -233,7 +275,7 @@ class EventController extends Controller
 
 
         if ($request->get('search') !== null) { //com filtros e pesquisa
-            $query = Event::select()
+            $query = $allEvents->select()
                 ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
                 ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
 
@@ -253,6 +295,9 @@ class EventController extends Controller
 
     static public function joinEvent(string $id)
     {
+        if(Auth::user()->is_admin){
+            return redirect()->route('home');
+        }
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
