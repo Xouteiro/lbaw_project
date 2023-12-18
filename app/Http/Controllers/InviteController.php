@@ -25,6 +25,10 @@ class InviteController extends Controller
             return response()->json(['error' => 'Event not found'], 404);
         }
 
+        if($event->eventdate < date('Y-m-d H:i:s')){
+            abort(403, 'This event has already ended!');
+        }
+
         if (Auth::check()) {
             $user = User::findOrFail(Auth::user()->id);
         }
