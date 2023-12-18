@@ -7,18 +7,19 @@
             <div class="participant-card" id="owner">
                 <img class='user' src="{{ $event->owner->getProfileImage() }}">
                 <div class="participant-info">
-                <h2><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->name }} - Owner</a></h2>
-                <h3><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->username }}</a></h3>
+                    <h2><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->name }} - Owner</a></h2>
+                    <h3><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->username }}</a></h3>
+                </div>
             </div>
-        </div>
             @if($event->participants->count() == 0)
-                <p>No participants yet</p>
+                <h4>No participants yet</h4>
             @else
             @foreach($event->participants as $participant)
                 @include('partials.participant', ['participant' => $participant])
             @endforeach
             @endif
-            @if (Auth::check() && Auth::user()->id == $event->id_owner)
+        </div>
+        @if (Auth::check() && Auth::user()->id == $event->id_owner)
             <div class="invite-container">
                 <h3>Invite a user to this event</h3>
                 
@@ -40,6 +41,5 @@
                 </form>
             </div>
         @endif
-        </div>
     </div>
 @endsection

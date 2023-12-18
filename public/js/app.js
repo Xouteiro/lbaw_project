@@ -80,10 +80,12 @@ function loadMoreEvents() {
     };
 
     let eventsContainers = document.getElementById('eventsContainer');
-    let queryString = eventsContainers.dataset.query;
-    const url = `/api/events-ajax?page=${page}&${queryString}`;
-    xhr.open('GET', url, true);
-    xhr.send();
+    if(eventsContainers){
+        let queryString = eventsContainers.dataset.query;
+        const url = `/api/events-ajax?page=${page}&${queryString}`;
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
 }
 
 function scrollHandler() {
@@ -258,8 +260,9 @@ function removeParticipant() {
     const fakebuttons = document.querySelectorAll(".fake.button.remove");
     fakebuttons.forEach((fakebutton) => {
         fakebutton.addEventListener("click", () => {
-            const participant_id = fakebutton.id;
-            const participant_card = document.getElementById(participant_id);
+            const eventId = fakebutton.id;
+            const participant_card = fakebutton.parentElement;
+            const participantId = participant_card.id;
             const sureboxExists = participant_card.querySelector(".surebox");
 
             if (!sureboxExists) {
@@ -268,7 +271,7 @@ function removeParticipant() {
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
-                        <button type="submit" class="surebox button yes">Yes</button>
+                        <button type="button" class="surebox button yes">Yes</button>
                         <button type="button" class="surebox button no">No</button>
                     </div>
                 `;
@@ -276,6 +279,19 @@ function removeParticipant() {
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
                     surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    const participantsDiv = participant_card.parentElement;
+                    participant_card.remove();
+                    if (participantsDiv.childElementCount == 1 && participantsDiv.firstElementChild.id == 'owner') {
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No participants yet";
+                        participantsDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/event/${eventId}/participants/${participantId}/remove`, null, function () {});
                 });
             }
         })
@@ -350,9 +366,7 @@ function deleteEvent() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
-                    sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {
-
-                    });
+                    sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {});
                 });
             }
         });
