@@ -75,7 +75,7 @@ class InviteController extends Controller
 
         $data = array(
             'type' => 'invite-event',
-            'name' => $user->name,
+            'name' => $userToInvite->name,
             'event' => $event->name,
             'eventId' => $event->id,
             'inviteId' => $invite->id_eventnotification,

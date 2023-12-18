@@ -73,7 +73,7 @@ class RequestToJoinController extends Controller
 
         $data = array(
             'type' => 'request-to-join-event',
-            'name' => $user->name,
+            'name' => $userToRequest->name,
             'event' => $event->name
         );
 
@@ -94,7 +94,8 @@ class RequestToJoinController extends Controller
         $data = array(
             'type' => 'accept-request-to-join-event',
             'name' => $user->name,
-            'event' => $event->name
+            'event' => $event->name,
+            'eventId' => $event->id
         );
 
         Mail::to($user->email, $user->name)->send(new Email($data));

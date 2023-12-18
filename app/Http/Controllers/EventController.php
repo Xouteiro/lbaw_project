@@ -164,7 +164,19 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $this->authorize('delete', $event);
+        $users = $event->participants()->get();
+
+        foreach ($users as $user) {
+            $data = array(
+                'type' => 'cancel-event',
+                'name' => $user->name,
+                'event' => $event->name
+            );
+
+            Mail::to($user->email, $user->name)->send(new Email($data));
+        }
         $event->delete();
+
         return response()->json(['message' => 'Delete successful'], 200);
     }
 

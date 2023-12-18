@@ -23,7 +23,7 @@ class Email extends Mailable
     {
         $this->data = $data;
         if($this->data['type'] == 'password-recover'){
-            $this->view = 'partials.mail.password-recover';
+            $this->view = 'partials.mail.recover-password';
             $this->subject = 'Recover your password!';
         }
         else if($this->data['type'] == 'leave-event'){
@@ -47,12 +47,12 @@ class Email extends Mailable
             $this->subject = "You have a request to join $eventName!";
         }
         else if($this->data['type'] == 'accept-request-to-join-event'){
-            $this->view = 'partials.mail.accept-request';
+            $this->view = 'partials.mail.accept-request-to-join-event';
             $eventName = $this->data['event'];
             $this->subject = "Your request to join $eventName was accepted!";
         }
         else if($this->data['type'] == 'deny-request-to-join-event'){
-            $this->view = 'partials.mail.deny-request';
+            $this->view = 'partials.mail.deny-request-to-join-event';
             $eventName = $this->data['event'];
             $this->subject = "Your request to join $eventName was denied!";
         }
