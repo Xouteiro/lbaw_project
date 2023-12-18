@@ -499,13 +499,13 @@ function requestToJoin() {
 }
 
 
-function eventUpdate(){
+function eventUpdate() {
     const eventUpdates = document.querySelectorAll(".pending_event_update");
     eventUpdates.forEach((eventUpdate) => {
         eventUpdate.addEventListener("mouseover", () => {
             const eventUpdateId = eventUpdate.id;
             const closeEventUpdateButton = eventUpdate.querySelector(".close_event_update");
-            if(!closeEventUpdateButton){
+            if (!closeEventUpdateButton) {
                 const closeEventUpdateButton = document.createElement("p");
                 closeEventUpdateButton.classList.add("close_event_update");
                 closeEventUpdateButton.classList.add("notification");
@@ -514,12 +514,12 @@ function eventUpdate(){
                 closeEventUpdateButton.addEventListener("click", () => {
                     const eventUpdatesDiv = eventUpdate.parentElement;
                     eventUpdate.remove();
-                    if(!eventUpdatesDiv.childElementCount){
+                    if (!eventUpdatesDiv.childElementCount) {
                         const noRequestsToJoin = document.createElement("h4");
                         noRequestsToJoin.textContent = "No Event Updates";
                         eventUpdatesDiv.appendChild(noRequestsToJoin);
                     }
-                    sendAjaxRequest('POST', `/api/clear-event-update`, {id_eventUpdate: eventUpdateId}, function () {});
+                    sendAjaxRequest('POST', `/api/clear-event-update`, { id_eventUpdate: eventUpdateId }, function () { });
                 });
             }
         });
@@ -530,14 +530,14 @@ function eventUpdate(){
 
         eventUpdate.addEventListener("mouseleave", () => {
             const closeEventUpdateButton = eventUpdate.querySelector(".close_event_update");
-            if(closeEventUpdateButton){
+            if (closeEventUpdateButton) {
                 closeEventUpdateButton.remove();
             }
         });
     });
 }
 
-function likeComment(){
+function likeComment() {
     const likes = document.querySelectorAll(".comment-like");
     likes.forEach((like) => {
         like.addEventListener("click", () => {
@@ -602,102 +602,103 @@ function dislikeComment() {
 }
 function createPoll() {
     const createPollFake = document.querySelector(".fake-poll-create-button");
-    if(createPollFake){
-    const eventId = createPollFake.id;
-    let optionNumber = 2;
-    let provisionalId = 1;
+    const eventIdHolder = document.querySelector(".event_id_holder");
     if (createPollFake) {
-        createPollFake.addEventListener("click", () => {
-            const noPolls = document.querySelector(".no-polls");
-            noPolls ? noPolls.style.display = "none" : null;
-            createPollFake.style.display = "none";
-            const createPollForm = document.createElement("div");
-            createPollForm.classList.add("create-poll-form");
-            createPollForm.action = `/poll/store`;
-            createPollForm.method = "POST";
-            createPollForm.innerHTML = `
+        const eventId = eventIdHolder.id;
+        let optionNumber = 2;
+        let provisionalId = 1;
+        if (createPollFake) {
+            createPollFake.addEventListener("click", () => {
+                const noPolls = document.querySelector(".no-polls");
+                noPolls ? noPolls.style.display = "none" : null;
+                createPollFake.style.display = "none";
+                const createPollForm = document.createElement("div");
+                createPollForm.classList.add("create-poll-form");
+                createPollForm.action = `/poll/store`;
+                createPollForm.method = "POST";
+                createPollForm.innerHTML = `
                     <input type="text" name="title" placeholder="Title" required>
                     <input type="text" name="option1" placeholder="Option 1" required>
                     <input type="text" name="option2" placeholder="Option 2" required>
             `;
-            createPollFake.parentElement.appendChild(createPollForm);
-            createPollFake.parentElement.insertBefore(createPollForm, createPollFake);
-            const createPollOptions = document.createElement("div");
-            createPollOptions.classList.add("add-poll-options");
-            createPollOptions.innerHTML = `
+                createPollFake.parentElement.appendChild(createPollForm);
+                createPollFake.parentElement.insertBefore(createPollForm, createPollFake);
+                const createPollOptions = document.createElement("div");
+                createPollOptions.classList.add("add-poll-options");
+                createPollOptions.innerHTML = `
                     <button type="button" class="add-option-button">Add Option</button>
             `;
-            createPollForm.appendChild(createPollOptions);
-            const addOptionButton = createPollOptions.querySelector(".add-option-button");
-            addOptionButton.addEventListener("click", () => {
-                if (optionNumber < 10) {
-                    optionNumber++;
-                    const fullOption = document.createElement("div");
-                    fullOption.classList.add("full-option");
-                    fullOption.style.display = "flex";
-                    fullOption.style.justifyContent = "space-between";
-                    fullOption.style.flexDirection = "row";
-                    const option = document.createElement("input");
-                    option.type = "text";
-                    option.name = `option${optionNumber}`;
-                    option.placeholder = `Option ${optionNumber}`;
-                    option.required = true;
-                    const removeOptionButton = document.createElement("button");
-                    removeOptionButton.type = "button";
-                    removeOptionButton.classList.add("remove-option-button");
-                    removeOptionButton.textContent = "Remove Option";
-                    removeOptionButton.addEventListener("click", () => {
-                        fullOption.remove();
-                        optionNumber--;
-                    });
-                    fullOption.appendChild(option);
-                    fullOption.appendChild(removeOptionButton);
-                    createPollForm.appendChild(fullOption);
-                    createPollForm.insertBefore(fullOption, createPollOptions);
-                }
-                if (optionNumber == 10) {
-                    addOptionButton.disabled = true;
-                    addOptionButton.style.display = "none";
-                }
-            });
-            const createPollButtons = document.createElement("div");
-            createPollButtons.classList.add("create-poll-buttons");
-            createPollButtons.innerHTML = `
+                createPollForm.appendChild(createPollOptions);
+                const addOptionButton = createPollOptions.querySelector(".add-option-button");
+                addOptionButton.addEventListener("click", () => {
+                    if (optionNumber < 10) {
+                        optionNumber++;
+                        const fullOption = document.createElement("div");
+                        fullOption.classList.add("full-option");
+                        fullOption.style.display = "flex";
+                        fullOption.style.justifyContent = "space-between";
+                        fullOption.style.flexDirection = "row";
+                        const option = document.createElement("input");
+                        option.type = "text";
+                        option.name = `option${optionNumber}`;
+                        option.placeholder = `Option ${optionNumber}`;
+                        option.required = true;
+                        const removeOptionButton = document.createElement("button");
+                        removeOptionButton.type = "button";
+                        removeOptionButton.classList.add("remove-option-button");
+                        removeOptionButton.textContent = "Remove Option";
+                        removeOptionButton.addEventListener("click", () => {
+                            fullOption.remove();
+                            optionNumber--;
+                        });
+                        fullOption.appendChild(option);
+                        fullOption.appendChild(removeOptionButton);
+                        createPollForm.appendChild(fullOption);
+                        createPollForm.insertBefore(fullOption, createPollOptions);
+                    }
+                    if (optionNumber == 10) {
+                        addOptionButton.disabled = true;
+                        addOptionButton.style.display = "none";
+                    }
+                });
+                const createPollButtons = document.createElement("div");
+                createPollButtons.classList.add("create-poll-buttons");
+                createPollButtons.innerHTML = `
                     <button type="button" class="cancel-create-poll-button">Cancel</button>
                     <button type="submit" class="create-poll-button">Create</button>
             `;
-            createPollForm.appendChild(createPollButtons);
-            const cancelCreatePollButton = createPollButtons.querySelector(".cancel-create-poll-button");
-            cancelCreatePollButton.addEventListener("click", () => {
-                noPolls ? noPolls.style.display = "block" : null;
-                createPollForm.remove();
-                createPollFake.style.display = "block";
-            });
-            const createPollButton = createPollButtons.querySelector(".create-poll-button");
-            createPollButton.addEventListener("click", () => {
-                const title = createPollForm.querySelector("input[name='title']").value;
-                if (!title) {
+                createPollForm.appendChild(createPollButtons);
+                const cancelCreatePollButton = createPollButtons.querySelector(".cancel-create-poll-button");
+                cancelCreatePollButton.addEventListener("click", () => {
+                    noPolls ? noPolls.style.display = "block" : null;
                     createPollForm.remove();
                     createPollFake.style.display = "block";
-                    //TODO: add error message
-                    return;
-                }
-                const options = [];
-                for (let i = 1; i <= optionNumber; i++) {
-                    options.push(createPollForm.querySelector(`input[name='option${i}']`).value);
-                    if (!options[i - 1]) {
+                });
+                const createPollButton = createPollButtons.querySelector(".create-poll-button");
+                createPollButton.addEventListener("click", () => {
+                    const title = createPollForm.querySelector("input[name='title']").value;
+                    if (!title) {
                         createPollForm.remove();
                         createPollFake.style.display = "block";
                         //TODO: add error message
                         return;
                     }
-                }
-                createPollForm.remove();
-                createPollFake.style.display = "block";
-                const poll = document.createElement("li");
-                poll.style.listStyleType = "none";
-                poll.classList.add("poll");
-                poll.innerHTML = `
+                    const options = [];
+                    for (let i = 1; i <= optionNumber; i++) {
+                        options.push(createPollForm.querySelector(`input[name='option${i}']`).value);
+                        if (!options[i - 1]) {
+                            createPollForm.remove();
+                            createPollFake.style.display = "block";
+                            //TODO: add error message
+                            return;
+                        }
+                    }
+                    createPollForm.remove();
+                    createPollFake.style.display = "block";
+                    const poll = document.createElement("li");
+                    poll.style.listStyleType = "none";
+                    poll.classList.add("poll");
+                    poll.innerHTML = `
                         <div class="poll-header">
                         <h3>${title}</h3>
                         <button type="button" class="fake-poll-delete-button">&#10060;</button>
@@ -705,87 +706,87 @@ function createPoll() {
                         <ul class="poll-options">
                         </ul>
                     `;
-                poll.querySelector(".poll-header").style.display = "flex";
-                poll.querySelector(".fake-poll-delete-button").addEventListener("click", () => {
-                    poll.remove();
-                    createPollFake.style.display = "block";
-                    const checkPolls = document.querySelectorAll(".poll");
-                    if (!checkPolls.length) {
-                        const noPolls = document.createElement("p");
-                        noPolls.classList.add("no-polls");
-                        noPolls.textContent = "No Polls";
-                        createPollFake.parentElement.appendChild(noPolls);
-                    }
-                    sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
-                    noPolls ? noPolls.style.display = "block" : null;
-                });
+                    poll.querySelector(".poll-header").style.display = "flex";
+                    poll.querySelector(".fake-poll-delete-button").addEventListener("click", () => {
+                        poll.remove();
+                        createPollFake.style.display = "block";
+                        const checkPolls = document.querySelectorAll(".poll");
+                        if (!checkPolls.length) {
+                            const noPolls = document.createElement("p");
+                            noPolls.classList.add("no-polls");
+                            noPolls.textContent = "No Polls";
+                            createPollFake.parentElement.appendChild(noPolls);
+                        }
+                        sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
+                        noPolls ? noPolls.style.display = "block" : null;
+                    });
 
-                createPollFake.parentElement.appendChild(poll);
-                const pollOptions = poll.querySelector(".poll-options");
-                options.forEach((option) => {
-                    const pollOption = document.createElement("li");
-                    pollOption.classList.add("poll-option");
-                    const pollOptionLabel = document.createElement("label");
-                    pollOptionLabel.style.display = "flex";
-                    pollOptionLabel.style.flexDirection = "row";
-                    pollOptionLabel.innerHTML = `
+                    createPollFake.parentElement.appendChild(poll);
+                    const pollOptions = poll.querySelector(".poll-options");
+                    options.forEach((option) => {
+                        const pollOption = document.createElement("li");
+                        pollOption.classList.add("poll-option");
+                        const pollOptionLabel = document.createElement("label");
+                        pollOptionLabel.style.display = "flex";
+                        pollOptionLabel.style.flexDirection = "row";
+                        pollOptionLabel.innerHTML = `
                             <input type="radio" name="poll-option ${provisionalId}" value="${option}">
                             <p>${option} - 0</p>
                         `;
-                    pollOption.appendChild(pollOptionLabel);
-                    pollOptions.appendChild(pollOption);
-                }
-                );
-                if (noPolls) {
-                    noPolls.remove();
-                }
-                sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () { });
-                optionNumber = 2;
-                provisionalId++;
-                const pollOptionsInputs = poll.querySelectorAll(".poll-option input[type='radio']");
-                const pollOptionsChecked = poll.querySelectorAll(".poll-option input[type='radio']:checked");
-                let checkedBefore = pollOptionsChecked[0] ? pollOptionsChecked[0] : null;
-                pollOptionsInputs.forEach((pollOptionInput) => {
-                    pollOptionInput.addEventListener("click", (event) => {
-                        event.stopPropagation();
-                        const eventId = document.querySelector(".fake-poll-create-button").id;
-                        const title = poll.querySelector("h3").textContent;
-                        const option = pollOptionInput.parentElement.querySelector("p").textContent.substring(0, pollOptionInput.parentElement.querySelector("p").textContent.indexOf(" - "));
-                        let votes = parseInt(pollOptionInput.parentElement.querySelector("p").textContent.split(" - ")[1]);
-                        const beforeOption = checkedBefore ? checkedBefore.parentElement.querySelector("p").textContent.substring(0, checkedBefore.parentElement.querySelector("p").textContent.indexOf(" - ")): null;
-                        let beforeVotes = checkedBefore ? parseInt(checkedBefore.parentElement.querySelector("p").textContent.split(" - ")[1]) : null;
-                        if (checkedBefore && checkedBefore.value == pollOptionInput.value) {
-                            votes -= 1;
-                            pollOptionInput.checked = false;
-                            checkedBefore = null;
-                            pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
-                            sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
-                        } else if ( checkedBefore && checkedBefore.value != pollOptionInput.value) {
-                            votes += 1;
-                            beforeVotes -= 1;
-                            checkedBefore.parentElement.querySelector("p").textContent = `${beforeOption} - ${beforeVotes}`;
-                            checkedBefore = pollOptionInput;
-                            sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: beforeOption, votes: beforeVotes }, function () { });
-                            pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
-                            sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
-                            pollOptionInput.classList.add("user_vote");
-                            pollOptionInput.checked = true;
-                        }else{
-                            votes += 1;
-                            checkedBefore = pollOptionInput;
-                            pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
-                            sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
-                            pollOptionInput.classList.add("user_vote");
-                            pollOptionInput.checked = true;
-                        }
-                    });
-                }
-                );
+                        pollOption.appendChild(pollOptionLabel);
+                        pollOptions.appendChild(pollOption);
+                    }
+                    );
+                    if (noPolls) {
+                        noPolls.remove();
+                    }
+                    sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () { });
+                    optionNumber = 2;
+                    provisionalId++;
+                    const pollOptionsInputs = poll.querySelectorAll(".poll-option input[type='radio']");
+                    const pollOptionsChecked = poll.querySelectorAll(".poll-option input[type='radio']:checked");
+                    let checkedBefore = pollOptionsChecked[0] ? pollOptionsChecked[0] : null;
+                    pollOptionsInputs.forEach((pollOptionInput) => {
+                        pollOptionInput.addEventListener("click", (event) => {
+                            event.stopPropagation();
+                            const eventId = document.querySelector(".event_id_holder").id;
+                            const title = poll.querySelector("h3").textContent;
+                            const option = pollOptionInput.parentElement.querySelector("p").textContent.substring(0, pollOptionInput.parentElement.querySelector("p").textContent.indexOf(" - "));
+                            let votes = parseInt(pollOptionInput.parentElement.querySelector("p").textContent.split(" - ")[1]);
+                            const beforeOption = checkedBefore ? checkedBefore.parentElement.querySelector("p").textContent.substring(0, checkedBefore.parentElement.querySelector("p").textContent.indexOf(" - ")) : null;
+                            let beforeVotes = checkedBefore ? parseInt(checkedBefore.parentElement.querySelector("p").textContent.split(" - ")[1]) : null;
+                            if (checkedBefore && checkedBefore.value == pollOptionInput.value) {
+                                votes -= 1;
+                                pollOptionInput.checked = false;
+                                checkedBefore = null;
+                                pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                                sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
+                            } else if (checkedBefore && checkedBefore.value != pollOptionInput.value) {
+                                votes += 1;
+                                beforeVotes -= 1;
+                                checkedBefore.parentElement.querySelector("p").textContent = `${beforeOption} - ${beforeVotes}`;
+                                checkedBefore = pollOptionInput;
+                                sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: beforeOption, votes: beforeVotes }, function () { });
+                                pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                                sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
+                                pollOptionInput.classList.add("user_vote");
+                                pollOptionInput.checked = true;
+                            } else {
+                                votes += 1;
+                                checkedBefore = pollOptionInput;
+                                pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
+                                sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
+                                pollOptionInput.classList.add("user_vote");
+                                pollOptionInput.checked = true;
+                            }
+                        });
+                    }
+                    );
+                });
             });
-        });
+        }
     }
-}
-   
+
 }
 
 
@@ -794,7 +795,7 @@ function deletePoll() {
     deletePollButtons.forEach((deletePollButton) => {
         deletePollButton.addEventListener("click", () => {
             const poll = deletePollButton.parentElement.parentElement;
-            const eventId = document.querySelector(".fake-poll-create-button").id;
+            const eventId = document.querySelector(".event_id_holder").id;
             const title = deletePollButton.parentElement.querySelector("h3").textContent;
             poll.remove();
             sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
@@ -807,10 +808,9 @@ function answerPoll() {
     polls.forEach((poll) => {
         const pollOptions = poll.querySelectorAll(".poll-option input[type='radio']");
         pollOptions.forEach((pollOptionInput) => {
-            console.log(pollOptionInput);
-            if(!pollOptionInput.classList.length){
+            if (!pollOptionInput.classList.length) {
                 pollOptionInput.checked = false;
-            }else{
+            } else {
                 pollOptionInput.checked = true;
             }
         });
@@ -819,11 +819,11 @@ function answerPoll() {
         pollOptions.forEach((pollOptionInput) => {
             pollOptionInput.addEventListener("click", (event) => {
                 event.stopPropagation();
-                const eventId = document.querySelector(".fake-poll-create-button").id;
+                const eventId = document.querySelector(".event_id_holder").id;
                 const title = poll.querySelector("h3").textContent;
                 const option = pollOptionInput.parentElement.querySelector("p").textContent.substring(0, pollOptionInput.parentElement.querySelector("p").textContent.indexOf(" - "));
                 let votes = parseInt(pollOptionInput.parentElement.querySelector("p").textContent.split(" - ")[1]);
-                const beforeOption = checkedBefore ? checkedBefore.parentElement.querySelector("p").textContent.substring(0, checkedBefore.parentElement.querySelector("p").textContent.indexOf(" - ")): null;
+                const beforeOption = checkedBefore ? checkedBefore.parentElement.querySelector("p").textContent.substring(0, checkedBefore.parentElement.querySelector("p").textContent.indexOf(" - ")) : null;
                 let beforeVotes = checkedBefore ? parseInt(checkedBefore.parentElement.querySelector("p").textContent.split(" - ")[1]) : null;
                 if (checkedBefore && checkedBefore.value == pollOptionInput.value) {
                     votes -= 1;
@@ -831,25 +831,25 @@ function answerPoll() {
                     checkedBefore = null;
                     pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
                     sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
-                } else if ( checkedBefore && checkedBefore.value != pollOptionInput.value) {
+                } else if (checkedBefore && checkedBefore.value != pollOptionInput.value) {
                     votes += 1;
                     beforeVotes -= 1;
                     checkedBefore.parentElement.querySelector("p").textContent = `${beforeOption} - ${beforeVotes}`;
                     checkedBefore = pollOptionInput;
                     sendAjaxRequest('DELETE', `/api/poll/unvote`, { eventId: eventId, title: title, option: beforeOption, votes: beforeVotes }, function () { });
                     pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
-                    sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
+                    sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
                     pollOptionInput.classList.add("user_vote");
                     pollOptionInput.checked = true;
-                }else{
+                } else {
                     votes += 1;
                     checkedBefore = pollOptionInput;
                     pollOptionInput.parentElement.querySelector("p").textContent = `${option} - ${votes}`;
-                    sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title:title, option: option, votes: votes }, function () { });
+                    sendAjaxRequest('PUT', `/api/poll/vote`, { eventId: eventId, title: title, option: option, votes: votes }, function () { });
                     pollOptionInput.classList.add("user_vote");
                     pollOptionInput.checked = true;
                 }
-                
+
             });
 
 
@@ -860,28 +860,28 @@ function answerPoll() {
 
 
 
-function closeNotifications(){
+function closeNotifications() {
     document.addEventListener("click", (e) => {
-        if (e.target.classList.contains("user-notifications-container") 
-        || e.target.classList.contains("user-notifications") 
-        || e.target.classList.contains("notifications-icon")
-        || e.target.classList.contains("notification")) {
+        if (e.target.classList.contains("user-notifications-container")
+            || e.target.classList.contains("user-notifications")
+            || e.target.classList.contains("notifications-icon")
+            || e.target.classList.contains("notification")) {
             return;
         }
         const notifications = document.querySelector(".user-notifications-container");
-        if(notifications){
+        if (notifications) {
             notifications.style.display = "none";
         }
     });
 }
 
-function openNotificaitons(){
+function openNotificaitons() {
     const notificationsIconDiv = document.querySelector(".notifications-icon");
     const notifications = document.querySelector(".user-notifications-container");
-    if(notificationsIconDiv && notifications){
+    if (notificationsIconDiv && notifications) {
         notificationsIconDiv.addEventListener("click", () => {
             const position = notificationsIconDiv.getBoundingClientRect();
-            if(notifications.style.display == "none"){
+            if (notifications.style.display == "none") {
                 notifications.style.display = "block";
                 notifications.style.position = "absolute";
                 notifications.style.left = (position.left - 150).toString() + "px";
