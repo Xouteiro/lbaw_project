@@ -1,6 +1,5 @@
 function addEventListeners() {
     window.addEventListener('load', function () {
-        // Load events from the API on page load
         loadMoreEvents();
     });
 }
@@ -27,11 +26,13 @@ let page = 1;
 
 function loadMoreEvents() {
     const xhr = new XMLHttpRequest();
+    
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
                 const events = response.events.data;
+                console.log(response.events.data);
 
                 const eventsContainer = document.getElementById('eventsContainer');
                 if (eventsContainer) {
@@ -78,7 +79,9 @@ function loadMoreEvents() {
         }
     };
 
-    const url = `/api/events-ajax?page=${page}`;
+    let eventsContainers = document.getElementById('eventsContainer');
+    let queryString = eventsContainers.dataset.query;
+    const url = `/api/events-ajax?page=${page}&${queryString}`;
     xhr.open('GET', url, true);
     xhr.send();
 }
