@@ -31,27 +31,44 @@
                     <label for="finished">Finished</label>
                     <input type="checkbox" name="finished" value="finished" {{ request('finished') ? 'checked' : '' }}>
                 </div>
+                <div class="order input_field">
+                    <select name="order" id="order">
+                        <option value="">Choose an option</option>
+                        <option value="eventdate-desc" {{ request('order') == 'eventdate-desc' ? 'selected' : '' }}>Date (Furthest from Today) </option>
+                        <option value="eventdate-asc" {{ request('order') == 'eventdate-asc' ? 'selected' : '' }}>Date (Closest to Today) </option>
+                        <option value="price-desc" {{ request('order') == 'price-desc' ? 'selected' : '' }}>Price (High to Low)</option>
+                        <option value="price-asc" {{ request('order') == 'price-asc' ? 'selected' : '' }}>Price (Low to High)</option>
+                        <option value="capacity-desc" {{ request('order') == 'capacity-desc' ? 'selected' : '' }}>Capacity (High to Low)</option>
+                        <option value="capacity-asc" {{ request('order') == 'capacity-asc' ? 'selected' : '' }}>Capacity (Low to High)</option>
+                    </select>
+                </div>
                 <button type="submit" id="searchButton">Search</button>
             </form>
         </div>
         <div class="container-events">
-            @if(!$events->count())
-                <p>No events were found for your search</p>
-            @else
-                <h1>Search Results:</h1>
+            @php
+                $filters = [];
+                if(request('search') != null) {
+                    $filters[] = "events found for '" . request('search') . "'";
+                }
+                if(request('date') != null) {
+                    $filters[] = "after " . request('date') . "";
+                }
+                if(request('id_location') != null) {
+                    $filters[] = " in " . DB::table('location')->where('id', request('id_location'))->value('name') . "";
+                }
+                if(request('free') != null) {
+                    $filters[] = "free ";
+                }
+                if(request('finished') != null) {
+                    $filters[] = "finished ";
+                }
+            @endphp
+            @if(!empty($filters))
+            <h3>{{ ucfirst(implode(', ', $filters)) }} events :</h3>
             @endif
-            @if($search != null)
-            <h3>Events found for '{{$search}}' :</h3>
-            @endif
-            @if(request('date') == null && request('id_location') == null && request('free') == null && request('finished') == null && $search == null)
-            <div class="events-container" id="eventsContainer">
-                @each('partials.event_card', $events, 'event')
+            <div class="events-container" id="eventsContainer" data-query="{{ http_build_query(request()->query()) }}"> 
             </div>
-            @else
-            <div class="events-container"> 
-                @each('partials.event_card', $events, 'event')
-            </div>
-            @endif
         </div>
     </div>
 @endsection

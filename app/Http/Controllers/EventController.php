@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
+use function Laravel\Prompts\alert;
+
 class EventController extends Controller
 {
     public function index()
@@ -35,25 +37,84 @@ class EventController extends Controller
         }
     }
 
-    public function indexAjax()
+    public function indexAjax(Request $request)
     {
+        $datefilter = $request->has('date') ? $request->get('date') : null;
+        $locationfilter = $request->has('id_location') ? $request->get('id_location') : null;
+        $freefilter = $request->has('free') ? $request->get('free') : null;
+        $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
+        $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
+
+
+        $order = $request->has('order') ? $request->get('order') : null;
+        if($order !== null){
+        $orderType = explode('-', $order)[0];
+        $orderDirection = explode('-', $order)[1];
+        }
+
+
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
         if ($user->is_admin) {
-            $events = Event::inRandomOrder()->paginate(10);
-            return response()->json(['events' => $events]);
+            $allEvents = Event::get();
         } else {
-            $events = Event::where(function ($query) use ($userId) {
+            $allEvents = Event::where(function ($query) use ($userId) {
                 $query->where('hide_owner', false)
                       ->where('public', true)
                       ->orWhere(function ($query) use ($userId) {
                           $query->where('public', false)
                                 ->whereHas('participants', function ($query) use ($userId) {
-                                    $query->where('id_event', $userId);
+                                    $query->where('id_user', $userId);
                                 });
                       });
-            })->inRandomOrder()->paginate(10);
-            return  response()->json(['events' => $events]);
+            });
+        }
+
+        if ($request->get('search') == null && $datefilter == null && $locationfilter == null && $freefilter == null && $finishedfilter == null) {
+            if ($order !== null) {
+                $events = $allEvents->select()
+                                    ->where('eventdate', '>=', Carbon::now())
+                                    ->orderBy($orderType, $orderDirection)
+                                    ->paginate(10);
+            } else {
+                $events = $allEvents->select()
+                                    ->where('eventdate', '>=', Carbon::now())
+                                    ->paginate(10);
+            }
+            return  response()->json(['events' => $events, 'search' => $request->get('search')]);
+            //return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
+        }
+
+        if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
+            $query = $allEvents->select();
+
+            $query->where(function ($query) use ($datefilter, $locationfilter, $input, $freefilter, $finishedfilter) {
+                if ($input !== '\'*\'') {
+                    $query->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
+                        ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
+                }
+                if ($datefilter !== null) {
+                    $query->where('eventdate', '>=', $datefilter);
+                }
+
+                if ($locationfilter !== null) {
+                    $query->where('id_location', '=', $locationfilter);
+                }
+                if ($freefilter !== null) {
+                    $query->where('price', '=', 0);
+                }
+                if ($finishedfilter !== null) {
+                    $query->where('eventdate', '<', Carbon::now());
+                }
+            });
+
+            if ($order !== null) {
+                $events = $query->orderBy($orderType, $orderDirection === 'asc' ? 'asc' : 'desc')->paginate(10);
+            } else {
+                $events = $query->paginate(10);
+            }
+            return  response()->json(['events' => $events, 'search' => $request->get('search')]);
+            //return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
     }
 
@@ -217,81 +278,9 @@ class EventController extends Controller
 
     public function eventsSearch(Request $request)
     {
-        $datefilter = $request->has('date') ? $request->get('date') : null;
-        $locationfilter = $request->has('id_location') ? $request->get('id_location') : null;
-        $freefilter = $request->has('free') ? $request->get('free') : null;
-        $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
-        $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
-
-        $userId = Auth::user()->id;
-        $user = User::findOrFail($userId);
-        if ($user->is_admin) {
-            $allEvents = Event::get();
-        } else {
-            $allEvents = Event::where(function ($query) use ($userId) {
-                $query->where('hide_owner', false)
-                      ->where('public', true)
-                      ->orWhere(function ($query) use ($userId) {
-                          $query->where('public', false)
-                                ->whereHas('participants', function ($query) use ($userId) {
-                                    $query->where('id_user', $userId);
-                                });
-                      });
-            });
-        }
-
-        if ($request->get('search') == null && $datefilter == null && $locationfilter == null && $freefilter == null && $finishedfilter == null) {
-            $events = $allEvents->select()->where('eventdate', '>=', Carbon::now())->get();
-            return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
-        }
-
-        if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
-            $query = $allEvents->select();
-
-            $query->where(function ($query) use ($datefilter, $locationfilter, $input, $freefilter, $finishedfilter) {
-                if ($input !== '\'*\'') {
-                    $query->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
-                        ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
-                }
-                if ($datefilter !== null) {
-                    $query->where('eventdate', '>=', $datefilter);
-                }
-
-                if ($locationfilter !== null) {
-                    $query->where('id_location', '=', $locationfilter);
-                }
-                if ($freefilter !== null) {
-                    $query->where('price', '=', 0);
-                }
-                if ($finishedfilter !== null) {
-                    $query->where('eventdate', '<', Carbon::now());
-                }
-            });
-
-            $events = $query->get();
-
-            return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
-        }
-
-
-        if ($request->get('search') !== null) { //com filtros e pesquisa
-            $query = $allEvents->select()
-                ->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
-                ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
-
-            if ($datefilter !== null) {
-                $query->where('eventdate', '>=', $datefilter);
-            }
-
-            if ($locationfilter !== null) {
-                $query->where('id_location', '=', $locationfilter);
-            }
-
-            $events = $query->get();
-
-            return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
-        }
+            return view('pages.events.search', [$request]);
     }
+
 
     static public function joinEvent(string $id)
     {
