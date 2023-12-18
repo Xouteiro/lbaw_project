@@ -62,7 +62,7 @@
             <p>Address: {{ $event->location->address }}</p>
 
         </div>
-        @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user)
+        @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user && !Auth::user()->admin)
             {{-- Form of invite decision (Accept/Deny) --}}
             <div class="invite-decision">
                 <h3>You have been invited for this event!</h3>
@@ -82,7 +82,9 @@
             $event->opentojoin &&
                 Auth::check() &&
                 Auth::user()->id != $event->id_owner &&
-                !Auth::user()->events->contains($event))
+                !Auth::user()->events->contains($event) &&
+                !Auth::user()->admin
+                )
             <form action="{{ route('event.join', ['id' => $event->id]) }}" method="POST">
                 @csrf
                 <button class="button" type="submit">
@@ -91,7 +93,9 @@
             </form>
         @elseif(!$event->opentojoin && Auth::check() &&
                 Auth::user()->id != $event->id_owner &&
-                !Auth::user()->events->contains($event))
+                !Auth::user()->events->contains($event) &&
+                !Auth::user()->admin
+                )
 
             @if(session('success'))
                 <span class="success">
@@ -110,7 +114,7 @@
                     Request to join
                 </button>
             </form>
-        @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event))
+        @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
             <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
                 @csrf
                 <button class="button" type="submit">
@@ -118,7 +122,7 @@
                 </button>
             </form>
         @endif
-        @if (Auth::check() && Auth::user()->id == $event->id_owner)
+        @if (Auth::check() && Auth::user()->id == $event->id_owner && !Auth::user()->admin)
             <div class="invite-container">
                 <h3>Invite a user to this event</h3>
                 

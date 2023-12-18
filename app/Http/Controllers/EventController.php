@@ -60,6 +60,9 @@ class EventController extends Controller
         if (!Auth::check()) {
             return redirect()->route('login');
         }
+        if(Auth::user()->is_admin){
+            return redirect()->route('home');
+        }
         return view('pages.events.create');
     }
 
@@ -210,7 +213,6 @@ class EventController extends Controller
         $user = User::findOrFail($userId);
         if ($user->is_admin) {
             $allEvents = Event::get();
-            return view('pages.events.index', ['events' => $events]);
         } else {
             $allEvents = Event::where(function ($query) use ($userId) {
                 $query->where('hide_owner', false)
@@ -279,6 +281,9 @@ class EventController extends Controller
 
     static public function joinEvent(string $id)
     {
+        if(Auth::user()->is_admin){
+            return redirect()->route('home');
+        }
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 

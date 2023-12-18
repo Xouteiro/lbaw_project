@@ -15,6 +15,10 @@ class InviteController extends Controller
     public function sendInvite(Request $request) {
         $event = Event::findOrFail($request->id_event);
 
+        if(Auth::user()->admin){
+            return redirect()->route('user.show', ['id' => Auth::user()->id]);
+        }
+
         if (!$event) {
             return response()->json(['error' => 'Event not found'], 404);
         }
@@ -75,6 +79,9 @@ class InviteController extends Controller
     }
 
     public function acceptInvite(Request $request) {
+        if(Auth::user()->admin){
+            return redirect()->route('user.show', ['id' => Auth::user()->id]);
+        }
         $invite = Notification::findOrFail($request->id_invite);
         //$this->authorize('acceptInvite', $invite);
         $event = $invite->event->id;
