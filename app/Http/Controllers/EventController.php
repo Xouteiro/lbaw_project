@@ -301,6 +301,10 @@ class EventController extends Controller
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
+        if($event->eventdate < date('Y-m-d H:i:s')){
+            abort(403, 'This event has already ended!');
+        }
+
         // $this->authorize('join', $event);
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);

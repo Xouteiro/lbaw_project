@@ -45,7 +45,7 @@
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
-                @endif 
+                @endif
             @else
                 @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
@@ -78,73 +78,75 @@
                 </form>
             </div>
         @endif
-        @if (
-            $event->opentojoin &&
-                Auth::check() &&
-                Auth::user()->id != $event->id_owner &&
-                !Auth::user()->events->contains($event) &&
-                !Auth::user()->admin
-                )
-            <form action="{{ route('event.join', ['id' => $event->id]) }}" method="POST">
-                @csrf
-                <button class="button" type="submit">
-                    Join Event
-                </button>
-            </form>
-        @elseif(!$event->opentojoin && Auth::check() &&
-                Auth::user()->id != $event->id_owner &&
-                !Auth::user()->events->contains($event) &&
-                !Auth::user()->admin
-                )
+        @if($event->eventdate > date('Y-m-d H:i:s'))
+            @if (
+                $event->opentojoin &&
+                    Auth::check() &&
+                    Auth::user()->id != $event->id_owner &&
+                    !Auth::user()->events->contains($event) &&
+                    !Auth::user()->admin
+                    )
+                <form action="{{ route('event.join', ['id' => $event->id]) }}" method="POST">
+                    @csrf
+                    <button class="button" type="submit">
+                        Join Event
+                    </button>
+                </form>
+            @elseif(!$event->opentojoin && Auth::check() &&
+                    Auth::user()->id != $event->id_owner &&
+                    !Auth::user()->events->contains($event) &&
+                    !Auth::user()->admin
+                    )
 
-            @if(session('success'))
-                <span class="success">
-                    {{ session('success') }}
-                </span>
-            @endif
-            @if ($errors->has('requestToJoin'))
-                <span class="error">
-                    {{ $errors->first('requestToJoin') }}
-                </span>
-            @endif
-            <form action="{{ route('requestToJoin.send') }}" method="POST">
-                @csrf
-                <input type="hidden" name="id_event" value="{{ $event->id }}">
-                <button class="button" type="submit">
-                    Request to join
-                </button>
-            </form>
-        @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
-            <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
-                @csrf
-                <button class="button" type="submit">
-                    Leave Event
-                </button>
-            </form>
-        @endif
-        @if (Auth::check() && Auth::user()->id == $event->id_owner && !Auth::user()->admin)
-            <div class="invite-container">
-                <h3>Invite a user to this event</h3>
-                
                 @if(session('success'))
                     <span class="success">
                         {{ session('success') }}
                     </span>
                 @endif
-                @if ($errors->has('invite'))
+                @if ($errors->has('requestToJoin'))
                     <span class="error">
-                        {{ $errors->first('invite') }}
+                        {{ $errors->first('requestToJoin') }}
                     </span>
                 @endif
-                <form method="POST" action="{{ route('invite.send') }}" id="invitationForm" style="margin: 0;">
+                <form action="{{ route('requestToJoin.send') }}" method="POST">
                     @csrf
-                    <input type="text" name="email" placeholder="Enter user's email">
                     <input type="hidden" name="id_event" value="{{ $event->id }}">
-                    <button type="submit">
-                        Send Invitation
+                    <button class="button" type="submit">
+                        Request to join
                     </button>
                 </form>
-            </div>
+            @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
+                <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
+                    @csrf
+                    <button class="button" type="submit">
+                        Leave Event
+                    </button>
+                </form>
+            @endif
+            @if (Auth::check() && Auth::user()->id == $event->id_owner && !Auth::user()->admin)
+                <div class="invite-container">
+                    <h3>Invite a user to this event</h3>
+                    
+                    @if(session('success'))
+                        <span class="success">
+                            {{ session('success') }}
+                        </span>
+                    @endif
+                    @if ($errors->has('invite'))
+                        <span class="error">
+                            {{ $errors->first('invite') }}
+                        </span>
+                    @endif
+                    <form method="POST" action="{{ route('invite.send') }}" id="invitationForm" style="margin: 0;">
+                        @csrf
+                        <input type="text" name="email" placeholder="Enter user's email">
+                        <input type="hidden" name="id_event" value="{{ $event->id }}">
+                        <button type="submit">
+                            Send Invitation
+                        </button>
+                    </form>
+                </div>
+            @endif
         @endif
         @if(Auth::check())
         <div class="comments">
