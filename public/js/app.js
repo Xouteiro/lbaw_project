@@ -676,23 +676,46 @@ function createPoll() {
                 });
                 const createPollButton = createPollButtons.querySelector(".create-poll-button");
                 createPollButton.addEventListener("click", () => {
+                    const errorMessages = document.querySelectorAll('div[style="color: red;"]');
+                    errorMessages.forEach((errorMessage) => {
+                        errorMessage.remove();
+                    }
+                    );
                     const title = createPollForm.querySelector("input[name='title']").value;
                     if (!title) {
-                        createPollForm.remove();
-                        createPollFake.style.display = "block";
-                        //TODO: add error message
+                        const errorMessage = document.createElement('div');
+                        errorMessage.textContent = 'Title can not be empty.';
+                        errorMessage.style.color = 'red';
+                        createPollForm.insertBefore(errorMessage, createPollButtons);
+                        return;
+                    }
+                    if (title.length > 150 || title.length < 2) {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.textContent = 'Title can not be that size.';
+                        errorMessage.style.color = 'red';
+                        createPollForm.insertBefore(errorMessage, createPollButtons);
                         return;
                     }
                     const options = [];
                     for (let i = 1; i <= optionNumber; i++) {
                         options.push(createPollForm.querySelector(`input[name='option${i}']`).value);
-                        if (!options[i - 1]) {
-                            createPollForm.remove();
-                            createPollFake.style.display = "block";
-                            //TODO: add error message
+                        if (!options[i - 1] || options[i - 1].length > 50 || options[i - 1].length < 2) {
+                            const errorMessage = document.createElement('div');
+                            errorMessage.textContent = 'Option names can not be that size.';
+                            errorMessage.style.color = 'red';
+                            createPollForm.insertBefore(errorMessage, createPollButtons);
                             return;
                         }
                     }
+
+                    if (options.length !== new Set(options).size) {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.textContent = 'Option names must be distinct.';
+                        errorMessage.style.color = 'red';
+                        createPollForm.insertBefore(errorMessage, createPollButtons);
+                        return;
+                    }
+
                     createPollForm.remove();
                     createPollFake.style.display = "block";
                     const poll = document.createElement("li");
