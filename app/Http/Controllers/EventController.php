@@ -26,7 +26,7 @@ class EventController extends Controller
         $locationfilter = $request->has('id_location') ? $request->get('id_location') : null;
         $freefilter = $request->has('free') ? $request->get('free') : null;
         $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
-        $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
+        $input = $request->get('search') ? "'" . $request->get('search') . "'" : "'*'";
 
 
         $order = $request->has('order') ? $request->get('order') : null;
@@ -71,10 +71,12 @@ class EventController extends Controller
         if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
             $query = $allEvents->select();
 
-            $query->where(function ($query) use ($datefilter, $locationfilter, $input, $freefilter, $finishedfilter) {
-                if ($input !== '\'*\'') {
-                    $query->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
-                        ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
+            $query->where(function ($query) use ($datefilter, $locationfilter, $request, $freefilter, $finishedfilter) {
+                if ($request->get('search') !== null) {
+                    $query->whereRaw("tsvectors @@ to_tsquery(?, ?)", ['english', $request->get('search')])
+                    ->orderByRaw("ts_rank(tsvectors, to_tsquery(?, ?)) ASC", ['english', $request->get('search')]);
+              
+
                 }
                 if ($datefilter !== null) {
                     $query->where('eventdate', '>=', $datefilter);
