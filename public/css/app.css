@@ -70,7 +70,9 @@ header img.user {
 }
 
 img.user {
-    max-height: 5.5em;
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
     margin-right: 1em;
     margin-left: 1em;
     border-radius: 25%;
