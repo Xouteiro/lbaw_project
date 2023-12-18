@@ -237,13 +237,13 @@ main>header span {
     font-weight: normal;
 }
 
-#content .home-page {
+#content .home-page,#content .about-page, #content .mainFeatures-page {
     text-align: center;
     margin: 0 auto 0em auto;
     display: flex;
     flex-direction: column;
     max-width: fit-content;
-    padding-top: 184px;
+    padding-top: 181px;
 }
 
 #content .container>form.general {

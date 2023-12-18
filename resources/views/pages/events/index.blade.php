@@ -35,13 +35,7 @@
             </form>
         </div>
         <div class="container-events">
-            @if(!$events->count())
-                <p>No events were found for your search</p>
-            @else
-                <h1>Search Results:</h1>
-            @endif
-            <div class="events-container" id="eventsContainer"> <!--é aqui o infinite-->
-                @each('partials.event_card', $events, 'event')
+            <div class="events-container" id="eventsContainer" data-query="{{ http_build_query(request()->query()) }}"> 
             </div>
         </div>
     </div>

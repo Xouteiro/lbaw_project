@@ -86,7 +86,10 @@ function loadMoreEvents() {
     };
 
     let eventsContainers = document.getElementById('eventsContainer');
-    let queryString = eventsContainers.dataset.query;
+    let queryString = null;
+    if(eventsContainers) {
+         queryString = eventsContainers.dataset.query;
+    }
     const url = `/api/events-ajax?page=${page}&${queryString}`;
     xhr.open('GET', url, true);
     xhr.send();
