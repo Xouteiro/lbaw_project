@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\EventUpdate;
 use App\Models\Notification;
+use App\Mail\Email;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class EventUpdateController extends Controller
 {
@@ -30,6 +32,15 @@ class EventUpdateController extends Controller
             $requestToJoin = new EventUpdate();
             $requestToJoin->notification()->associate($notification);
             $requestToJoin->save();
+
+            $data = array(
+                'type' => 'event-update',
+                'name' => $user->name,
+                'event' => $event->name,
+                'eventId' => $event->id
+            );
+
+            Mail::to($user->email, $user->name)->send(new Email($data));
         }
 
         return redirect()->route('event.show', ['id' => $event->id]);

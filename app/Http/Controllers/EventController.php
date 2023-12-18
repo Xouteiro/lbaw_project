@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Notification;
+use App\Mail\Email;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -187,7 +189,19 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $this->authorize('delete', $event);
+        $users = $event->participants()->get();
+
+        foreach ($users as $user) {
+            $data = array(
+                'type' => 'cancel-event',
+                'name' => $user->name,
+                'event' => $event->name
+            );
+
+            Mail::to($user->email, $user->name)->send(new Email($data));
+        }
         $event->delete();
+
         return response()->json(['message' => 'Delete successful'], 200);
     }
 
@@ -291,7 +305,16 @@ class EventController extends Controller
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
-        return back();
+        $data = array(
+            'type' => 'join-event',
+            'name' => $user->name,
+            'event' => $event->name,
+            'eventId' => $event->id
+        );
+
+        Mail::to($user->email, $user->name)->send(new Email($data));
+
+        return redirect()->route('event.show', ['id' => $event->id]);
     }
 
     public function leaveEvent(string $id)
@@ -302,6 +325,16 @@ class EventController extends Controller
         $this->authorize('leave', $event);
 
         $event->participants()->detach($user->id);
-        return back();
+
+        $data = array(
+            'type' => 'leave-event',
+            'name' => $user->name,
+            'event' => $event->name,
+            'eventId' => $event->id
+        );
+
+        Mail::to($user->email, $user->name)->send(new Email($data));
+
+        return redirect()->route('event.show', ['id' => $event->id]);
     }
 }
