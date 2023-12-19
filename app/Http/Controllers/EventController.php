@@ -11,8 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-use function Laravel\Prompts\alert;
-
 class EventController extends Controller
 {
     public function index()
@@ -228,7 +226,7 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
         $this->authorize('removeparticipant', $event);
         $event->participants()->detach($id_participant);
-        return back();
+        return response()->json(['message' => 'Participant removed'], 200);
     }
 
     public function delete(string $id)
