@@ -34,29 +34,21 @@ class RequestToJoinController extends Controller
         $userToRequest = User::findOrFail($event->id_owner);
 
         if (!$userToRequest) {
-            return back()->withErrors([
-                'requestToJoin' => 'User not found!',
-            ])->onlyInput('requestToJoin');
+            abort(404, 'Event owner not found!');
         }
 
         if($event->owner->id == $user->id) {
-            return back()->withErrors([
-                'requestToJoin' => 'Cannot request to join your own event!',
-            ])->onlyInput('requestToJoin');
+            abort(403, 'Cannot request to join your own event!');
         }
 
         $checkIfUserAlreadyIn = $event->participants()->where('id_user', $user->id)->first();
         if($checkIfUserAlreadyIn) {
-            return back()->withErrors([
-                'requestToJoin' => 'You\'re already in this event!',
-            ])->onlyInput('requestToJoin');
+            abort(403, 'You\'re already in this event!');
         }
 
         $checkIfAlreadyExists = Notification::where([['id_user', $userToRequest->id], ['id_event', $event->id]])->first();
         if($checkIfAlreadyExists) {
-            return back()->withErrors([
-                'requestToJoin' => 'You already requested to join this event!',
-            ])->onlyInput('requestToJoin');
+            abort(403, 'You already requested to join this event!');
         }
 
         $notification = Notification::create([
@@ -83,7 +75,16 @@ class RequestToJoinController extends Controller
 
         Mail::to($userToRequest->email, $userToRequest->name)->send(new Email($data));
 
-        return back()->with('success', 'Request to join sent successfully!');
+        return response()->json('Request to join sent successfully!', 200);
+    }
+
+    public function cancelRequestToJoin(Request $request) {
+        $requestToJoinNotification = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $request->id_event)
+        ->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
+        //$this->authorize('cancelRequestToJoin', $requestToJoin);
+        RequestToJoin::findOrFail($requestToJoinNotification->id)->delete();
+        Notification::findOrFail($requestToJoinNotification->id)->delete();
+        return response()->json('Request to join cancelled successfully!', 200);
     }
 
     public function acceptRequestToJoin(Request $request) {

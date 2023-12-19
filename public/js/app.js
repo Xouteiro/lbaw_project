@@ -469,7 +469,46 @@ function closeDecisionBox() {
     });
 }
 
-function requestToJoin() {
+function requestToJoin(requestToJoinButton){
+    const eventId = requestToJoinButton.id;
+    if(requestToJoinButton.classList.contains("sent")){
+        const sureboxExists = document.querySelector(".surebox");
+
+        if (!sureboxExists) {
+            const surebox = document.createElement("div");
+            surebox.classList.add("surebox");
+            surebox.innerHTML = `
+                <p>Cancel request to join ?</p>
+                <div class="surebox-buttons">
+                    <button type="button" class="surebox button yes">Yes</button>
+                    <button type="button" class="surebox button no">No</button>
+                </div>
+            `;
+            requestToJoinButton.parentElement.insertBefore(surebox, requestToJoinButton.nextSibling);
+            const noButton = surebox.querySelector(".surebox.button.no");
+            noButton.addEventListener("click", () => {
+                surebox.remove();
+            });
+
+            const yesButton = surebox.querySelector(".surebox.button.yes");
+            yesButton.addEventListener("click", () => {
+                surebox.remove();
+                requestToJoinButton.classList.remove("sent");
+                requestToJoinButton.textContent = "Request To Join";
+                sendAjaxRequest('POST', `/api/cancel-request-to-join`, {id_event: eventId}, function () {});
+
+            });
+        }
+        closeSureOptions();
+        return;
+    }
+    requestToJoinButton.textContent = "Request Sent";
+    requestToJoinButton.classList.add("sent");
+    sendAjaxRequest('POST', `/api/send-request-to-join`, {id_event: eventId}, function () {});
+    closeSureOptions();
+}
+
+function requestToJoinDecision() {
     const requestsToJoin = document.querySelectorAll(".pending_request_to_join");
     requestsToJoin.forEach((requestToJoin) => {
         requestToJoin.addEventListener("click", () => {
@@ -944,7 +983,7 @@ deleteAccount();
 deleteEvent();
 deleteComment();
 editComment();
-requestToJoin();
+requestToJoinDecision();
 eventUpdate();
 likeComment();
 dislikeComment();

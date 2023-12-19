@@ -91,6 +91,7 @@ Route::controller(StaticPagesController::class)->group(function(){
 // RequestToJoin
 Route::controller(RequestToJoinController::class)->group(function(){
     Route::post('/api/send-request-to-join', 'sendRequestToJoin')->name('requestToJoin.send');
+    Route::post('/api/cancel-request-to-join', 'cancelRequestToJoin')->name('requestToJoin.cancel');
     Route::post('/api/accept-request-to-join', 'acceptRequestToJoin')->name('requestToJoin.accept');
     Route::post('/api/deny-request-to-join', 'denyRequestToJoin')->name('requestToJoin.deny');
 });
