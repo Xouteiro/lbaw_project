@@ -24,7 +24,6 @@ class EventController extends Controller
         $locationfilter = $request->has('id_location') ? $request->get('id_location') : null;
         $freefilter = $request->has('free') ? $request->get('free') : null;
         $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
-        $input = $request->get('search') ? "'" . $request->get('search') . "'" : "'*'";
 
 
         $order = $request->has('order') ? $request->get('order') : null;

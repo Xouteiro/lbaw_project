@@ -1,9 +1,16 @@
 <li>
-    <div id="{{ $comment->id }}" class="comment">
+    <div id="{{ $comment['id'] }}" class="comment">
         <div class="comment-header">
             <div class="comment-header-title-likes">
                 @if(isset($comment->user->username)) 
+                    @if($comment->user->id == $event->id_owner)
+                        <div class="event-owner-message">
+                            <h3>{{ $comment->user->username }}</h3>
+                            <p class="event-owner">Event Owner Message</p>
+                        </div>
+                    @else
                     <h3>{{ $comment->user->username }}</h3>
+                    @endif
                 @else
                     <h3>Anonymous</h3>  
                 @endif
