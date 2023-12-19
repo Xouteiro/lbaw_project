@@ -60,15 +60,18 @@
                     {{ $errors->first('capacity') }}
                 </span>
             @endif
-
             <label for="id_location">Location:</label>
 
-            <select name="id_location" required>
-                <?php $locations = DB::table('location')->get(); ?>
-                @foreach ($locations as $location)
-                    <option value="{{ $location->id }}">{{ $location->name }}</option>
-                @endforeach
-            </select>
+            <div class="full-location">
+                <select class="location-select" name="id_location" required>
+                    <?php $locations = DB::table('location')->get(); ?>
+                    <option value="" disabled selected>Select a location</option>
+                    @foreach ($locations as $location)
+                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                    @endforeach
+                </select>
+                <button type="button" class="fake-add-location">Add Location</button>
+            </div>
 
             <a href="{{ url('/user/' . Auth::user()->id) }}">
                 <button type="button">Cancel</button>

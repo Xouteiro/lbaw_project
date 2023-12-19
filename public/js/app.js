@@ -998,6 +998,73 @@ function openNotificaitons() {
     closeNotifications();
 }
 
+
+function createLocation()
+{
+    const createLocationFake = document.querySelector(".fake-add-location");
+    if(createLocationFake)
+    {
+        createLocationFake.addEventListener("click", () => {
+            const createLocationForm = document.createElement("div");
+            createLocationForm.classList.add("create-location-form");
+            createLocationForm.action = `api/location/store`;
+            createLocationForm.method = "POST";
+            createLocationForm.innerHTML = `
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="text" name="address" placeholder="Address" required>
+                <input type="text" name="city" placeholder="City" required>
+                <input type="text" name="country" placeholder="Country" required>
+                <button type="button" class="cancel-create-location-button">Cancel</button>
+                <button type="button" class="create-location-button">Create</button>
+            `;
+            createLocationFake.parentElement.appendChild(createLocationForm);
+            createLocationFake.parentElement.parentNode.insertBefore(createLocationForm, createLocationFake.parentElement.nextSibling);
+            const cancelCreateLocationButton = createLocationForm.querySelector(".cancel-create-location-button");
+            cancelCreateLocationButton.addEventListener("click", () => {
+                createLocationForm.remove();
+            });
+            const createLocationButton = createLocationForm.querySelector(".create-location-button");
+            createLocationButton.addEventListener("click", () => {
+                const errorMessages = document.querySelectorAll('div[style="color: red;"]');
+                errorMessages.forEach((errorMessage) => {
+                    errorMessage.remove();
+                });
+                const name = createLocationForm.querySelector("input[name='name']").value;
+                const address = createLocationForm.querySelector("input[name='address']").value;
+                const city = createLocationForm.querySelector("input[name='city']").value;
+                const country = createLocationForm.querySelector("input[name='country']").value;
+                if (!name || !address || !city || !country) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'All fields are required.';
+                    errorMessage.style.color = 'red';
+                    createLocationForm.insertBefore(errorMessage, createLocationForm.querySelector(".create-location-buttons"));
+                    return;
+                }
+                if (name.length > 50 || name.length < 10 || address.length > 50 || address.length < 10 || city.length > 50 || city.length < 2|| country.length > 50 || country.length < 2) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'Fields can not be that size.';
+                    errorMessage.style.color = 'red';
+                    createLocationForm.insertBefore(errorMessage, createLocationForm.querySelector(".create-location-buttons"));
+                    return;
+                }
+                const fullAddress = `${address}, ${city}, ${country}`;
+                let locationId;
+                sendAjaxRequest('POST', `/api/location/store`, { name: name, address: fullAddress }, function (data) { 
+                    locationId = JSON.parse(data.originalTarget.response).id;
+                }); 
+                createLocationForm.remove();
+                const LocationSelect = document.querySelector(".location-select");
+                const option = document.createElement("option");
+                option.value = locationId;
+                option.textContent = name;
+                option.selected = true;
+                LocationSelect.appendChild(option);
+            });
+        });
+
+    }
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -1015,3 +1082,4 @@ createPoll();
 deletePoll();
 answerPoll();
 openNotificaitons();
+createLocation();
