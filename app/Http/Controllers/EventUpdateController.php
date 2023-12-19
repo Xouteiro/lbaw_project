@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 
 class EventUpdateController extends Controller
 {
-    public function sendEventUpdate($id) {
+    public function sendEventUpdate($id, $whatChanged) {
         $event = Event::findOrFail($id);
         $users = $event->participants()->get();
 
@@ -29,15 +29,16 @@ class EventUpdateController extends Controller
             $notification->event()->associate($event);
             $notification->save();
 
-            $requestToJoin = new EventUpdate();
-            $requestToJoin->notification()->associate($notification);
-            $requestToJoin->save();
+            $eventUpdate = new EventUpdate();
+            $eventUpdate->notification()->associate($notification);
+            $eventUpdate->what_changed = json_encode($whatChanged);
+            $eventUpdate->save();
 
             $data = array(
                 'type' => 'event-update',
                 'name' => $user->name,
-                'event' => $event->name,
-                'eventId' => $event->id
+                'eventUpdateId' => $eventUpdate->id_eventnotification,
+                'whatChanged' => $whatChanged
             );
 
             Mail::to($user->email, $user->name)->send(new Email($data));

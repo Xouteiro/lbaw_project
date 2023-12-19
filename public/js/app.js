@@ -587,10 +587,6 @@ function eventUpdate() {
             }
         });
 
-        eventUpdate.firstElementChild.addEventListener("click", () => {
-            window.location.href = `/event/${eventUpdate.firstElementChild.id}`;
-        });
-
         eventUpdate.addEventListener("mouseleave", () => {
             const closeEventUpdateButton = eventUpdate.querySelector(".close_event_update");
             if (closeEventUpdateButton) {

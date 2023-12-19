@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\User;
 use App\Models\Notification;
 use App\Mail\Email;
+use App\Models\EventUpdate;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -162,6 +163,14 @@ class EventController extends Controller
             return view('pages.events.show', ['event' => $event, 'requestToJoin' => $requestToJoin]);
         }
 
+        if($request->id_eventUpdate){
+            $eventUpdate = EventUpdate::find($request->id_eventUpdate);
+            if($eventUpdate === null){
+                abort(404, "Event update not found!"); // a mensagem de erro não está a ser displayed?? 
+            }
+            return view('pages.events.show', ['event' => $event, 'whatChanged' => json_decode($eventUpdate->what_changed)]);
+        }
+
         if (!Auth::check() && $event->public == false) { //por mensagem de erro dizer que é preciso estar logado para ver o evento
             return redirect()->route('login');
         }
@@ -198,17 +207,54 @@ class EventController extends Controller
 
         $this->authorize('update', $event);
 
-        $event->name = $request->input('name');
-        $event->eventdate = $request->input('eventdate');
-        $event->description = $request->input('description');
-        $event->price = $request->input('price');
-        $event->public = $request->input('public');
-        $event->opentojoin = $request->input('opentojoin');
-        $event->capacity = $request->input('capacity');
-        $event->id_owner = $event->id_owner;
-        $event->id_location = $request->input('id_location');
-        $event->save();
-        return (new EventUpdateController())->sendEventUpdate($id);
+        $whatChanged = array();
+        if ($event->name != $request->input('name')) {
+            $whatChanged['old_name'] = $event->name;
+            $whatChanged['name'] = $request->input('name');
+            $event->name = $request->input('name');
+        }
+        $date = date('Y-m-d H:i:s', strtotime($request->input('eventdate')));
+        if ($event->eventdate != $date) {
+            $whatChanged['old_eventdate'] = $event->eventdate;
+            $whatChanged['eventdate'] = $date;
+            $event->eventdate = $date;
+        }
+        if ($event->description != $request->input('description')) {
+            $whatChanged['old_description'] = $event->description;
+            $whatChanged['description'] = $request->input('description');
+            $event->description = $request->input('description');
+        }
+        if ($event->price != $request->input('price')) {
+            $whatChanged['old_price'] = $event->price;
+            $whatChanged['price'] = $request->input('price');
+            $event->price = $request->input('price');
+        }
+        if ($event->public != $request->input('public')) {
+            $whatChanged['old_public'] = $event->public;
+            $whatChanged['public'] = $request->input('public');
+            $event->public = $request->input('public');
+        }
+        if ($event->opentojoin != $request->input('opentojoin')) {
+            $whatChanged['old_opentojoin'] = $event->opentojoin;
+            $whatChanged['opentojoin'] = $request->input('opentojoin');
+            $event->opentojoin = $request->input('opentojoin');
+        }
+        if ($event->capacity != $request->input('capacity')) {
+            $whatChanged['old_capacity'] = $event->capacity;
+            $whatChanged['capacity'] = $request->input('capacity');
+            $event->capacity = $request->input('capacity');
+        }
+        if ($event->id_location != $request->input('id_location')) {
+            $whatChanged['old_id_location'] = $event->id_location;
+            $whatChanged['id_location'] = $request->input('id_location');
+            $event->id_location = $request->input('id_location');
+        }
+        if(!empty($whatChanged))
+        {
+            $event->save();
+            return (new EventUpdateController())->sendEventUpdate($id, $whatChanged);
+        }
+        return redirect()->route('event.show', ['id' => $event->id]);
     }
 
     public function participants(string $id)
