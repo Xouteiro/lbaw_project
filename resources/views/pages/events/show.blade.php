@@ -138,7 +138,7 @@
                     @endif
                     <form method="POST" action="{{ route('invite.send') }}" id="invitationForm" style="margin: 0;">
                         @csrf
-                        <input type="text" name="email" placeholder="Enter user's email">
+                        <input type="text" name="username" placeholder="Enter user's username">
                         <input type="hidden" name="id_event" value="{{ $event->id }}">
                         <button type="submit">
                             Send Invitation
