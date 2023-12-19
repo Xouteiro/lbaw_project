@@ -152,10 +152,24 @@
             @if($event->comments->count() == 0)
                 <p>No comments yet</p>
             @else
+            @php
+                $ownerComments = $event->comments->filter(function ($comment) use ($event) {
+                    return $comment->id_user == $event->id_owner;
+                })->sortByDesc('date');
+            
+                $otherComments = $event->comments->filter(function ($comment) use ($event) {
+                    return $comment->id_user != $event->id_owner;
+                })->sortByDesc('date');
+            @endphp
                 <ul class="comment-list">
-                    @each('partials.comment', $event->comments, 'comment')
+                    @foreach($ownerComments as $comment)
+                         @include('partials.comment', ['comment' => $comment, 'event' => $event])
+                    @endforeach 
+                    @foreach($otherComments as $comment)
+                         @include('partials.comment', ['comment' => $comment, 'event' => $event])
+                    @endforeach
                 </ul>
-            @endif
+        @endif
         </div>
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div>
