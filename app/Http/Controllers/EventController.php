@@ -14,25 +14,8 @@ use Carbon\Carbon;
 class EventController extends Controller
 {
     public function index()
-    {
-        $userId = Auth::user()->id;
-        $user = User::findOrFail($userId);
-        if ($user->is_admin) {
-            $events = Event::inRandomOrder()->paginate(10);
-            return view('pages.events.index', ['events' => $events]);
-        } else {
-            $events = Event::where(function ($query) use ($userId) {
-                $query->where('hide_owner', false)
-                      ->where('public', true)
-                      ->orWhere(function ($query) use ($userId) {
-                          $query->where('public', false)
-                                ->whereHas('participants', function ($query) use ($userId) {
-                                    $query->where('id_user', $userId);
-                                });
-                      });
-            })->inRandomOrder()->paginate(10);
-            return view('pages.events.index', ['events' => $events]);
-        }
+    {        
+        return view('pages.events.search');
     }
 
     public function indexAjax(Request $request)
@@ -276,7 +259,7 @@ class EventController extends Controller
 
     public function eventsSearch(Request $request)
     {
-            return view('pages.events.search', [$request]);
+        return view('pages.events.search', [$request]);
     }
 
 

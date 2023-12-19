@@ -66,6 +66,12 @@ function loadMoreEvents() {
                         `;
                         eventsContainer.appendChild(eventCard);
                     });
+                    if (events.length === 0) {
+                        const noEventsMessage = document.createElement('p');
+                        noEventsMessage.textContent = 'No events found.';
+                        noEventsMessage.style.fontSize = '1.5em';
+                        eventsContainer.appendChild(noEventsMessage);
+                    }
 
                     page++;
 
