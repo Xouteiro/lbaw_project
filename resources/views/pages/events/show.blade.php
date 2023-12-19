@@ -1,7 +1,10 @@
 <?php
     use App\Models\Notification;
+    use Illuminate\Support\Facades\Auth;
     // check if user already sent a request to join
-    $hasSent = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $event->id)->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
+    if(Auth::check()){
+        $hasSent = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $event->id)->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
+    }
 ?>
 
 @extends('layouts.app')
@@ -47,13 +50,13 @@
             <p>Description: {{ $event->description }}</p>
             <p>Event date: {{ $event->eventdate }}</p>
             @if ($event->capacity == 0)
-                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
+                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
                 @endif
             @else
-                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
+                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
@@ -144,7 +147,6 @@
                 </div>
             @endif
         @endif
-        @if(Auth::check())
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)
@@ -155,7 +157,6 @@
                 </ul>
             @endif
         </div>
-        @endif
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div>
                 <form class="general" action="{{ route('comment.store') }}" method="POST">

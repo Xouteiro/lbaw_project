@@ -4,13 +4,23 @@
     <div class="container">
         <h1>{{$event->name}} Participants</h1>
         <div class="participants">
-            <div class="participant-card" id="owner">
-                <img class='user' src="{{ $event->owner->getProfileImage() }}">
-                <div class="participant-info">
-                    <h2><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->name }} - Owner</a></h2>
-                    <h3><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->username }}</a></h3>
+            @if($event->id_owner !== null)
+                <div class="participant-card" id="owner">
+                    <img class='user' src="{{ $event->owner->getProfileImage() }}">
+                    <div class="participant-info">
+                        <h2><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->name }} - Owner</a></h2>
+                        <h3><a href="{{ route('user.show', ['id' => $event->owner->id]) }}">{{ $event->owner->username }}</a></h3>
+                    </div>
                 </div>
-            </div>
+            @else
+                <div class="participant-card" id="owner">
+                    <img class='user' src="{{ url('profile/default.jpg') }}">
+                    <div class="participant-info">
+                        <h2>Anonymous - Owner</h2>
+                        <h3>Anonymous</h3>
+                    </div>
+                </div>
+            @endif
             @if($event->participants->count() == 0)
                 <h4>No participants yet</h4>
             @else
