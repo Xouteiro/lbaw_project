@@ -670,11 +670,21 @@ function createPoll() {
         const eventId = eventIdHolder.id;
         let optionNumber = 2;
         let provisionalId = 1;
-        let pollNumber = document.querySelectorAll(".poll").length;
 
         if (createPollFake) {
+            
             createPollFake.addEventListener("click", () => {
+                let pollNumber = document.querySelectorAll(".poll").length;
+                console.log(pollNumber);
+                const errorMessages = document.querySelectorAll('div[style="color: red;"]');
+                errorMessages.forEach((errorMessage) => {
+                    errorMessage.remove();
+                });
                 if(pollNumber >= 4){
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'Max polls reached';
+                    errorMessage.style.color = 'red';
+                    createPollFake.parentNode.insertBefore(errorMessage, createPollFake.nextSibling); 
                     return;
                 }
                 const noPolls = document.querySelector(".no-polls");
@@ -810,6 +820,7 @@ function createPoll() {
                         }
                         sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
                         noPolls ? noPolls.style.display = "block" : null;
+                        pollNumber--;
                     });
 
                     createPollFake.parentElement.appendChild(poll);
