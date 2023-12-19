@@ -32,12 +32,19 @@ class PollController extends Controller
             'id_user' => Auth::user()->id,
         ]);
 
-        
+        $maxPolls = 4;
+        $polls = Poll::where('id_event', $request->input('eventId'))->get();
+        if (count($polls) > $maxPolls) {
+            return back()->withErrors(['polls' => 'Maximum number of polls reached.']);
+        }
 
         $poll = Poll::where('title', $request->input('title'))->where('id_event', $request->input('eventId'))->first()->id;
         foreach ($options as $option) {
-            //nao permitir criar opções com o mesmo nome no mesmo poll
-            //nao permitir criar mais que x polls
+            $existingOption = Option::where('name', $option)->where('id_poll', $poll)->first();
+            if ($existingOption) {
+                return back()->withErrors(['options' => 'Option name already exists in this poll.']);
+            }
+            
             Option::create([
                 'id_poll' => $poll,
                 'name' => $option,

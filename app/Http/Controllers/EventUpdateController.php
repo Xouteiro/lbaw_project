@@ -48,7 +48,6 @@ class EventUpdateController extends Controller
 
     public function clearEventUpdate(Request $request){
         $eventUpdate = Notification::findOrFail($request->id_eventUpdate);
-        //$this->authorize('clearEventUpdate', $eventUpdate);
         EventUpdate::where('id_eventnotification', $eventUpdate->id)->delete();
         $eventUpdate->delete();
         return response()->json('You have successfully cleared the event update notification!', 200);

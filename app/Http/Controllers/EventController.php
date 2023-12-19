@@ -62,7 +62,6 @@ class EventController extends Controller
                                     ->paginate(10);
             }
             return  response()->json(['events' => $events, 'search' => $request->get('search')]);
-            //return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
 
         if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
@@ -96,7 +95,6 @@ class EventController extends Controller
                 $events = $query->paginate(10);
             }
             return  response()->json(['events' => $events, 'search' => $request->get('search')]);
-            //return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
     }
 
@@ -264,7 +262,7 @@ class EventController extends Controller
     }
 
 
-    static public function joinEvent(string $id)
+    public function joinEvent(string $id)
     {
         if(Auth::user()->is_admin){
             return redirect()->route('home');
@@ -276,7 +274,7 @@ class EventController extends Controller
             abort(403, 'This event has already ended!');
         }
 
-        // $this->authorize('join', $event);
+        $this->authorize('join', $event);
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 
