@@ -42,7 +42,7 @@ function loadMoreEvents() {
                         let eventStatus = '';
                         const eventDate = new Date(event.eventdate);
                         const currentDate = new Date();
-
+                        const eventImage = event.event_image ? '/event/' + event.event_image : '/event/default.jpg';
                         if (eventDate < currentDate) {
                             eventStatus = 'Finished';
                         } else if (eventDate.toDateString() === currentDate.toDateString()) {
@@ -53,7 +53,7 @@ function loadMoreEvents() {
 
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
-                                <img src="/images/event_default.png" alt="Event Image" class="event-image">
+                                <img src="${eventImage}" alt="Event Image" class="event-image">
                                 
                                 <div class="event-info">
                                     <h3>${event.name}</h3>
@@ -371,7 +371,9 @@ function deleteEvent() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
-                    sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {});
+                    sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {
+                        window.location.href = "/home";
+                    });
                 });
             }
         });
@@ -668,8 +670,13 @@ function createPoll() {
         const eventId = eventIdHolder.id;
         let optionNumber = 2;
         let provisionalId = 1;
+        let pollNumber = document.querySelectorAll(".poll").length;
+
         if (createPollFake) {
             createPollFake.addEventListener("click", () => {
+                if(pollNumber >= 4){
+                    return;
+                }
                 const noPolls = document.querySelector(".no-polls");
                 noPolls ? noPolls.style.display = "none" : null;
                 createPollFake.style.display = "none";
@@ -827,6 +834,7 @@ function createPoll() {
                     sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () { });
                     optionNumber = 2;
                     provisionalId++;
+                    pollNumber++;
                     const pollOptionsInputs = poll.querySelectorAll(".poll-option input[type='radio']");
                     const pollOptionsChecked = poll.querySelectorAll(".poll-option input[type='radio']:checked");
                     let checkedBefore = pollOptionsChecked[0] ? pollOptionsChecked[0] : null;

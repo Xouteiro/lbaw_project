@@ -81,7 +81,6 @@ class RequestToJoinController extends Controller
     public function cancelRequestToJoin(Request $request) {
         $requestToJoinNotification = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $request->id_event)
         ->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
-        //$this->authorize('cancelRequestToJoin', $requestToJoin);
         RequestToJoin::findOrFail($requestToJoinNotification->id)->delete();
         Notification::findOrFail($requestToJoinNotification->id)->delete();
         return response()->json('Request to join cancelled successfully!', 200);
@@ -89,7 +88,6 @@ class RequestToJoinController extends Controller
 
     public function acceptRequestToJoin(Request $request) {
         $requestToJoinNotification = Notification::findOrFail($request->id_requestToJoin);
-        //$this->authorize('acceptRequestToJoin', $requestToJoinNotification);
         $event = $requestToJoinNotification->event;
         $requestToJoin = RequestToJoin::findOrFail($requestToJoinNotification->id);
 
@@ -113,7 +111,6 @@ class RequestToJoinController extends Controller
 
     public function denyRequestToJoin(Request $request){
         $requestToJoinNotification = Notification::findOrFail($request->id_requestToJoin);
-        //$this->authorize('denyRequestToJoin', $requestToJoin);
         $requestToJoin = RequestToJoin::findOrFail($requestToJoinNotification->id);
         $event = $requestToJoinNotification->event;
         $user = User::find($requestToJoin->id_user);
