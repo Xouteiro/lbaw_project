@@ -11,20 +11,60 @@
             </div>
         </div>
         <div class="main">
-            <div class="feature">
-                <h3>Search Events!</h3>
+            <a href="{{ route('events') }}">
+            <div class="about-card">
+                <h2>Search Events!</h3>
                 <p>Dedicated to offering the best user experience, Invents provides Full text and exact match search for all events.</p>
             </div>
-
-            <div class="feature">
-                <h3>Hide and Pin Events on your profile page</h3>
+            </a> 
+            @if(Auth::check())
+            <a href= "{{ url('/user/' . Auth::user()->id) }}"">
+            @else
+            <a href="{{ route('login') }}">
+            @endif
+            <div class="about-card">
+                <h2>Hide and Pin Events</h3>
                 <p>Powered by cutting-edge technology, Invents let you Pin and Hide Events on your profile in a fast and responsive way using AJAX</p>
             </div>
-
-            <div class="feature">
-                <h3>Manage Event Participants</h3>
-                <p>User-friendly and intuitive, Invents simplifies the management of the Event making it possible for the Event Owner to view participants's profile page and remove them from the event</p>
+            </a>
+            @if(Auth::check())
+            <a href= "{{ url('/user/' . Auth::user()->id) }}"">
+            @else
+            <a href="{{ route('login') }}">
+            @endif
+            <div class="about-card">
+                <h2>Manage Event Participants</h3>
+                <p>User-friendly and intuitive. Invents simplifies the management of the Events and their participants</p>
             </div>
+            </a>
+        </div>
+        <div class="main">
+            @if(Auth::check())
+            <a href= "{{ url('/user/' . Auth::user()->id) }}"">
+            @else
+            <a href="{{ route('login') }}">
+            @endif
+            <div class="about-card">
+                <h2>Effortless Event Creation </h2>
+                <p>Invents empowers you to effortlessly create, manage, all from a single intuitive
+                    platform. Invite participants, share event details, and gather feedback, ensuring a smooth and engaging experience for all.</p>
+            </div>
+            </a>
+            <a href="{{ route('events') }}">
+            <div class="about-card">
+                <h2>Tailored Event Experiences</h2>
+                <p> Invents helps you discover events that align with your interests and preferences.  
+                    Browse through a diverse range of events, filter by location, and stay updated with real-time notifications.</p>
+            </div>
+            </a>
+            <a href="{{ route('events') }}">
+            <div class="about-card">
+                <h2>Engaging Event Interactions </h2>
+                <p>Immerse yourself in the event experience by engaging in polls. Share your
+                    thoughts, ask questions, and connect with others.
+                </p>
+            </div>
+            </a>
         </div>
     </div>
 @endsection

@@ -32,7 +32,6 @@ function loadMoreEvents() {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
                 const events = response.events.data;
-                console.log(response.events.data);
 
                 const eventsContainer = document.getElementById('eventsContainer');
                 if (eventsContainer) {

@@ -967,10 +967,6 @@ textarea {
     margin-left: 2em;
 }
 
-.profile-header p {
-    text-wrap: wrap;
-}
-
 
 
 form#searchForm div.input_field input#date,
@@ -1012,6 +1008,44 @@ li.poll-option label{
     margin-bottom: 0px;
     align-self: center;
 }
+
+ul.names{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.about-card:hover, .name-card:hover, .mainFeatures-page .main .feature:hover {
+    scale: 1.05;
+}
+
+.name-card {
+    background-color: #8ba4f2;
+    border-radius: 5%;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    width: 21em;
+    scale: 0.95;
+    transition: scale 0.9s;
+}
+
+.name-card p, .name-card a{
+    color: white;
+}
+
+.name-card strong{
+    font-weight: 600;
+}
+
+.about-card p{
+    height: 100%;
+    font-size: 1.2em;   
+}
+
+
+
 
 @media (max-width: 1050px) {
     #content .home-page{
@@ -1095,12 +1129,7 @@ li.poll-option label{
     justify-content: space-evenly;
 }
 
-.about-page .call-to-action,
-.contact-us {
-    margin: auto;
-    max-width: 75%;
-    text-align: center;
-}
+
 
 .about-card {
     position: relative;
@@ -1114,7 +1143,7 @@ li.poll-option label{
     transition: scale 0.9s;
 }
 
-.about-page a {
+.call-to-action a {
     color: blue;
 }
 
@@ -1141,6 +1170,8 @@ li.poll-option label{
     background-color: white;
     padding: 2rem;
     border-radius: 5%;
+    scale: 0.95;
+    transition: scale 0.9s;
 }
 
 .mainFeatures-page .main .feature h3 {
@@ -1178,13 +1209,16 @@ footer a:hover {
     margin-top: 5rem;
     display: flex;
     justify-content: space-evenly;
+    margin-bottom: 35px;
 }
 
-.about-page .call-to-action,
+
 .contact-us {
     margin: auto;
     max-width: 75%;
     text-align: center;
+    margin-top: 35px;
+    margin-bottom: 35px;
 }
 
 .about-card {
@@ -1194,14 +1228,22 @@ footer a:hover {
     padding: 2rem;
     margin-bottom: 2rem;
     margin-top: 2rem;
-    width: 21em;
+    width: 26em;
+    height: 23em;
     scale: 0.95;
     transition: scale 0.9s;
+    display: flex;
+    flex-direction: column;
 }
 
-.about-page a {
-    color: blue;
+.call-to-action{
+    margin: auto;
+    max-width: 75%;
+    text-align: center;
+    margin-top: 100px;
+    margin-bottom: 35px;
 }
+
 
 .mainFeatures-page {
     margin: 0;
@@ -1214,10 +1256,13 @@ footer a:hover {
 
 .mainFeatures-page .main {
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-evenly;
     width: 90%;
     margin: auto;
     margin-top: 5rem;
+    margin-bottom: 25px;
 }
 
 .mainFeatures-page .main .feature {
