@@ -36,7 +36,7 @@ class InviteController extends Controller
             return response()->json(['error' => 'Need to be logged in'], 401);
         }
 
-        $userToInvite = User::where('email', $request->email)->first();
+        $userToInvite = User::where('username', $request->username)->first();
 
         if (!$userToInvite) {
             return back()->withErrors([

@@ -7,29 +7,31 @@
                 @else
                     <h3>Anonymous</h3>  
                 @endif
-                <div class="likes-dislikes">
-                    <?php
-                        $likeClass = "comment-like";
-                        $dislikeClass = "comment-dislike";
-                        $likeSrc = url('icons/like.png');
-                        $dislikeSrc = url('icons/like.png');
-                        $likeDislikeUser = $comment->likesDislikes->where('id_user', Auth::user()->id)->first();
-                        if( $likeDislikeUser !== null){
-                            if($likeDislikeUser->liked){
-                                $likeSrc = url('icons/blue_like.png');
-                                $likeClass = $likeClass . " comment-like-active";
+                @if (Auth::check() && Auth::user()->events->contains($comment->id_event))
+                    <div class="likes-dislikes">
+                        <?php
+                            $likeClass = "comment-like";
+                            $dislikeClass = "comment-dislike";
+                            $likeSrc = url('icons/like.png');
+                            $dislikeSrc = url('icons/like.png');
+                            $likeDislikeUser = $comment->likesDislikes->where('id_user', Auth::user()->id)->first();
+                            if( $likeDislikeUser !== null){
+                                if($likeDislikeUser->liked){
+                                    $likeSrc = url('icons/blue_like.png');
+                                    $likeClass = $likeClass . " comment-like-active";
+                                }
+                                else {
+                                    $dislikeSrc = url('icons/blue_like.png');
+                                    $dislikeClass = $dislikeClass . " comment-dislike-active";
+                                }
                             }
-                            else {
-                                $dislikeSrc = url('icons/blue_like.png');
-                                $dislikeClass = $dislikeClass . " comment-dislike-active";
-                            }
-                        }
-                    ?>
-                    <p class="comment-like-number">{{ $comment->likes }}</p>
-                    <img id="{{ Auth::user()->id }}" class="{{ $likeClass }}" src="{{ $likeSrc }}" alt="like">
-                    <p class="comment-dislike-number">{{ $comment->dislikes }}</p>
-                    <img id="{{ Auth::user()->id }}" class="{{ $dislikeClass }}" src="{{ $dislikeSrc }}" alt="dislike">
-                </div>
+                        ?>
+                        <p class="comment-like-number">{{ $comment->likes }}</p>
+                        <img id="{{ Auth::user()->id }}" class="{{ $likeClass }}" src="{{ $likeSrc }}" alt="like">
+                        <p class="comment-dislike-number">{{ $comment->dislikes }}</p>
+                        <img id="{{ Auth::user()->id }}" class="{{ $dislikeClass }}" src="{{ $dislikeSrc }}" alt="dislike">
+                    </div>
+                @endif
             </div>
             @if (Auth::check() && (Auth::user()->id === $comment->id_user || Auth::user()->admin))
                 <div class="comment-actions">
