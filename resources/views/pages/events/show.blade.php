@@ -1,3 +1,9 @@
+<?php
+    use App\Models\Notification;
+    // check if user already sent a request to join
+    $hasSent = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $event->id)->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
+?>
+
 @extends('layouts.app')
 
 @section('content')
@@ -97,24 +103,14 @@
                     !Auth::user()->events->contains($event) &&
                     !Auth::user()->admin
                     )
-
-                @if(session('success'))
-                    <span class="success">
-                        {{ session('success') }}
-                    </span>
-                @endif
-                @if ($errors->has('requestToJoin'))
-                    <span class="error">
-                        {{ $errors->first('requestToJoin') }}
-                    </span>
-                @endif
-                <form action="{{ route('requestToJoin.send') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id_event" value="{{ $event->id }}">
-                    <button class="button" type="submit">
-                        Request to join
-                    </button>
-                </form>
+                <button class="fake button @if($hasSent)sent @endif" type="button"
+                    id="{{ $event->id }}" onclick="requestToJoin(this)">
+                    @if($hasSent)
+                    Request sent
+                    @else
+                    Request to join
+                    @endif
+                </button>
             @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
                 <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
                     @csrf
