@@ -602,6 +602,7 @@ function eventUpdate() {
 
 function likeComment() {
     const likes = document.querySelectorAll(".comment-like");
+    if(likes){
     likes.forEach((like) => {
         like.addEventListener("click", () => {
             const commentId = like.parentElement.parentElement.parentElement.parentElement.id;
@@ -630,6 +631,7 @@ function likeComment() {
             }
         });
     });
+    }
 }
 
 function dislikeComment() {

@@ -105,7 +105,7 @@
                     @csrf
                     <button class="button" type="submit">
                         Join Event
-                    </button>
+                    </button>like
                 </form>
             @elseif(!$event->opentojoin && Auth::check() &&
                     Auth::user()->id != $event->id_owner &&
