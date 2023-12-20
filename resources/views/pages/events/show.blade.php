@@ -14,7 +14,7 @@
     <div class="event-container">
         <div class="event-info">
             <div class="event-header">
-                <h1 class="event-name">{{ $event->name }}</h1>
+                <h1 class="event-name" @if(isset($whatChanged) && isset($whatChanged->name)) style="font-weight: bold;" @endif>{{ $event->name }}</h1>
                 @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
                         Edit Event
@@ -48,8 +48,8 @@
                     @endif
                 </p>
             @endif
-            <p>Description: {{ $event->description }}</p>
-            <p>Event date: {{ $event->eventdate }}</p>
+            <p @if(isset($whatChanged) && isset($whatChanged->description)) style="font-weight: bold;" @endif>Description: {{ $event->description }}</p>
+            <p @if(isset($whatChanged) && isset($whatChanged->eventdate)) style="font-weight: bold;" @endif>Event date: {{ $event->eventdate }}</p>
             @if ($event->capacity == 0)
                 @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
@@ -58,24 +58,23 @@
                 @endif
             @else
                 @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
-                    <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
+                    <div class="participants"><p @if(isset($whatChanged) && isset($whatChanged->capacity)) style="font-weight: bold;" @endif>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
-                    <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
+                    <div class="participants"><p @if(isset($whatChanged) && isset($whatChanged->capacity)) style="font-weight: bold;" @endif>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
                 @endif
             @endif
             @if ($event->price == 0)
-                <p>Free Event</p>
+                <p @if(isset($whatChanged) && isset($whatChanged->price)) style="font-weight: bold;" @endif>Free Event</p>
             @else
-                <p>Price: {{ $event->price }} €</p>
+                <p @if(isset($whatChanged) && isset($whatChanged->price)) style="font-weight: bold;" @endif>Price: {{ $event->price }} €</p>
             @endif
             <?php $isAdmin = Auth::user()->admin ? 'true' : 'false' ?>
             <div id="{{$event->location->id}}" class="full-event-location" data-is-admin="{{$isAdmin}}" data-event-id="{{$event->id}}">
                 <div class=location-info>
-                    <p>Location: {{ $event->location->name }}</p>
-                    <p>Address: {{ $event->location->address }}</p>
+                    <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Location: {{ $event->location->name }}</p>
+                    <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Address: {{ $event->location->address }}</p>
                 </div>
             </div>
-
         </div>
         @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user && !Auth::user()->admin)
             {{-- Form of invite decision (Accept/Deny) --}}

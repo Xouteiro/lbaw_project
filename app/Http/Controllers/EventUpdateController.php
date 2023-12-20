@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\Mail;
 
 class EventUpdateController extends Controller
 {
-    public function sendEventUpdate($id) {
-        $event = Event::findOrFail($id);
+    public function sendEventUpdate(Request $request) {
+        $event = Event::findOrFail($request->id_event);
         $users = $event->participants()->get();
+        $whatChanged = json_decode($request->whatChanged, true);
 
         if (!$event) {
-            return response()->json(['error' => 'Event not found'], 404);
+            return abort(404, 'Event not found!');
         }
 
         foreach ($users as $user) {
@@ -29,21 +30,23 @@ class EventUpdateController extends Controller
             $notification->event()->associate($event);
             $notification->save();
 
-            $requestToJoin = new EventUpdate();
-            $requestToJoin->notification()->associate($notification);
-            $requestToJoin->save();
+            $eventUpdate = new EventUpdate();
+            $eventUpdate->notification()->associate($notification);
+            $eventUpdate->what_changed = json_encode($whatChanged);
+            $eventUpdate->save();
 
             $data = array(
                 'type' => 'event-update',
                 'name' => $user->name,
                 'event' => $event->name,
-                'eventId' => $event->id
+                'eventUpdateId' => $eventUpdate->id_eventnotification,
+                'whatChanged' => $whatChanged
             );
 
             Mail::to($user->email, $user->name)->send(new Email($data));
         }
 
-        return redirect()->route('event.show', ['id' => $event->id]);
+        return response()->json('You have successfully updated the event!', 200);
     }
 
     public function clearEventUpdate(Request $request){
