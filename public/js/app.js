@@ -32,7 +32,6 @@ function loadMoreEvents() {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
                 const events = response.events.data;
-                console.log(response.events.data);
 
                 const eventsContainer = document.getElementById('eventsContainer');
                 if (eventsContainer) {
@@ -43,7 +42,7 @@ function loadMoreEvents() {
                         let eventStatus = '';
                         const eventDate = new Date(event.eventdate);
                         const currentDate = new Date();
-
+                        const eventImage = event.event_image ? '/event/' + event.event_image : '/event/default.jpg';
                         if (eventDate < currentDate) {
                             eventStatus = 'Finished';
                         } else if (eventDate.toDateString() === currentDate.toDateString()) {
@@ -54,7 +53,7 @@ function loadMoreEvents() {
 
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
-                                <img src="/images/event_default.png" alt="Event Image" class="event-image">
+                                <img src="${eventImage}" alt="Event Image" class="event-image">
                                 
                                 <div class="event-info">
                                     <h3>${event.name}</h3>
@@ -66,6 +65,12 @@ function loadMoreEvents() {
                         `;
                         eventsContainer.appendChild(eventCard);
                     });
+                    if (events.length === 0) {
+                        const noEventsMessage = document.createElement('p');
+                        noEventsMessage.textContent = 'No events found.';
+                        noEventsMessage.style.fontSize = '1.5em';
+                        eventsContainer.appendChild(noEventsMessage);
+                    }
 
                     if (events.length === 0) {
                         const noEventsMessage = document.createElement('p');
@@ -87,10 +92,12 @@ function loadMoreEvents() {
     };
 
     let eventsContainers = document.getElementById('eventsContainer');
-    let queryString = eventsContainers.dataset.query;
-    const url = `/api/events-ajax?page=${page}&${queryString}`;
-    xhr.open('GET', url, true);
-    xhr.send();
+    if(eventsContainers){
+        let queryString = eventsContainers.dataset.query;
+        const url = `/api/events-ajax?page=${page}&${queryString}`;
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
 }
 
 function scrollHandler() {
@@ -265,8 +272,9 @@ function removeParticipant() {
     const fakebuttons = document.querySelectorAll(".fake.button.remove");
     fakebuttons.forEach((fakebutton) => {
         fakebutton.addEventListener("click", () => {
-            const participant_id = fakebutton.id;
-            const participant_card = document.getElementById(participant_id);
+            const eventId = fakebutton.id;
+            const participant_card = fakebutton.parentElement;
+            const participantId = participant_card.id;
             const sureboxExists = participant_card.querySelector(".surebox");
 
             if (!sureboxExists) {
@@ -275,7 +283,7 @@ function removeParticipant() {
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
-                        <button type="submit" class="surebox button yes">Yes</button>
+                        <button type="button" class="surebox button yes">Yes</button>
                         <button type="button" class="surebox button no">No</button>
                     </div>
                 `;
@@ -283,6 +291,19 @@ function removeParticipant() {
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
                     surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    const participantsDiv = participant_card.parentElement;
+                    participant_card.remove();
+                    if (participantsDiv.childElementCount == 1 && participantsDiv.firstElementChild.id == 'owner') {
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No participants yet";
+                        participantsDiv.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('POST', `/event/${eventId}/participants/${participantId}/remove`, null, function () {});
                 });
             }
         })
@@ -358,7 +379,7 @@ function deleteEvent() {
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
                     sendAjaxRequest('DELETE', `/event/${eventId}/delete`, null, function () {
-
+                        window.location.href = "/home";
                     });
                 });
             }
@@ -462,7 +483,46 @@ function closeDecisionBox() {
     });
 }
 
-function requestToJoin() {
+function requestToJoin(requestToJoinButton){
+    const eventId = requestToJoinButton.id;
+    if(requestToJoinButton.classList.contains("sent")){
+        const sureboxExists = document.querySelector(".surebox");
+
+        if (!sureboxExists) {
+            const surebox = document.createElement("div");
+            surebox.classList.add("surebox");
+            surebox.innerHTML = `
+                <p>Cancel request to join ?</p>
+                <div class="surebox-buttons">
+                    <button type="button" class="surebox button yes">Yes</button>
+                    <button type="button" class="surebox button no">No</button>
+                </div>
+            `;
+            requestToJoinButton.parentElement.insertBefore(surebox, requestToJoinButton.nextSibling);
+            const noButton = surebox.querySelector(".surebox.button.no");
+            noButton.addEventListener("click", () => {
+                surebox.remove();
+            });
+
+            const yesButton = surebox.querySelector(".surebox.button.yes");
+            yesButton.addEventListener("click", () => {
+                surebox.remove();
+                requestToJoinButton.classList.remove("sent");
+                requestToJoinButton.textContent = "Request To Join";
+                sendAjaxRequest('POST', `/api/cancel-request-to-join`, {id_event: eventId}, function () {});
+
+            });
+        }
+        closeSureOptions();
+        return;
+    }
+    requestToJoinButton.textContent = "Request Sent";
+    requestToJoinButton.classList.add("sent");
+    sendAjaxRequest('POST', `/api/send-request-to-join`, {id_event: eventId}, function () {});
+    closeSureOptions();
+}
+
+function requestToJoinDecision() {
     const requestsToJoin = document.querySelectorAll(".pending_request_to_join");
     requestsToJoin.forEach((requestToJoin) => {
         requestToJoin.addEventListener("click", () => {
@@ -617,8 +677,23 @@ function createPoll() {
         const eventId = eventIdHolder.id;
         let optionNumber = 2;
         let provisionalId = 1;
+
         if (createPollFake) {
+            
             createPollFake.addEventListener("click", () => {
+                let pollNumber = document.querySelectorAll(".poll").length;
+                console.log(pollNumber);
+                const errorMessages = document.querySelectorAll('div[style="color: red;"]');
+                errorMessages.forEach((errorMessage) => {
+                    errorMessage.remove();
+                });
+                if(pollNumber >= 4){
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'Max polls reached';
+                    errorMessage.style.color = 'red';
+                    createPollFake.parentNode.insertBefore(errorMessage, createPollFake.nextSibling); 
+                    return;
+                }
                 const noPolls = document.querySelector(".no-polls");
                 noPolls ? noPolls.style.display = "none" : null;
                 createPollFake.style.display = "none";
@@ -752,6 +827,7 @@ function createPoll() {
                         }
                         sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
                         noPolls ? noPolls.style.display = "block" : null;
+                        pollNumber--;
                     });
 
                     createPollFake.parentElement.appendChild(poll);
@@ -776,6 +852,7 @@ function createPoll() {
                     sendAjaxRequest('POST', `/api/poll/store`, { title: title, options: JSON.stringify(options), eventId: eventId }, function () { });
                     optionNumber = 2;
                     provisionalId++;
+                    pollNumber++;
                     const pollOptionsInputs = poll.querySelectorAll(".poll-option input[type='radio']");
                     const pollOptionsChecked = poll.querySelectorAll(".poll-option input[type='radio']:checked");
                     let checkedBefore = pollOptionsChecked[0] ? pollOptionsChecked[0] : null;
@@ -928,6 +1005,131 @@ function openNotificaitons() {
     closeNotifications();
 }
 
+
+function createLocation()
+{
+    const createLocationFake = document.querySelector(".fake-add-location");
+    let openCreate = 0;
+    if(createLocationFake)
+    {
+        createLocationFake.addEventListener("click", () => {
+            if(openCreate == 1){
+                return;
+            }
+            openCreate++;
+            const createLocationForm = document.createElement("div");
+            createLocationForm.classList.add("create-location-form");
+            createLocationForm.action = `api/location/store`;
+            createLocationForm.method = "POST";
+            createLocationForm.innerHTML = `
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="text" name="address" placeholder="Address" required>
+                <input type="text" name="city" placeholder="City" required>
+                <input type="text" name="country" placeholder="Country" required>
+                <button type="button" class="cancel-create-location-button">Cancel</button>
+                <button type="button" class="create-location-button">Create</button>
+            `;
+            createLocationFake.parentElement.appendChild(createLocationForm);
+            createLocationFake.parentElement.parentNode.insertBefore(createLocationForm, createLocationFake.parentElement.nextSibling);
+            const cancelCreateLocationButton = createLocationForm.querySelector(".cancel-create-location-button");
+            cancelCreateLocationButton.addEventListener("click", () => {
+                openCreate--;
+                createLocationForm.remove();
+            });
+            const createLocationButton = createLocationForm.querySelector(".create-location-button");
+            createLocationButton.addEventListener("click", () => {
+                const errorMessages = document.querySelectorAll('div[style="color: red;"]');
+                errorMessages.forEach((errorMessage) => {
+                    errorMessage.remove();
+                });
+                const name = createLocationForm.querySelector("input[name='name']").value;
+                const address = createLocationForm.querySelector("input[name='address']").value;
+                const city = createLocationForm.querySelector("input[name='city']").value;
+                const country = createLocationForm.querySelector("input[name='country']").value;
+                if (!name || !address || !city || !country) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'All fields are required.';
+                    errorMessage.style.color = 'red';
+                    createLocationForm.insertBefore(errorMessage, createLocationForm.querySelector(".create-location-buttons"));
+                    return;
+                }
+                if (name.length > 50 || name.length < 10 || address.length > 50 || address.length < 10 || city.length > 50 || city.length < 2|| country.length > 50 || country.length < 2) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'Fields can not be that size.';
+                    errorMessage.style.color = 'red';
+                    createLocationForm.insertBefore(errorMessage, createLocationForm.querySelector(".create-location-buttons"));
+                    return;
+                }
+                const fullAddress = `${address}, ${city}, ${country}`;
+                let locationId;
+                sendAjaxRequest('POST', `/api/location/store`, { name: name, address: fullAddress }, function (data) { 
+                    locationId = JSON.parse(data.originalTarget.response).id;
+                    createLocationForm.remove();
+                    console.log(locationId);
+                    const LocationSelect = document.querySelector(".location-select");
+                    const option = document.createElement("option");
+                    option.value = locationId;
+                    option.textContent = name;
+                    option.selected = true;
+                    LocationSelect.appendChild(option);
+                }); 
+                openCreate--;
+            });
+        });
+
+    }
+}
+
+function deleteLocation(){
+    const fullLocation = document.querySelector(".full-event-location");
+    if(fullLocation){
+        const isAdmin = fullLocation.dataset.isAdmin;
+        const eventId = fullLocation.dataset.eventId;
+        let locationId = document.querySelector(".full-event-location").id;
+        if(isAdmin == 'false'){
+            return;
+        }
+        if(locationId == 79){
+            return;
+        }
+        const deleteLocationButton = document.createElement("button");
+        deleteLocationButton.classList.add("delete-location-button");
+        deleteLocationButton.textContent = "Delete Location";
+        fullLocation.appendChild(deleteLocationButton);
+        fullLocation.style.display = "flex";
+        fullLocation.style.flexDirection = "row";
+        fullLocation.style.justifyContent = "space-between";
+        deleteLocationButton.addEventListener("click", () => {
+            locationId = document.querySelector(".full-event-location").id;
+            if(locationId == 79){
+                return;
+            }
+            deleteLocationButton.remove();
+            fullLocation.remove();
+            const newfullLocation = document.createElement("div");
+            newfullLocation.id = "79";
+            newfullLocation.classList.add("full-event-location");
+            newfullLocation.dataset.isAdmin = isAdmin;
+            newfullLocation.dataset.eventId = eventId;
+
+            const locationInfo = document.createElement("div");
+            locationInfo.classList.add("location-info");
+
+            const locationName = document.createElement("p");
+            locationName.textContent = "Location: To be determined";
+            locationInfo.appendChild(locationName);
+
+            const locationAddress = document.createElement("p");
+            locationAddress.textContent = "Address: To be determined";
+            locationInfo.appendChild(locationAddress);
+            newfullLocation.appendChild(locationInfo);
+            const eventInfo = document.querySelector(".event-info");
+            eventInfo.appendChild(newfullLocation);
+            sendAjaxRequest('DELETE', `/api/location/delete`, { id_location: locationId, id_event: eventId }, function () { });
+        });
+    }
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -937,7 +1139,7 @@ deleteAccount();
 deleteEvent();
 deleteComment();
 editComment();
-requestToJoin();
+requestToJoinDecision();
 eventUpdate();
 likeComment();
 dislikeComment();
@@ -945,3 +1147,5 @@ createPoll();
 deletePoll();
 answerPoll();
 openNotificaitons();
+createLocation();
+deleteLocation();

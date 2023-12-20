@@ -1,3 +1,13 @@
+<?php
+    use App\Models\Notification;
+    use Illuminate\Support\Facades\Auth;
+    // check if user already sent a request to join
+    if(Auth::check()){
+        $hasSent = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $event->id)->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
+    }
+
+?>
+
 @extends('layouts.app')
 
 @section('content')
@@ -41,13 +51,13 @@
             <p>Description: {{ $event->description }}</p>
             <p>Event date: {{ $event->eventdate }}</p>
             @if ($event->capacity == 0)
-                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
+                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
                 @endif
             @else
-                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
+                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
                     <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
@@ -58,8 +68,13 @@
             @else
                 <p>Price: {{ $event->price }} €</p>
             @endif
-            <p>Location: {{ $event->location->name }}</p>
-            <p>Address: {{ $event->location->address }}</p>
+            <?php $isAdmin = Auth::user()->admin ? 'true' : 'false' ?>
+            <div id="{{$event->location->id}}" class="full-event-location" data-is-admin="{{$isAdmin}}" data-event-id="{{$event->id}}">
+                <div class=location-info>
+                    <p>Location: {{ $event->location->name }}</p>
+                    <p>Address: {{ $event->location->address }}</p>
+                </div>
+            </div>
 
         </div>
         @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user && !Auth::user()->admin)
@@ -97,24 +112,14 @@
                     !Auth::user()->events->contains($event) &&
                     !Auth::user()->admin
                     )
-
-                @if(session('success'))
-                    <span class="success">
-                        {{ session('success') }}
-                    </span>
-                @endif
-                @if ($errors->has('requestToJoin'))
-                    <span class="error">
-                        {{ $errors->first('requestToJoin') }}
-                    </span>
-                @endif
-                <form action="{{ route('requestToJoin.send') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id_event" value="{{ $event->id }}">
-                    <button class="button" type="submit">
-                        Request to join
-                    </button>
-                </form>
+                <button class="fake button @if($hasSent)sent @endif" type="button"
+                    id="{{ $event->id }}" onclick="requestToJoin(this)">
+                    @if($hasSent)
+                    Request sent
+                    @else
+                    Request to join
+                    @endif
+                </button>
             @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
                 <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
                     @csrf
@@ -139,7 +144,7 @@
                     @endif
                     <form method="POST" action="{{ route('invite.send') }}" id="invitationForm" style="margin: 0;">
                         @csrf
-                        <input type="text" name="email" placeholder="Enter user's email">
+                        <input type="text" name="username" placeholder="Enter user's username">
                         <input type="hidden" name="id_event" value="{{ $event->id }}">
                         <button type="submit">
                             Send Invitation
@@ -148,18 +153,30 @@
                 </div>
             @endif
         @endif
-        @if(Auth::check())
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)
                 <p>No comments yet</p>
             @else
+            @php
+                $ownerComments = $event->comments->filter(function ($comment) use ($event) {
+                    return $comment->id_user == $event->id_owner;
+                })->sortByDesc('date');
+            
+                $otherComments = $event->comments->filter(function ($comment) use ($event) {
+                    return $comment->id_user != $event->id_owner;
+                })->sortByDesc('date');
+            @endphp
                 <ul class="comment-list">
-                    @each('partials.comment', $event->comments, 'comment')
+                    @foreach($ownerComments as $comment)
+                         @include('partials.comment', ['comment' => $comment, 'event' => $event])
+                    @endforeach 
+                    @foreach($otherComments as $comment)
+                         @include('partials.comment', ['comment' => $comment, 'event' => $event])
+                    @endforeach
                 </ul>
-            @endif
-        </div>
         @endif
+        </div>
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div>
                 <form class="general" action="{{ route('comment.store') }}" method="POST">

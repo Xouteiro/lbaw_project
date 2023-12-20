@@ -19,6 +19,7 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
+        
         $request->validate([
             'comment' => 'required|string|max:5000',
         ],
@@ -31,10 +32,10 @@ class CommentController extends Controller
         $comment->id_user = $request->id_user;
         $comment->text = $request->comment;
         $comment->date = date('Y-m-d H:i:s');
+        $this->authorize('store', $comment);
         $comment->save();
 
-        // $this->authorize('store');
-
+        
         return redirect(url()->previous() . '#' . $comment->id);
     }
 
@@ -49,10 +50,10 @@ class CommentController extends Controller
 
         $comment = Comment::find($id);
 
-        // $this->authorize('update', $comment);
+        
 
         $comment->text = $request->comment;
-
+        $this->authorize('update', $comment);
         $comment->save();
         return response()->json(['message' => 'You have successfully updated the comment!'], 200);
     }
@@ -61,7 +62,7 @@ class CommentController extends Controller
     {
         $comment = Comment::find($id);
 
-        // $this->authorize('delete', $comment);
+        $this->authorize('delete', $comment);
 
         $comment->delete();
         return response()->json(['message' => 'You have successfully deleted the comment!'], 200);

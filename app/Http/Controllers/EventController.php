@@ -11,30 +11,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-use function Laravel\Prompts\alert;
-
 class EventController extends Controller
 {
     public function index()
-    {
-        $userId = Auth::user()->id;
-        $user = User::findOrFail($userId);
-        if ($user->is_admin) {
-            $events = Event::inRandomOrder()->paginate(10);
-            return view('pages.events.index', ['events' => $events]);
-        } else {
-            $events = Event::where(function ($query) use ($userId) {
-                $query->where('hide_owner', false)
-                      ->where('public', true)
-                      ->orWhere(function ($query) use ($userId) {
-                          $query->where('public', false)
-                                ->whereHas('participants', function ($query) use ($userId) {
-                                    $query->where('id_user', $userId);
-                                });
-                      });
-            })->inRandomOrder()->paginate(10);
-            return view('pages.events.index', ['events' => $events]);
-        }
+    {        
+        return view('pages.events.search');
     }
 
     public function indexAjax(Request $request)
@@ -43,7 +24,6 @@ class EventController extends Controller
         $locationfilter = $request->has('id_location') ? $request->get('id_location') : null;
         $freefilter = $request->has('free') ? $request->get('free') : null;
         $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
-        $input = $request->get('search') ? "'" . $request->get('search') . ":*'" : "'*'";
 
 
         $order = $request->has('order') ? $request->get('order') : null;
@@ -82,16 +62,17 @@ class EventController extends Controller
                                     ->paginate(10);
             }
             return  response()->json(['events' => $events, 'search' => $request->get('search')]);
-            //return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
 
         if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
             $query = $allEvents->select();
 
-            $query->where(function ($query) use ($datefilter, $locationfilter, $input, $freefilter, $finishedfilter) {
-                if ($input !== '\'*\'') {
-                    $query->whereRaw("tsvectors @@ to_tsquery(?)", [$input])
-                        ->orderByRaw("ts_rank(tsvectors, to_tsquery(?)) ASC", [$input]);
+            $query->where(function ($query) use ($datefilter, $locationfilter, $request, $freefilter, $finishedfilter) {
+                if ($request->get('search') !== null) {
+                    $query->whereRaw("tsvectors @@ to_tsquery(?, ?)", ['english', $request->get('search')])
+                    ->orderByRaw("ts_rank(tsvectors, to_tsquery(?, ?)) ASC", ['english', $request->get('search')]);
+              
+
                 }
                 if ($datefilter !== null) {
                     $query->where('eventdate', '>=', $datefilter);
@@ -114,7 +95,6 @@ class EventController extends Controller
                 $events = $query->paginate(10);
             }
             return  response()->json(['events' => $events, 'search' => $request->get('search')]);
-            //return view('pages.events.search', ['events' => $events, 'search' => $request->get('search')]);
         }
     }
 
@@ -243,7 +223,7 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
         $this->authorize('removeparticipant', $event);
         $event->participants()->detach($id_participant);
-        return back();
+        return response()->json(['message' => 'Participant removed'], 200);
     }
 
     public function delete(string $id)
@@ -278,11 +258,11 @@ class EventController extends Controller
 
     public function eventsSearch(Request $request)
     {
-            return view('pages.events.search', [$request]);
+        return view('pages.events.search', [$request]);
     }
 
 
-    static public function joinEvent(string $id)
+    public function joinEvent(string $id)
     {
         if(Auth::user()->is_admin){
             return redirect()->route('home');
@@ -294,7 +274,7 @@ class EventController extends Controller
             abort(403, 'This event has already ended!');
         }
 
-        // $this->authorize('join', $event);
+        $this->authorize('join', $event);
 
         $user->events()->attach($event->id, ['date' => date('Y-m-d H:i:s')]);
 

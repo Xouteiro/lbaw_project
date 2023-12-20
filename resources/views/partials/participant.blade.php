@@ -6,11 +6,8 @@
         <p>Joined: {{ $participant->getOriginal('pivot_date') }}</p>
     </div>
     @if(Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
-    <form action="{{ route('event.removeparticipant', ['id' => $event->id, 'id_p' => $participant->id]) }}" method="POST">
-        @csrf
-        <div class="fake button remove" id="{{$participant->id}}">
+        <button type="button" class="fake button remove" id="{{$event->id}}">
             Remove Participant
-        </div>
-    </form>
+        </button>
     @endif
 </div>

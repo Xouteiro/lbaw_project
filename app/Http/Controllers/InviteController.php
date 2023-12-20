@@ -36,7 +36,7 @@ class InviteController extends Controller
             return response()->json(['error' => 'Need to be logged in'], 401);
         }
 
-        $userToInvite = User::where('email', $request->email)->first();
+        $userToInvite = User::where('username', $request->username)->first();
 
         if (!$userToInvite) {
             return back()->withErrors([
@@ -99,15 +99,22 @@ class InviteController extends Controller
             return redirect()->route('user.show', ['id' => Auth::user()->id]);
         }
         $invite = Notification::findOrFail($request->id_invite);
-        //$this->authorize('acceptInvite', $invite);
         $event = $invite->event->id;
-        Invite::where('id_eventnotification', $invite->id)->delete();
-        $invite->delete();
         if(isset($request->deny)){
+            Invite::where('id_eventnotification', $invite->id)->delete();
+            $invite->delete();
             return redirect()->route('user.show', ['id' => Auth::user()->id])
             ->withSuccess('You have successfully denied the invite!');
+        }else{
+            try {
+                $redirectResponse = (new EventController())->joinEvent($event);
+                Invite::where('id_eventnotification', $invite->id)->delete();
+                $invite->delete();
+            } catch (\Exception $e) {
+                return redirect()->route('event.show', ['id' => $event]);
+            }
         }
-        return (new EventController())->joinEvent($event);
+        return $redirectResponse;
     }
 
     /**
@@ -115,7 +122,6 @@ class InviteController extends Controller
      */
     public function destroy(Invite $invite)
     {
-        // $this->authorize('delete', $invite);
         $temp = $invite->id_eventnotification;
         $invite->delete();
         Notification::findOrFail($temp)->delete();

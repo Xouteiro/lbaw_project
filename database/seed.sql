@@ -204,8 +204,8 @@ BEGIN
     UPDATE event SET id_owner = NULL WHERE id_owner = OLD.id;
     UPDATE comment SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE poll SET id_user = NULL WHERE id_user = OLD.id;
-    UPDATE user_option SET id_user = NULL WHERE id_user = OLD.id;
     UPDATE likes_dislikes SET id_user = NULL WHERE id_user = OLD.id;
+    DELETE FROM user_option WHERE id_user = OLD.id;
     DELETE FROM joined WHERE id_user = OLD.id;
     DELETE FROM password_recovers WHERE email = OLD.email;
 
