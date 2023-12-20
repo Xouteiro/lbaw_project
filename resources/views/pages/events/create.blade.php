@@ -61,12 +61,14 @@
                 </span>
             @endif
             <label for="id_location">Location:</label>
-
             <div class="full-location">
                 <select class="location-select" name="id_location" required>
                     <?php $locations = DB::table('location')->get(); ?>
                     <option value="" disabled selected>Select a location</option>
                     @foreach ($locations as $location)
+                    @if($location->id == 79)
+                                @continue
+                            @endif
                         <option value="{{ $location->id }}">{{ $location->name }}</option>
                     @endforeach
                 </select>

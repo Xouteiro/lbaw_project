@@ -131,6 +131,7 @@ Route::controller(PollController::class)->group(function () {
 // Location
 Route::controller(LocationController::class)->group(function () {
     Route::post('/api/location/store', 'store');
+    Route::delete('/api/location/delete', 'delete');
 });
 
 
