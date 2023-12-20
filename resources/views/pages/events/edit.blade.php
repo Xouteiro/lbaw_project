@@ -73,15 +73,20 @@
                         {{ $errors->first('capacity') }}
                     </span>
                 @endif
-
-            
                 <label for="id_location">Location</label>
-                <select name="id_location" required>
-                    <?php $locations = DB::table('location')->get(); ?>
-                    @foreach ($locations as $location)
-                        <option value="{{ $location->id }}" {{ $location->id == $event->id_location ? 'selected' : '' }}>{{ $location->name }}</option>
-                    @endforeach
-                </select>
+                <div class="full-location">
+                    <select class="location-select" name="id_location" required>
+                        <?php $locations = DB::table('location')->get(); ?>
+                        <option value="" disabled >Select a location</option>
+                        @foreach ($locations as $location)
+                            @if($location->id == 79)
+                                @continue
+                            @endif
+                            <option value="{{ $location->id }}">{{ $location->name }}</option>
+                        @endforeach
+                    </select>
+                    <button type="button" class="fake-add-location">Add Location</button>
+                </div>
 
             <a href="{{ route('event.show', ['id' => $event->id]) }}">
                 <button type="button">Cancel</button>
