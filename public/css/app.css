@@ -125,11 +125,11 @@ footer {
 }
 
 footer p {
-    align-self: center;
-    margin-left: 50px;
     margin-bottom: 0;
     color: white;
 }
+
+
 
 h1,
 h2,
@@ -1214,15 +1214,66 @@ footer {
     display: flex;
 }
 
-footer a {
-    color: white;
-    font-weight: 700;
-    font-size: 1.8rem;
+
+footer div.media-logo{ 
+    display: flex;
+    flex-direction: column;
+
+}
+footer div.social-media img{
+    width: 30px;
+    height: 30px;
+    margin: 3px;
+    transition: scale 0.5s;
 }
 
-footer a:hover {
-    color: #0056b3;
+footer div.social-media img:hover{
+    scale: 1.3;
 }
+
+footer div.social-media {
+   align-items: center;
+   justify-content: space-between;
+   display: flex;
+   margin-bottom: 20px;
+}
+
+footer div.social-copy{
+    display: flex;
+    flex-direction: column;
+}
+
+footer div.social-copy p{
+    align-self: center;
+}
+
+footer img{
+    height: 7.5em;
+    object-fit: contain;
+    margin-bottom: 50px;
+    width: 100%;
+}
+
+footer h3{
+
+    color: white;
+}
+
+footer div.useful-links{
+    display: flex;
+    flex-direction: column;
+    padding-top : 50px;
+    margin-right: 150px;
+}
+
+footer div.static-pages{
+    display: flex;
+    flex-direction: column;
+    padding-top : 50px;
+    margin-left: 150px;
+}
+
+
 
 .about-page {
     margin: 0;
@@ -1311,14 +1362,18 @@ footer a:hover {
 
 footer {
     display: flex;
+    justify-content: space-evenly;
+    padding: 50px;
 }
 
 footer a {
     color: white;
     font-weight: 700;
     font-size: 1.8rem;
+    transition: scale 0.5s;    
 }
 
 footer a:hover {
     color: #0056b3;
+    scale: 1.1;
 }

@@ -28,7 +28,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+        <link rel="icon" type="image/x-icon" href="/icons/logo.ico">
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -115,9 +115,45 @@
                 @yield('content')
             </section>
             <footer>
-                <p>© 2023 Invents</p>
-                <p><a href="{{route('about')}}">About Us</a></p>
-                <p><a href="{{route('mainFeatures')}}">Main Features</a></p>
+                <div class="useful-links">
+                    <h3>Useful Links</h3>
+                    <a href="{{route('home')}}">- Home Page</a>
+                    <a href="{{route('events')}}">- All Events</a>
+                    @if(Auth::check())
+                        <a href="{{ url('/user/' . Auth::user()->id) }}">- Profile Page</a>
+                    @else
+                        <a href="{{route('login')}}">- Profile Page</a>
+                    @endif
+                    @if(Auth::check() && !Auth::user()->admin)
+                        <a href="{{route('event.create')}}">- Create an Event</a>
+                    @elseif(!Auth::check())
+                        <a href="{{route('login')}}">- Create an Event</a>
+                    @endif
+                    @if(Auth::check())
+                        <a href="{{route('logout')}}">- Logout</a>
+                    @endif
+
+                </div>
+
+                <div class="media-logo">
+                    <a  href={{url('/home')}} ><img src="{{ url('icons/logo.png') }}" alt="Invents"></a>
+                    <div class = "social-copy">
+                        <div class="social-media">
+                            <img src="{{ url('icons/instagram.png') }}" alt="Instagram icon">
+                            <img src="{{ url('icons/facebook.png') }}" alt="Facebook icon">
+                            <img src="{{ url('icons/twitter.png') }}" alt="Twitter icon">
+                        </div>
+                        <p>© 2023 Invents</p>
+                    </div>
+                </div>
+
+                <div class="static-pages">
+                    <h3>Information</h3>
+                    <a href="{{route('mainFeatures')}}">- Main Features</a>
+                    <a href="{{route('about')}}"> - About Us</a>
+
+                </div>
+    
             </footer>
         </main>
     </body>
