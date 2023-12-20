@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\Mail;
 
 class EventUpdateController extends Controller
 {
-    public function sendEventUpdate($id, $whatChanged) {
-        $event = Event::findOrFail($id);
+    public function sendEventUpdate(Request $request) {
+        $event = Event::findOrFail($request->id_event);
         $users = $event->participants()->get();
+        $whatChanged = json_decode($request->whatChanged, true);
 
         if (!$event) {
-            return response()->json(['error' => 'Event not found'], 404);
+            return abort(404, 'Event not found!');
         }
 
         foreach ($users as $user) {
@@ -37,6 +38,7 @@ class EventUpdateController extends Controller
             $data = array(
                 'type' => 'event-update',
                 'name' => $user->name,
+                'event' => $event->name,
                 'eventUpdateId' => $eventUpdate->id_eventnotification,
                 'whatChanged' => $whatChanged
             );

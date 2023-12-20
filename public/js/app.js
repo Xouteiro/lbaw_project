@@ -561,6 +561,35 @@ function requestToJoinDecision() {
     closeDecisionBox();
 }
 
+function editEvent() {
+    const updateEventButton = document.querySelector(".btn.btn-primary");
+    if(updateEventButton){
+        updateEventButton.parentElement.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+
+            fetch(e.target.action, {
+                method: 'POST',
+                body: new URLSearchParams(formData),
+                keepalive: true
+            }).then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                setTimeout(() => {
+                    window.location.href = `/event/${updateEventButton.id}`;
+                }, 1000);
+                return response.json();
+            }).then((jsonData) => {
+                const jsonString = JSON.stringify(jsonData);
+                sendAjaxRequest('POST', '/api/send-event-update', { id_event: updateEventButton.id, whatChanged: jsonString }, function () {});
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    }
+}
 
 function eventUpdate() {
     const eventUpdates = document.querySelectorAll(".pending_event_update");
@@ -1138,3 +1167,4 @@ answerPoll();
 openNotificaitons();
 createLocation();
 deleteLocation();
+editEvent();

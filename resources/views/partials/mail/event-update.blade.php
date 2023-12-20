@@ -7,7 +7,7 @@
 ?>
 
 <h3>Hello, {{ $name }}</h3>
-<h3>The event {{ $whatChanged['old_name'] }} has been updated!</h3>
+<h3>The event @if(isset($whatChanged['old_name'])) {{ $whatChanged['old_name'] }} @else {{ $event }} @endif has been updated!</h3>
 <h3>New values of the information that has changed:</h3>
 <ul>
     @foreach($whatChanged as $key => $change)

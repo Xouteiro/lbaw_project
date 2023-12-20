@@ -58,7 +58,12 @@ class Email extends Mailable
         }
         else if($this->data['type'] == 'event-update'){
             $this->view = 'partials.mail.event-update';
-            $eventName = $this->data['whatChanged']['old_name'];
+            if(isset($this->data['whatChanged']['old_name'])){
+                $eventName = $this->data['whatChanged']['old_name'];
+            }
+            else{
+                $eventName = $this->data['event'];
+            }
             $this->subject = "$eventName was updated!";
         }
         else if($this->data['type'] == 'cancel-event'){

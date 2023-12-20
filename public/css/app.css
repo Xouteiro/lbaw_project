@@ -265,6 +265,13 @@ main>header span {
     border: 1px solid rgb(148, 170, 236);
 }
 
+#content .container>div.general {
+    margin: 0 auto;
+    padding: 1em;
+    max-width: 30em;
+    border: 1px solid rgb(148, 170, 236);
+}
+
 #content .container>form .error {
     display: block;
     font-weight: bold;

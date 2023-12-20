@@ -256,7 +256,7 @@ class EventController extends Controller
         if(!empty($whatChanged))
         {
             $event->save();
-            return (new EventUpdateController())->sendEventUpdate($id, $whatChanged);
+            return $whatChanged;
         }
         return redirect()->route('event.show', ['id' => $event->id]);
     }
