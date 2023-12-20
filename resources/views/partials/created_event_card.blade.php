@@ -7,6 +7,12 @@
             @if ($event->hide_owner)
             <p class="event-hidden">Hidden</p>
             @endif
+            @php
+                $description = $event->description;
+                if (strlen($description) > 70){
+                    $description = substr($description, 0, 67) . '...';
+                }
+            @endphp
             <img src="{{ $event->getEventImage($event->id) }}" alt="Event Image" class="event-image">
             <div class="event-info">
                 <h3>{{ $event->name }}</h3>

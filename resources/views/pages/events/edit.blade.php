@@ -78,7 +78,7 @@
                         @if($location->id == 79)
                             @continue
                         @endif
-                        <option value="{{ $location->id }}">{{ $location->name }}</option>
+                        <option value="{{ $location->id }}" {{ $location->id == $event->id_location ? 'selected' : '' }}>{{ $location->name }}</option>
                     @endforeach
                 </select>
                 <button type="button" class="fake-add-location">Add Location</button>

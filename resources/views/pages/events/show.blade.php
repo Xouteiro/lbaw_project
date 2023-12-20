@@ -68,7 +68,7 @@
             @else
                 <p @if(isset($whatChanged) && isset($whatChanged->price)) style="font-weight: bold;" @endif>Price: {{ $event->price }} €</p>
             @endif
-            <?php $isAdmin = Auth::user()->admin ? 'true' : 'false' ?>
+            <?php $isAdmin = (Auth::check() && Auth::user()->admin) ? 'true' : 'false' ?>
             <div id="{{$event->location->id}}" class="full-event-location" data-is-admin="{{$isAdmin}}" data-event-id="{{$event->id}}">
                 <div class=location-info>
                     <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Location: {{ $event->location->name }}</p>
@@ -120,6 +120,7 @@
                     @endif
                 </button>
             @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
+            
                 <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
                     @csrf
                     <button class="button" type="submit">

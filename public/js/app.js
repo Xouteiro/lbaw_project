@@ -50,14 +50,17 @@ function loadMoreEvents() {
                         } else if (eventDate > currentDate) {
                             eventStatus = 'Upcoming';
                         }
-
+                        let description = event.description;
+                            if (description.length > 70){
+                                description = description.substring(0, 67) + '...';
+                            }
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
                                 <img src="${eventImage}" alt="Event Image" class="event-image">
                                 
                                 <div class="event-info">
                                     <h3>${event.name}</h3>
-                                    <p>${event.description}</p>
+                                    <p>${description}</p>
                                     <p>${event.eventdate}</p>
                                     <p>${eventStatus}</p>
                                 </div>
@@ -627,6 +630,7 @@ function eventUpdate() {
 
 function likeComment() {
     const likes = document.querySelectorAll(".comment-like");
+    if(likes){
     likes.forEach((like) => {
         like.addEventListener("click", () => {
             const commentId = like.parentElement.parentElement.parentElement.parentElement.id;
@@ -655,6 +659,7 @@ function likeComment() {
             }
         });
     });
+    }
 }
 
 function dislikeComment() {
