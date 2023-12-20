@@ -13,7 +13,8 @@ class Location extends Model
     public $timestamps = false;
     protected $table = 'location';
     protected $fillable = [
-        'name'
+        'name',
+        'address',
     ];
 
     public function events()

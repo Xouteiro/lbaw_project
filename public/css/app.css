@@ -277,6 +277,11 @@ main>header span {
     color: #30a33a;
 }
 
+.full-location {
+    display: flex;
+    flex-direction: row;
+}
+
 
 .button,
 button,
@@ -652,6 +657,8 @@ div.event-owner-message p{
     display: flex;
     align-self: end;
 }
+
+
 
 img.back-button {
     margin: 1em 0;

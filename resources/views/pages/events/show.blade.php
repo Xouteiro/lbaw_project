@@ -5,6 +5,7 @@
     if(Auth::check()){
         $hasSent = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $event->id)->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
     }
+
 ?>
 
 @extends('layouts.app')
@@ -67,9 +68,13 @@
             @else
                 <p @if(isset($whatChanged) && isset($whatChanged->price)) style="font-weight: bold;" @endif>Price: {{ $event->price }} €</p>
             @endif
-            <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Location: {{ $event->location->name }}</p>
-            <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Address: {{ $event->location->address }}</p>
-
+            <?php $isAdmin = Auth::user()->admin ? 'true' : 'false' ?>
+            <div id="{{$event->location->id}}" class="full-event-location" data-is-admin="{{$isAdmin}}" data-event-id="{{$event->id}}">
+                <div class=location-info>
+                    <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Location: {{ $event->location->name }}</p>
+                    <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Address: {{ $event->location->address }}</p>
+                </div>
+            </div>
         </div>
         @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user && !Auth::user()->admin)
             {{-- Form of invite decision (Accept/Deny) --}}
