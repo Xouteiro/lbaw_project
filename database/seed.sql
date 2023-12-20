@@ -96,6 +96,7 @@ CREATE TABLE invite (
 
 CREATE TABLE event_update (
     id_eventnotification INTEGER REFERENCES event_notification(id),
+    what_changed JSON NOT NULL,
     PRIMARY KEY (id_eventnotification)
 );
 
