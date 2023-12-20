@@ -44,7 +44,7 @@ class EventUpdateController extends Controller
             Mail::to($user->email, $user->name)->send(new Email($data));
         }
 
-        return redirect()->route('event.show', ['id' => $event->id]);
+        return response()->json('You have successfully updated the event!', 200);
     }
 
     public function clearEventUpdate(Request $request){

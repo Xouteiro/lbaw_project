@@ -48,7 +48,7 @@
                 </p>
             @endif
             <p @if(isset($whatChanged) && isset($whatChanged->description)) style="font-weight: bold;" @endif>Description: {{ $event->description }}</p>
-            <p @if(isset($whatChanged) && isset($whatChanged->date)) style="font-weight: bold;" @endif>Event date: {{ $event->eventdate }}</p>
+            <p @if(isset($whatChanged) && isset($whatChanged->eventdate)) style="font-weight: bold;" @endif>Event date: {{ $event->eventdate }}</p>
             @if ($event->capacity == 0)
                 @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
