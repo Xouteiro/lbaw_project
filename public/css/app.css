@@ -283,6 +283,7 @@ main>header span {
 }
 
 
+
 .button,
 button,
 input[type='button'],
@@ -1374,7 +1375,7 @@ footer a {
 }
 
 footer a:hover {
-    color: #0056b3;
+    color: #16b8d2;
     scale: 1.1;
 }
 
