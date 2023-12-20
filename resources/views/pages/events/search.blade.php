@@ -31,9 +31,14 @@
                     <label for="finished">Finished</label>
                     <input type="checkbox" name="finished" value="finished" {{ request('finished') ? 'checked' : '' }}>
                 </div>
+                <div class="input_field">
+                    <label for="opentojoin">Open to join</label>
+                    <input type="checkbox" name="opentojoin" value="opentojoin" {{ request('opentojoin') ? 'checked' : '' }}>
+                </div>
+
                 <div class="order input_field">
                     <select name="order" id="order">
-                        <option value="">Choose an option</option>
+                        <option value="">Order By</option>
                         <option value="eventdate-desc" {{ request('order') == 'eventdate-desc' ? 'selected' : '' }}>Date (Furthest from Today) </option>
                         <option value="eventdate-asc" {{ request('order') == 'eventdate-asc' ? 'selected' : '' }}>Date (Closest to Today) </option>
                         <option value="price-desc" {{ request('order') == 'price-desc' ? 'selected' : '' }}>Price (High to Low)</option>
@@ -62,6 +67,9 @@
                 }
                 if(request('finished') != null) {
                     $filters[] = "finished ";
+                }
+                if(request('opentojoin') != null) {
+                    $filters[] = "open to join ";
                 }
             @endphp
             @if(!empty($filters))
