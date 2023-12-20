@@ -16,7 +16,7 @@ class InvitePolicy
 
     public function acceptInvite(User $user, Notification $invite) : bool
     {
-        return $user->id === $invite->recievedBy->id;  // não funciona ??
+        return $user->id === $invite->recievedBy->id && !$user->blocked;  // não funciona ??
     }
 
 }

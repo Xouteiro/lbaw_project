@@ -998,6 +998,45 @@ function openNotificaitons() {
     closeNotifications();
 }
 
+function banAccount() {
+    const banAccountButton = document.querySelector(".fake.button.ban-account");
+    if (banAccountButton) {
+        banAccountButton.addEventListener("click", () => {
+            const accountId = banAccountButton.id;
+            const sureboxExists = banAccountButton.parentElement.querySelector(".surebox");
+
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                var position = banAccountButton.getBoundingClientRect();
+                surebox.style.left = (position.left + parseInt(window.scrollX) - 150).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) - 150).toString() + "px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                banAccountButton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    sendAjaxRequest('PUT', `/user/${accountId}/ban`, null, function () {
+                        window.location.href = `/user/${accountId}`;
+                    });
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -1015,3 +1054,4 @@ createPoll();
 deletePoll();
 answerPoll();
 openNotificaitons();
+banAccount();

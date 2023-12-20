@@ -5,11 +5,11 @@
                 @if(isset($comment->user->username)) 
                     @if($comment->user->id == $event->id_owner)
                         <div class="event-owner-message">
-                            <h3>{{ $comment->user->username }}</h3>
+                            <h3><a href="{{ route('user.show', ['id' => $comment->user->id]) }}">{{ $comment->user->username }}</a></h3>
                             <p class="event-owner">Event Owner Message</p>
                         </div>
                     @else
-                    <h3>{{ $comment->user->username }}</h3>
+                        <h3><a href="{{ route('user.show', ['id' => $comment->user->id]) }}">{{ $comment->user->username }}</a></h3>
                     @endif
                 @else
                     <h3>Anonymous</h3>  
@@ -40,7 +40,7 @@
                     </div>
                 @endif
             </div>
-            @if (Auth::check() && (Auth::user()->id === $comment->id_user || Auth::user()->admin))
+            @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->id === $comment->id_user || Auth::user()->admin))
                 <div class="comment-actions">
                     <button class="fake button edit-comment" id="{{ $comment->id }}">
                         Edit Comment
