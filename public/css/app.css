@@ -5,8 +5,8 @@
 html {
     box-sizing: border-box;
     font-size: 62.5%;
+    min-width: 100%;
 }
-
 
 main {
     display: flex;
@@ -16,6 +16,7 @@ main {
 }
 
 body {
+    min-width: 100%;
     margin: 0;
     padding: 0;
     font-size: 1.6em;
@@ -109,13 +110,11 @@ img.user {
 section#content {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    min-height: max-content;
-    flex: 1;
     background-color: #dee6ff;
+    padding-top: 130px;
     padding-bottom: 3em;
-    padding-top: 100px;
-
+    width: 100%;
+    flex: 1;
 }
 
 section#content.home,
@@ -425,22 +424,17 @@ input[type='radio'] {
 .container {
     margin: 2em auto;
     max-width: 112.0rem;
-    position: relative;
     width: 100%
 }
 
 .search-container {
-    position: relative;
     width: 100%;
     display: flex;
 }
 
 .container-events {
-    margin: 3em auto 2em 2em;
+    margin: 3em 2em;
     max-width: 112.0rem;
-    position: relative;
-    width: 100%;
-    padding-right: 50px;
 }
 
 
@@ -452,7 +446,7 @@ input[type='radio'] {
 }
 
 div.form {
-    margin: 2em 2em 2em 0;
+    margin: 2em;
     min-width: 20%;
 }
 
@@ -876,9 +870,9 @@ form#searchForm {
     transform: translate(-50%, -50%);
     color: #fff;
     /* Text color */
-    font-size: 4vw;
+    font-size: 4em;
     font-weight: 900;
-    flex-shrink: 0;
+    white-space: nowrap;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     /* Optional text shadow for better visibility */
 }
@@ -890,9 +884,9 @@ form#searchForm {
     transform: translate(-50%, -50%);
     color: #fff;
     /* Text color */
-    font-size: 3vw;
+    font-size: 2.5em;
     font-weight: 900;
-    flex-shrink: 0;
+    white-space: nowrap;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     /* Optional text shadow for better visibility */
 }
@@ -904,9 +898,9 @@ form#searchForm {
     transform: translate(-50%, -50%);
     color: #fff;
     /* Text color */
-    font-size: 2vw;
+    font-size: 2em;
     font-weight: 800;
-    flex-shrink: 0;
+    white-space: nowrap;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     /* Optional text shadow for better visibility */
 }
@@ -919,9 +913,9 @@ form#searchForm {
     transform: translate(-50%, -50%);
     color: rgb(43, 63, 124);
     font-weight: 800;
-    font-size: 1.6vw;
-    flex-shrink: 0;
-    }
+    font-size: 1.5em;
+    white-space: nowrap;
+}
 
 form.searchBar#searchForm {
     display: flex;
@@ -971,7 +965,6 @@ form.searchBar#searchForm #searchButton {
 }
 
 .check-all a {
-    width: 20%;
     align-self: center;
 }
 
@@ -1120,9 +1113,23 @@ ul.names {
         flex-direction: column;
     }
 
-    div.form {
-        width: 100%;
-        padding-right: 2em;
+    .background-image .overlay-text h1 {
+        font-size: 3em;
+        top: 10%;
+    }
+
+    .background-image .overlay-text h2 {
+        font-size: 2em;
+        top: 35%;
+    }
+
+    .background-image .overlay-text h3 {
+        font-size: 1.5em;
+        top: 50%;
+    }
+
+    .background-image .overlay-text h4 {
+        font-size: 1.2em;
     }
 
     main>header a.logo,
@@ -1243,20 +1250,6 @@ ul.names {
     font-size: 2.1rem;
 }
 
-footer {
-    display: flex;
-}
-
-footer a {
-    color: white;
-    font-weight: 700;
-    font-size: 1.8rem;
-}
-
-footer a:hover {
-    color: #0056b3;
-}
-
 .about-page {
     margin: 0;
     max-width: 100%;
@@ -1342,10 +1335,6 @@ footer a:hover {
     font-size: 2.1rem;
 }
 
-footer {
-    display: flex;
-}
-
 footer a {
     color: white;
     font-weight: 700;
@@ -1354,4 +1343,25 @@ footer a {
 
 footer a:hover {
     color: #0056b3;
+}
+
+@media (max-width: 558px) {
+    .background-image .overlay-text h1 {
+        font-size: 2.5em;
+        top: 10%;
+    }
+
+    .background-image .overlay-text h2 {
+        font-size: 1.8em;
+        top: 40%;
+    }
+
+    .background-image .overlay-text h3 {
+        font-size: 1.3em;
+        top: 55%;
+    }
+
+    .background-image .overlay-text h4 {
+        font-size: 1em;
+    }
 }
