@@ -74,7 +74,7 @@ class EventPolicy
                 'invite.id_eventnotification', '=', 'event_notification.id')
                 ->get();
 
-        if ($event->public && $event->openTojoin) return true;
+        if ($event->public && $event->opentojoin) return true;
         else if ($user->admin) return false;
         else{
             if ($event->id_owner == $user->id) return true;

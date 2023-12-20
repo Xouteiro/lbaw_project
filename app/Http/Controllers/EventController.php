@@ -95,7 +95,7 @@ class EventController extends Controller
                     $query->where('eventdate', '<', Carbon::now());
                 }
                 if ($openToJoinfilter !== null) {
-                    $query->where('opentojoin', '=', true);
+                    $query->where('opentojoin', '=', true)->where('eventdate', '>=', Carbon::now());
                 }
             });
 

@@ -14,9 +14,5 @@
         <div class="events-container">
             @each('partials.event_card', $events, 'event')
         </div>
-        <div class="check-all">
-            <h3>Still curious?</h3>
-            <a class = 'button' href="{{ route('events') }}">Check them all!</a>
-        </div>
     </div>
 @endsection

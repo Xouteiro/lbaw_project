@@ -70,7 +70,7 @@ Route::controller(RegisterController::class)->group(function () {
     Route::post('/register', 'register');
 });
 
-// Event
+// Events
 Route::controller(EventController::class)->group(function () {
     Route::get('/events', 'index')->name('events');
     Route::get('/events/search', 'eventsSearch')->name('events.search');
