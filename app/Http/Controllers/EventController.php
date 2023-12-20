@@ -33,12 +33,17 @@ class EventController extends Controller
         $orderDirection = explode('-', $order)[1];
         }
 
-
-        $userId = Auth::user()->id;
-        $user = User::findOrFail($userId);
-        if ($user->is_admin) {
+        $userId = Auth::check() ? Auth::user()->id : null;
+        $user = Auth::check()  ? User::findOrFail($userId) : null;
+        if (Auth::check() && $user->is_admin) {
             $allEvents = Event::get();
-        } else {
+        }else if(!Auth::check()){
+            $allEvents = Event::where(function ($query)  {
+                $query->where('hide_owner', false)
+                      ->where('public', true);
+            });
+        } 
+        else {
             $allEvents = Event::where(function ($query) use ($userId) {
                 $query->where('hide_owner', false)
                       ->where('public', true)
