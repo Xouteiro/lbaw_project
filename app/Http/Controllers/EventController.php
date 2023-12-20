@@ -24,6 +24,7 @@ class EventController extends Controller
         $locationfilter = $request->has('id_location') ? $request->get('id_location') : null;
         $freefilter = $request->has('free') ? $request->get('free') : null;
         $finishedfilter = $request->has('finished') ? $request->get('finished') : null;
+        $openToJoinfilter = $request->has('opentojoin') ? $request->get('opentojoin') : null;
 
 
         $order = $request->has('order') ? $request->get('order') : null;
@@ -50,7 +51,7 @@ class EventController extends Controller
             });
         }
 
-        if ($request->get('search') == null && $datefilter == null && $locationfilter == null && $freefilter == null && $finishedfilter == null) {
+        if ($request->get('search') == null && $datefilter == null && $locationfilter == null && $freefilter == null && $finishedfilter == null && $openToJoinfilter == null) { //sem filtros
             if ($order !== null) {
                 $events = $allEvents->select()
                                     ->where('eventdate', '>=', Carbon::now())
@@ -64,10 +65,10 @@ class EventController extends Controller
             return  response()->json(['events' => $events, 'search' => $request->get('search')]);
         }
 
-        if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null) { //com filtros
+        if ($datefilter !== null || $locationfilter !== null || $request->get('search') !== null || $freefilter !== null || $finishedfilter !== null || $openToJoinfilter !== null) { //com filtros
             $query = $allEvents->select();
 
-            $query->where(function ($query) use ($datefilter, $locationfilter, $request, $freefilter, $finishedfilter) {
+            $query->where(function ($query) use ($datefilter, $locationfilter, $request, $freefilter, $finishedfilter, $openToJoinfilter) {
                 if ($request->get('search') !== null) {
                     $query->whereRaw("tsvectors @@ to_tsquery(?, ?)", ['english', $request->get('search')])
                     ->orderByRaw("ts_rank(tsvectors, to_tsquery(?, ?)) ASC", ['english', $request->get('search')]);
@@ -86,6 +87,9 @@ class EventController extends Controller
                 }
                 if ($finishedfilter !== null) {
                     $query->where('eventdate', '<', Carbon::now());
+                }
+                if ($openToJoinfilter !== null) {
+                    $query->where('opentojoin', '=', true);
                 }
             });
 

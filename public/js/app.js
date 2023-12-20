@@ -1037,6 +1037,130 @@ function banAccount() {
     closeSureOptions()
 }
 
+function createLocation()
+{
+    const createLocationFake = document.querySelector(".fake-add-location");
+    let openCreate = 0;
+    if(createLocationFake)
+    {
+        createLocationFake.addEventListener("click", () => {
+            if(openCreate == 1){
+                return;
+            }
+            openCreate++;
+            const createLocationForm = document.createElement("div");
+            createLocationForm.classList.add("create-location-form");
+            createLocationForm.action = `api/location/store`;
+            createLocationForm.method = "POST";
+            createLocationForm.innerHTML = `
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="text" name="address" placeholder="Address" required>
+                <input type="text" name="city" placeholder="City" required>
+                <input type="text" name="country" placeholder="Country" required>
+                <button type="button" class="cancel-create-location-button">Cancel</button>
+                <button type="button" class="create-location-button">Create</button>
+            `;
+            createLocationFake.parentElement.appendChild(createLocationForm);
+            createLocationFake.parentElement.parentNode.insertBefore(createLocationForm, createLocationFake.parentElement.nextSibling);
+            const cancelCreateLocationButton = createLocationForm.querySelector(".cancel-create-location-button");
+            cancelCreateLocationButton.addEventListener("click", () => {
+                openCreate--;
+                createLocationForm.remove();
+            });
+            const createLocationButton = createLocationForm.querySelector(".create-location-button");
+            createLocationButton.addEventListener("click", () => {
+                const errorMessages = document.querySelectorAll('div[style="color: red;"]');
+                errorMessages.forEach((errorMessage) => {
+                    errorMessage.remove();
+                });
+                const name = createLocationForm.querySelector("input[name='name']").value;
+                const address = createLocationForm.querySelector("input[name='address']").value;
+                const city = createLocationForm.querySelector("input[name='city']").value;
+                const country = createLocationForm.querySelector("input[name='country']").value;
+                if (!name || !address || !city || !country) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'All fields are required.';
+                    errorMessage.style.color = 'red';
+                    createLocationForm.insertBefore(errorMessage, createLocationForm.querySelector(".create-location-buttons"));
+                    return;
+                }
+                if (name.length > 50 || name.length < 10 || address.length > 50 || address.length < 10 || city.length > 50 || city.length < 2|| country.length > 50 || country.length < 2) {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'Fields can not be that size.';
+                    errorMessage.style.color = 'red';
+                    createLocationForm.insertBefore(errorMessage, createLocationForm.querySelector(".create-location-buttons"));
+                    return;
+                }
+                const fullAddress = `${address}, ${city}, ${country}`;
+                let locationId;
+                sendAjaxRequest('POST', `/api/location/store`, { name: name, address: fullAddress }, function (data) { 
+                    locationId = JSON.parse(data.originalTarget.response).id;
+                    createLocationForm.remove();
+                    console.log(locationId);
+                    const LocationSelect = document.querySelector(".location-select");
+                    const option = document.createElement("option");
+                    option.value = locationId;
+                    option.textContent = name;
+                    option.selected = true;
+                    LocationSelect.appendChild(option);
+                }); 
+                openCreate--;
+            });
+        });
+
+    }
+}
+
+function deleteLocation(){
+    const fullLocation = document.querySelector(".full-event-location");
+    if(fullLocation){
+        const isAdmin = fullLocation.dataset.isAdmin;
+        const eventId = fullLocation.dataset.eventId;
+        let locationId = document.querySelector(".full-event-location").id;
+        if(isAdmin == 'false'){
+            return;
+        }
+        if(locationId == 79){
+            return;
+        }
+        const deleteLocationButton = document.createElement("button");
+        deleteLocationButton.classList.add("delete-location-button");
+        deleteLocationButton.textContent = "Delete Location";
+        fullLocation.appendChild(deleteLocationButton);
+        fullLocation.style.display = "flex";
+        fullLocation.style.flexDirection = "row";
+        fullLocation.style.justifyContent = "space-between";
+        deleteLocationButton.addEventListener("click", () => {
+            locationId = document.querySelector(".full-event-location").id;
+            if(locationId == 79){
+                return;
+            }
+            deleteLocationButton.remove();
+            fullLocation.remove();
+            const newfullLocation = document.createElement("div");
+            newfullLocation.id = "79";
+            newfullLocation.classList.add("full-event-location");
+            newfullLocation.dataset.isAdmin = isAdmin;
+            newfullLocation.dataset.eventId = eventId;
+
+            const locationInfo = document.createElement("div");
+            locationInfo.classList.add("location-info");
+
+            const locationName = document.createElement("p");
+            locationName.textContent = "Location: To be determined";
+            locationInfo.appendChild(locationName);
+
+            const locationAddress = document.createElement("p");
+            locationAddress.textContent = "Address: To be determined";
+            locationInfo.appendChild(locationAddress);
+            newfullLocation.appendChild(locationInfo);
+            const eventInfo = document.querySelector(".event-info");
+            eventInfo.appendChild(newfullLocation);
+            sendAjaxRequest('DELETE', `/api/location/delete`, { id_location: locationId, id_event: eventId }, function () { });
+        });
+    }
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -1055,3 +1179,5 @@ deletePoll();
 answerPoll();
 openNotificaitons();
 banAccount();
+createLocation();
+deleteLocation();

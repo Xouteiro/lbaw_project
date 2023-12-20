@@ -11,7 +11,9 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\RequestToJoinController;
 use App\Http\Controllers\EventUpdateController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\StaticPagesController;
+use App\Models\Location;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,6 +127,12 @@ Route::controller(PollController::class)->group(function () {
     Route::delete('api/poll/delete', 'delete')->name('poll.delete');
     Route::put('api/poll/vote', 'vote')->name('poll.vote');
     Route::delete('api/poll/unvote', 'unvote')->name('poll.unvote');
+});
+
+// Location
+Route::controller(LocationController::class)->group(function () {
+    Route::post('/api/location/store', 'store');
+    Route::delete('/api/location/delete', 'delete');
 });
 
 

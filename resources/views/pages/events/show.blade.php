@@ -5,6 +5,7 @@
     if(Auth::check() && !Auth::user()->blocked){
         $hasSent = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $event->id)->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
     }
+
 ?>
 
 @extends('layouts.app')
@@ -67,8 +68,13 @@
             @else
                 <p>Price: {{ $event->price }} €</p>
             @endif
-            <p>Location: {{ $event->location->name }}</p>
-            <p>Address: {{ $event->location->address }}</p>
+            <?php $isAdmin = Auth::user()->admin ? 'true' : 'false' ?>
+            <div id="{{$event->location->id}}" class="full-event-location" data-is-admin="{{$isAdmin}}" data-event-id="{{$event->id}}">
+                <div class=location-info>
+                    <p>Location: {{ $event->location->name }}</p>
+                    <p>Address: {{ $event->location->address }}</p>
+                </div>
+            </div>
 
         </div>
         @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user && !Auth::user()->admin && !Auth::user()->blocked)
