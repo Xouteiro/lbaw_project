@@ -1003,6 +1003,16 @@ function closeNotifications() {
     });
 }
 
+function moveNotifications() {
+    const notificationsIconDiv = document.querySelector(".notifications-icon");
+    const notifications = document.querySelector(".user-notifications-container");
+    if (notifications && notificationsIconDiv && notifications.style.display == "block") {
+        const position = notificationsIconDiv.getBoundingClientRect();
+        notifications.style.left = (position.left - 150).toString() + "px";
+        notifications.style.top = (position.top + 80).toString() + "px";
+    }
+}
+
 function openNotificaitons() {
     const notificationsIconDiv = document.querySelector(".notifications-icon");
     const notifications = document.querySelector(".user-notifications-container");
@@ -1168,3 +1178,4 @@ openNotificaitons();
 createLocation();
 deleteLocation();
 editEvent();
+window.onresize = moveNotifications;

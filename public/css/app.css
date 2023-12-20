@@ -215,13 +215,28 @@ a.user {
 }
 
 img.logo {
-    height: 7em;
-    margin: 20px;
-    padding-left: 50px;
+    height: 150px;
+    width: 150px;
+    object-fit: contain;
+    margin: 0;
+    padding: 0;
+    min-width: 100px;
 }
 
 img.small-logo {
-    height: 5em;
+    height: 100px;
+    width: 100px;
+    object-fit: contain;
+    padding: 0;
+    margin: 0;
+    min-width: 100px;
+}
+
+main>header a.logo {
+    padding-left: 50px;
+}
+
+main>header a.small-logo {
     padding-left: 50px;
 }
 
@@ -233,10 +248,6 @@ main>header {
     align-items: center;
     padding: 0.7em;
     background-color: #00172b;
-}
-
-main>header.home {
-    position: fixed;
 }
 
 main>header h1 {
@@ -271,7 +282,7 @@ main>header span {
     display: flex;
     flex-direction: column;
     max-width: fit-content;
-    padding-top: 181px;
+    padding-top: 180px;
 }
 
 #content .container>form.general {
@@ -867,6 +878,7 @@ form#searchForm {
     /* Text color */
     font-size: 4vw;
     font-weight: 900;
+    flex-shrink: 0;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     /* Optional text shadow for better visibility */
 }
@@ -880,6 +892,7 @@ form#searchForm {
     /* Text color */
     font-size: 3vw;
     font-weight: 900;
+    flex-shrink: 0;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     /* Optional text shadow for better visibility */
 }
@@ -893,6 +906,7 @@ form#searchForm {
     /* Text color */
     font-size: 2vw;
     font-weight: 800;
+    flex-shrink: 0;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     /* Optional text shadow for better visibility */
 }
@@ -906,7 +920,8 @@ form#searchForm {
     color: rgb(43, 63, 124);
     font-weight: 800;
     font-size: 1.6vw;
-}
+    flex-shrink: 0;
+    }
 
 form.searchBar#searchForm {
     display: flex;
@@ -1006,8 +1021,10 @@ textarea {
 .profile-header img {
     height: 200px;
     width: 200px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 3%;
+    min-width: 100px;
+    min-height: 100px;
 }
 
 .profile-header {
@@ -1098,14 +1115,7 @@ ul.names {
     font-size: 1.2em;
 }
 
-
-
-
 @media (max-width: 1050px) {
-    #content .home-page {
-        padding-top: 152px;
-    }
-
     .search-container {
         flex-direction: column;
     }
@@ -1115,20 +1125,8 @@ ul.names {
         padding-right: 2em;
     }
 
-    .event-container {
-        padding-left: 0;
-        padding-right: 100px;
-    }
-
-    img.logo {
-        max-height: 5em;
-        margin: 20px;
-        padding-left: 0px;
-    }
-
-    img.small-logo {
-        max-height: 5em;
-        margin: 20px;
+    main>header a.logo,
+    main>header a.small-logo {
         padding-left: 0px;
     }
 
