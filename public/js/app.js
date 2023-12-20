@@ -999,7 +999,7 @@ function openNotificaitons() {
 }
 
 function banAccount() {
-    const banAccountButton = document.querySelector(".fake.button.ban-account");
+    const banAccountButton = document.querySelector(".fake.button.ban-user");
     if (banAccountButton) {
         banAccountButton.addEventListener("click", () => {
             const accountId = banAccountButton.id;
@@ -1008,10 +1008,6 @@ function banAccount() {
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
-                surebox.style.position = "absolute";
-                var position = banAccountButton.getBoundingClientRect();
-                surebox.style.left = (position.left + parseInt(window.scrollX) - 150).toString() + "px";
-                surebox.style.top = (position.top + parseInt(window.scrollY) - 150).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -1019,7 +1015,11 @@ function banAccount() {
                         <a class="surebox button no">No</a>
                     </div>
                 `;
-                banAccountButton.parentElement.appendChild(surebox);
+                const buttonsDiv = banAccountButton.parentElement;
+                buttonsDiv.style.display = "flex";
+                buttonsDiv.style.flexDirection = "row";
+                buttonsDiv.appendChild(surebox);
+                surebox.style.marginLeft = "20px";
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
                     surebox.remove();
