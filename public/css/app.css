@@ -1377,3 +1377,7 @@ footer a:hover {
     color: #0056b3;
     scale: 1.1;
 }
+
+footer a.image:hover {
+    scale: 1;
+}
