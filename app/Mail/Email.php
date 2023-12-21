@@ -22,51 +22,46 @@ class Email extends Mailable
     public function __construct($data)
     {
         $this->data = $data;
-        if($this->data['type'] == 'password-recover'){
+        if ($this->data['type'] == 'password-recover') {
             $this->view = 'partials.mail.recover-password';
             $this->subject = 'Recover your password!';
-        }
-        else if($this->data['type'] == 'leave-event'){
+        } else if ($this->data['type'] == 'leave-event') {
             $this->view = 'partials.mail.leave-event';
             $eventName = $this->data['event'];
             $this->subject = "You left $eventName!";
-        }
-        else if($this->data['type'] == 'join-event'){
+        } else if ($this->data['type'] == 'join-event') {
             $this->view = 'partials.mail.join-event';
             $eventName = $this->data['event'];
             $this->subject = "Welcome to $eventName!";
-        }
-        else if($this->data['type'] == 'invite-event'){
+        } else if ($this->data['type'] == 'invite-event') {
             $this->view = 'partials.mail.invite-event';
             $eventName = $this->data['event'];
             $this->subject = "You have been invited to $eventName!";
-        }
-        else if($this->data['type'] == 'request-to-join-event'){
+        } else if ($this->data['type'] == 'request-to-join-event') {
             $this->view = 'partials.mail.request-to-join-event';
             $eventName = $this->data['event'];
             $this->subject = "You have a request to join $eventName!";
-        }
-        else if($this->data['type'] == 'accept-request-to-join-event'){
+        } else if ($this->data['type'] == 'accept-request-to-join-event') {
             $this->view = 'partials.mail.accept-request-to-join-event';
             $eventName = $this->data['event'];
             $this->subject = "Your request to join $eventName was accepted!";
-        }
-        else if($this->data['type'] == 'deny-request-to-join-event'){
+        } else if ($this->data['type'] == 'deny-request-to-join-event') {
             $this->view = 'partials.mail.deny-request-to-join-event';
             $eventName = $this->data['event'];
             $this->subject = "Your request to join $eventName was denied!";
-        }
-        else if($this->data['type'] == 'event-update'){
+        } else if ($this->data['type'] == 'event-update') {
             $this->view = 'partials.mail.event-update';
-            if(isset($this->data['whatChanged']['old_name'])){
+            if (isset($this->data['whatChanged']['old_name'])) {
                 $eventName = $this->data['whatChanged']['old_name'];
-            }
-            else{
+            } else {
                 $eventName = $this->data['event'];
             }
             $this->subject = "$eventName was updated!";
-        }
-        else if($this->data['type'] == 'cancel-event'){
+        } else if ($this->data['type'] == 'event-remove-participant') {
+            $this->view = 'partials.mail.event-remove-participant';
+            $eventName = $this->data['event'];
+            $this->subject = "You've been removed from $eventName!";
+        } else if ($this->data['type'] == 'cancel-event') {
             $this->view = 'partials.mail.cancel-event';
             $eventName = $this->data['event'];
             $this->subject = "$eventName was cancelled!";
@@ -77,7 +72,7 @@ class Email extends Mailable
      * Get the message envelope.
      */
     public function envelope(): Envelope
-    {   
+    {
         return new Envelope(
             subject: $this->subject
         );

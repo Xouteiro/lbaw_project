@@ -282,7 +282,7 @@ main>header span {
     display: flex;
     flex-direction: column;
     max-width: fit-content;
-    padding-top: 180px;
+    padding-top: 178px;
 }
 
 #content .banned-page {
@@ -1160,7 +1160,7 @@ div.event-page-image{
 
 .background-image .overlay-text h1 {
     position: absolute;
-    top: 5%;
+    top: 10%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
