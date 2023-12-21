@@ -34,6 +34,11 @@
                             @endif
                         </div>
                     @endif
+                    @if(Auth::user()->id === $user->id && $user->admin)
+                        <a href="{{ route('admin.candidates') }}" class="button check-admin-candidates">
+                            Check Admin Candidates
+                        </a>
+                    @endif
                 </div>
                 @endif
         @if (AutH::check() && Auth::user()->id === $user->id)
@@ -41,13 +46,13 @@
                 <a class="button" href="{{ url('/logout') }}"> Logout </a>
                 @if(!$user->admin)
                     @if(!$user->adminCandidate)
-                        <div class="fake button request-admin not-candidate" id="{{$user->id}}">
-                            Request admin permissions
+                        <div class="fake button request-admin" id="{{$user->id}}">
+                            Request Admin Permissions
                         </div>
                     @else
-                    <div class="fake button request-admin candidate" id="{{$user->id}}">
-                        Request admin permissions
-                    </div>
+                        <div class="fake button request-admin sent" id="{{$user->id}}">
+                            Request Admin Permissions Sent
+                        </div>
                     @endif
                 @endif
             </div>

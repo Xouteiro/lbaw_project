@@ -131,36 +131,46 @@ class UserController extends Controller
     public function requestAdmin(string $id)
     {
         $user = User::find($id);
-        $this->authorize('requestAdmin',$user);
+        //$this->authorize('requestAdmin', $user);
         $user->adminCandidate = true;
         $user->save();
+        return response()->json(['message' => 'Admin Permissions Requested'], 200);
+    }
+
+    public function cancelRequestAdmin(string $id)
+    {
+        $user = User::find($id);
+        //$this->authorize('cancelRequestAdmin', $user);
+        $user->adminCandidate = false;
+        $user->save();
+        return response()->json(['message' => 'Admin Permissions Request Canceled'], 200);
     }
 
     public function adminCandidates()
     {
-        #$this->authorize('adminCandidates');
+        //$this->authorize('adminCandidates');
         $users = User::where('adminCandidate', true)->get();
         return view('pages.admin.candidates', ['users' => $users]);
     }
 
     public function acceptAdmin(string $id)
     {
-        #$this->authorize('respondAdminRequest');
+        //$this->authorize('respondAdminRequest');
         $user = User::find($id);
         $user->adminCandidate = false;
         $user->admin = true;
         $user->save();
 
-        return response()->json(['message' => 'New admin accepted'], 200);
+        return response()->json(['message' => 'Request admin permissions has been accepted'], 200);
     }
 
     public function refuseAdmin(string $id)
     {
-        #$this->authorize('respondAdminRequest');
+        //$this->authorize('respondAdminRequest');
         $user = User::find($id);
         $user->adminCandidate = false;
         $user->save();
 
-        return response()->json(['message' => 'New admin refused'], 200);
+        return response()->json(['message' => 'Request admin permissions has been refused'], 200);
     }
 }

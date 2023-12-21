@@ -51,11 +51,13 @@
             @else  
             <header>
                 <a class="small-logo" href={{url('/home')}}><img class="small-logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a> 
-            @endif               
+            @endif          
+            @if(Auth::check() || (!Auth::check() && url()->current() == url('/home')))     
                 <form class="searchBar" id="searchForm" action="{{ route('events.search') }}" method="GET">
                     <input name="search" value="" placeholder="Search event" class="search-event"/>
                     <button type="submit" id="searchButton"></button>
-                </form> 
+                </form>
+            @endif
                 @if (Auth::check())
                     @if(!Auth::user()->admin)
                         <img class="notifications-icon" src="{{url('icons/bell.png')}}" alt="Notifications Image">

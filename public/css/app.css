@@ -257,6 +257,7 @@ main>header a.button {
     margin: 1em;
     justify-self: center;
     margin-right: 60px;
+    margin-left: auto;
 }
 
 main>header span {
@@ -353,7 +354,7 @@ input:not([type]),
 textarea,
 select {
     background-color: transparent;
-    border: 0.1rem solid #d1d1d1;
+    border: 0.1rem solid #00172b;
     border-radius: .4rem;
     box-shadow: none;
     box-sizing: inherit;
@@ -436,6 +437,7 @@ input[type='radio'] {
 .container-events {
     margin: 3em 2em;
     max-width: 112.0rem;
+    width: 100%;
 }
 
 
@@ -510,7 +512,6 @@ div.event-info p.Finished{
 
 div.event-info p.Finished:hover{
     text-decoration-line: none;
-    text-decoration-style: none;
 }
 
 div.event-card p.status{
@@ -631,6 +632,13 @@ input.search-event {
     margin-left: 2em;
 }
 
+div.comments{
+    border-top-color: #00172b;
+  border-top-style: dashed;
+  border-top-width: 1px;
+  padding-top: 30px;
+}
+
 .event-name {
     margin: 1em 0;
 }
@@ -638,7 +646,11 @@ input.search-event {
 .invite-container {
     margin: 1em 0;
     padding-bottom: 1em;
-    border-bottom: 1px solid #eaeaea;
+    padding-top: 30px;
+    border-top-color: #00172b;
+  border-top-style: dashed;
+  border-top-width: 1px;
+  padding-bottom: 30px;
 }
 
 .pending_request_to_join {
@@ -677,6 +689,22 @@ input.search-event {
 div.add-comment {
     padding-bottom: 1em;
     border-bottom: 1px solid #eaeaea;
+    margin-left:40px;
+}
+
+div.add-comment textarea, textarea.edit-comment-textarea {
+    width: 100%;
+    border-color: #00172b;
+    border-radius: 1rem;
+    border-width: 2px;
+    border-style: solid;
+    margin: 1em 0;
+    margin-left: auto;
+    margin-right: 10px;
+    padding: 1em;
+    font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-weight: 300;
+    height: 50%;
 }
 
 div.event-owner-message h3 {
@@ -686,8 +714,17 @@ div.event-owner-message h3 {
 div.event-owner-message p {
     margin-bottom: 2rem;
     font-weight: 600;
+    white-space: nowrap;
 
 }
+
+div.comment-header-title-likes h4{
+    font-size: 2.5rem;
+    margin-bottom: 0;
+    align-self: center;
+}
+
+
 
 .profile-events-title-div {
     display: flex;
@@ -760,24 +797,40 @@ form#searchForm {
 .event-container {
     width: 80%;
     margin: 0 auto;
-    margin-top: 5rem;
-    background-color: #fff;
+    margin-top: 3rem;
     padding: 20px;
-    box-shadow: 0 4px 8px 4px rgba(0, 0, 0, 0.1);
     border-color: #000;
     border-width: 20px;
     margin-bottom: 2rem;
 }
 
+.event-container div.event-header .manage-event{
+    display: flex;
+    flex-direction: row;
+    margin-right: 15px;
+    margin-left: auto;
+}
 .event-container .event-info {
-    border-bottom: 1px solid #eaeaea;
     margin-bottom: 20px;
 }
 
 .event-container .event-header {
     display: flex;
-    align-items: center;
-    align-content: center;
+    margin-bottom: 40px;
+    padding-left: 40px;
+    margin-top: 20px;
+}
+
+div.event-container div.event-header div.location-info{
+    margin-left: auto;
+    align-self: center;
+}
+
+div.event-container div.event-header div.location-info p{
+    height: max-content;
+    margin-bottom: 0;
+    font-size: 1.4em;
+    padding-left: 10px;
 }
 
 .event-container .event-header> :not(:first-child) {
@@ -791,6 +844,149 @@ form#searchForm {
 .event-container .event-name {
     color: rgb(43, 63, 124);
     margin: 0;
+    font-size: 3.2em;
+    width: fit-content;
+    justify-content: left;
+    display: flex;
+    font-weight: 800;
+
+}
+
+div.event-creator{
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    margin-right: 100px;
+    margin-left: 30px;
+    margin-top: 30px;
+    transition: scale 0.5s;
+
+}
+
+div.event-container .event-creator form{
+    width: 80%;
+    display: flex;
+    justify-content: left;
+    margin-bottom: 0;
+}
+
+div.event-container .event-creator button.fake.button{
+    margin-left:40px;
+    margin-right: auto;
+}
+
+div.invite-decision form{
+    margin-left: 50px;
+}
+
+div.event-creator img{
+    height: 60px;
+    width: 60px;
+    object-fit: cover;
+    border-radius: 25%;
+    margin-right: 10px;
+}
+
+div.event-container div.event-info div.event-creator p{
+    align-self: center;
+    margin-bottom: 0;
+    font-size: 1.2em;
+    padding-left: 10px;
+    white-space: nowrap;
+
+}  
+
+div.event-container div.event-creator a{
+    font-weight: 600;
+}
+
+
+div.event-info img.event-page-image{
+    width: 80%;
+    height: 28em;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: 30px;
+}
+
+div.event-container div.event-info p{
+    font-size: 1.2em;
+    padding-left: 90px;
+}
+
+div.event-container h3{
+    padding-left: 40px;
+    font-size: 2em;
+    font-weight: 600;
+    margin-right: 15px;
+}
+
+div.event-container div.event-info .participants p{
+    padding: 0;
+}
+div.event-container div.event-info .participants{
+    margin: 0;
+    padding-left: 90px;
+}
+
+div.event-container div.event-info .participants a{
+    font-size: 1.2em;
+    align-self: center;
+    margin-bottom: 1rem;
+    color:#106aed;
+    padding-left: 0;
+    padding-right: 5px;
+}
+
+div.event-container div.event-info .participants a:hover { 
+    text-decoration: underline;
+    color: #16b8d2;
+}
+
+div.event-container div.event-header p.date{
+    font-weight: 600;
+    font-size: 1.4em;
+    display: flex;
+    justify-content: right;
+    padding-left: 0px;
+    white-space: nowrap;
+}
+
+
+div.comments h5, div.polls p{
+    margin-left: 40px;
+    font-size: 1.1em;
+}
+
+div.polls div button.fake-poll-create-button{
+    margin-left: 40px;
+    margin-bottom: 40px;
+    font-size: 13px;
+    height: 45px;
+
+}
+
+
+div.event-container div.event-header div.full-date{
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+    padding-right: 100px;
+    padding-left: 0;
+    padding-top: 10px;
+    margin-left: auto;
+}
+
+div.invite-container form#invitationForm{
+    margin-left:90px;
+}
+div.invite-container form#invitationForm input{
+    width: 65%;
+}
+
+div.event-page-image{
+    display: flex;
+    justify-content: center;
 }
 
 .event-container .button {
@@ -805,6 +1001,33 @@ form#searchForm {
     border-radius: 4px;
     vertical-align: middle;
     line-height: normal;
+    font-size: 13px;
+    height: 45px;
+}
+
+
+.event-container .button.surebox {
+    height: 35px;
+    font-size: 13px;
+}
+
+
+
+.event-header a.button.no-button, .event-header div.button.no-button, .comment-header div.comment-actions button.no-button, .comment-header div.button.no-button, div.poll-header button.no-button {
+    background-color: unset;
+    color: #00172b;
+    box-shadow: none;
+    font-size: 35px;
+    margin: 0;
+    padding: 0;
+    margin-right: 8px;
+}
+
+.event-container .comment-actions {
+	display: flex;
+	flex-direction: row;
+	justify-content: left;
+	width: 100%;
 }
 
 .event-container button {
@@ -828,6 +1051,7 @@ form#searchForm {
 .event-container .comment-list {
     list-style-type: none;
     padding: 0;
+    margin-left: 90px;
 }
 
 .event-container .comment-list li {
@@ -861,17 +1085,31 @@ form#searchForm {
 .event-container .comment .comment-header .comment-header-title-likes {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    width: 35%;
+    width: 100%;
 }
 
 .event-container .comment .comment-header .likes-dislikes {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: left;
     width: 30%;
-    margin: 0em 2em;
+    margin: 0em 8em;
+    align-self: center;
 }
+
+.event-container .comment .comment-header .likes-dislikes .comment-like, .event-container .comment .comment-header .likes-dislikes .comment-dislike  {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.event-container .comment .comment-header .likes-dislikes .comment-like-number, .event-container .comment .comment-header .likes-dislikes .comment-dislike-number {
+    align-self: center;
+    margin-bottom: 0;
+}
+
+
+
+
 
 .event-container .comment .comment-header .comment-like {
     height: 30px;
@@ -888,6 +1126,7 @@ form#searchForm {
 
 .event-container .comment> :not(:first-child) {
     margin-left: 1.5rem;
+    font-size: 1.8rem;
 }
 
 .background-image {
@@ -973,6 +1212,7 @@ form.searchBar#searchForm {
     margin-left: auto;
     margin-right: auto;
 }
+
 
 
 form.searchBar#searchForm input.search-event {
@@ -1091,6 +1331,54 @@ form#searchForm div.input_field select {
 
 .polls {
     margin: 1em 0;
+    padding-top: 50px;
+    border-top-color: #00172b;
+    border-top-style: dashed;
+    border-top-width: 1px;
+}
+
+.create-poll-buttons{
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+.poll-header h4{
+    font-size: 2.5rem;
+    margin-bottom: 0;
+    align-self: center;
+    margin-left: 40px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.poll-option input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    border: 2px solid #00172b;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+  }
+  
+  /* Style the custom radio */
+  .poll-option input:checked {
+    background-color: #16b8d2;
+    border-color: #00172b;
+  }
+  
+
+ul.poll-options{
+    list-style-type: none;
+    padding-left: 90px;
+    margin: 15px;
+}
+
+div.event-container ul.poll-options p{
+    margin-bottom: 0;
+    font-size: 1.1em;
+    padding-left: 10px;
 }
 
 li.poll-option label {

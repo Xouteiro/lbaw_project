@@ -3,6 +3,9 @@ FROM ubuntu:22.04
 # Install dependencies
 env DEBIAN_FRONTEND=noninteractive
 RUN apt-get update; apt-get install -y --no-install-recommends libpq-dev vim nginx php8.1-fpm php8.1-mbstring php8.1-xml php8.1-pgsql php8.1-curl ca-certificates
+RUN echo "upload_max_filesize=20M" >> /usr/local/etc/php/conf.d/docker-php-ext-upload_max_filesize.ini
+
+
 
 # Copy project code and install project dependencies
 COPY --chown=www-data . /var/www/
