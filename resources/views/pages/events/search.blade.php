@@ -4,10 +4,10 @@
     <div class="search-container">
         <div class="form">
             <form id="searchForm" action="{{ route('events.search') }}" method="GET">
-                <input name="search" value="{{ request('search') }}" placeholder="Search again" class="search-event"/>
+                <input name="search" value="{{ request('search') }}" placeholder="Search again" class="search-event">
                 <div class="input_field">
                     <label for="date">After:</label>
-                    <input type="date" name="date" id="date" value="{{ request('date') }}">
+                    <input id="date" type="date" name="date" id="date" value="{{ request('date') }}">
                 </div>
                 <div class="input_field">
                     <select name="id_location" >
@@ -22,15 +22,15 @@
                 </div>
                 <div class="input_field">
                     <label for="free">Free</label>
-                    <input type="checkbox" name="free"  value="free" {{ request('free') ? 'checked' : '' }}>
+                    <input id="free" type="checkbox" name="free"  value="free" {{ request('free') ? 'checked' : '' }}>
                 </div>
                 <div class="input_field">
                     <label for="finished">Finished</label>
-                    <input type="checkbox" name="finished" value="finished" {{ request('finished') ? 'checked' : '' }}>
+                    <input id="finished" type="checkbox" name="finished" value="finished" {{ request('finished') ? 'checked' : '' }}>
                 </div>
                 <div class="input_field">
                     <label for="opentojoin">Open to join</label>
-                    <input type="checkbox" name="opentojoin" value="opentojoin" {{ request('opentojoin') ? 'checked' : '' }}>
+                    <input id="opentojoin" type="checkbox" name="opentojoin" value="opentojoin" {{ request('opentojoin') ? 'checked' : '' }}>
                 </div>
 
                 <div class="order input_field">
@@ -70,7 +70,9 @@
                 }
             @endphp
             @if(!empty($filters))
-            <h3>{{ ucfirst(implode(', ', $filters)) }} events :</h3>
+                <h3>{{ ucfirst(implode(', ', $filters)) }} events :</h3>
+            @else
+                <h3>Events :</h3>  
             @endif
             <div class="events-container" id="eventsContainer" data-query="{{ http_build_query(request()->query()) }}"> 
             </div>

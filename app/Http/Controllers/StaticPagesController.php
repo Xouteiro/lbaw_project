@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class StaticPagesController extends Controller
@@ -10,6 +11,10 @@ class StaticPagesController extends Controller
     public function home()
     {
         if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return view('pages.banned');
+            }
             $events = Event::where('hide_owner', '=', false)->inRandomOrder()->get()->take(6);
             return view('pages.home', ['events' => $events]);
         } else {

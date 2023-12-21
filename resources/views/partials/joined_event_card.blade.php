@@ -1,4 +1,4 @@
-@if ($event->public || Auth::check())
+@if ($event->public || (Auth::check() && !Auth::user()->blocked))
     <div id="event-{{ $event->id }}" class="event-card">
         <a href="{{ route('event.show', ['id' => $event->id]) }}">
             @if ($event->getOriginal('pivot_highlighted'))
@@ -20,7 +20,7 @@
                     $description = substr($description, 0, 67) . '...';
                 }
                 $eventdate = $event->eventdate;
-                $date = $eventdate[8] . $eventdate[9] . '/' . $eventdate[5] . $eventdate[6] . '/' . $eventdate[0] . $eventdate[1] . $eventdate[2] . $eventdate[3];
+                $date = $eventdate[8] . $eventdate[9] . '-' . $eventdate[5] . $eventdate[6] . '-' . $eventdate[0] . $eventdate[1] . $eventdate[2] . $eventdate[3];
                 $time = $eventdate[11] . $eventdate[12] . 'h' . $eventdate[14] . $eventdate[15];
             @endphp
             <div class="event-info">
@@ -33,7 +33,7 @@
                 @endif
             </div>
         </a>
-        @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->id == request()->route('id') || Auth::user()->admin))
+        @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->id == $event->id_owner || Auth::user()->id == request()->route('id') || Auth::user()->admin))
             <img src="{{ asset('icons/option.png') }}" alt="Manage Icon" class="event-manage">
         @endif
     </div>

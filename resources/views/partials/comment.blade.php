@@ -5,14 +5,14 @@
                 @if(isset($comment->user->username)) 
                     @if($comment->user->id == $event->id_owner)
                         <div class="event-owner-message">
-                            <h3>{{ $comment->user->username }}</h3>
+                            <h4>{{ $comment->user->username }}</h4>
                             <p class="event-owner">Event Owner Message</p>
                         </div>
                     @else
-                    <h3>{{ $comment->user->username }}</h3>
+                    <h4>{{ $comment->user->username }}</h4>
                     @endif
                 @else
-                    <h3>Anonymous</h3>  
+                    <h4>Anonymous</h4>  
                 @endif
                 @if (Auth::check() && (Auth::user()->events->contains($comment->id_event) || Auth::user()->id == $event->id_owner))
                     <div class="likes-dislikes">
@@ -40,13 +40,13 @@
                     </div>
                 @endif
             </div>
-            @if (Auth::check() && (Auth::user()->id === $comment->id_user || Auth::user()->admin))
+            @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->id === $comment->id_user || Auth::user()->admin))
                 <div class="comment-actions">
-                    <button class="fake button edit-comment" id="{{ $comment->id }}">
-                        Edit Comment
+                    <button title="Edit Comment" class="fake button edit-comment no-button" id="{{ $comment->id }}">
+                        &#9998;
                     </button>
-                    <button class="fake button delete-comment" id="{{ $comment->id }}">
-                        Delete Comment
+                    <button title="Remove Comment" class="fake button delete-comment no-button" id="{{ $comment->id }}">
+                        &#128465;
                     </button>
                 </div>
             @endif

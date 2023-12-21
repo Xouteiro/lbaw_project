@@ -13,21 +13,27 @@ use Illuminate\Support\Facades\Mail;
 
 class RequestToJoinController extends Controller
 {
-    public function sendRequestToJoin(Request $request) {
+    public function sendRequestToJoin(Request $request)
+    {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $event = Event::findOrFail($request->id_event);
 
         if (!$event) {
             return response()->json(['error' => 'Event not found'], 404);
         }
 
-        if($event->eventdate < date('Y-m-d H:i:s')){
+        if ($event->eventdate < date('Y-m-d H:i:s')) {
             abort(403, 'This event has already ended!');
         }
 
         if (Auth::check()) {
             $user = User::findOrFail(Auth::user()->id);
-        }
-        else {
+        } else {
             return response()->json(['error' => 'Need to be logged in'], 401);
         }
 
@@ -37,17 +43,17 @@ class RequestToJoinController extends Controller
             abort(404, 'Event owner not found!');
         }
 
-        if($event->owner->id == $user->id) {
+        if ($event->owner->id == $user->id) {
             abort(403, 'Cannot request to join your own event!');
         }
 
         $checkIfUserAlreadyIn = $event->participants()->where('id_user', $user->id)->first();
-        if($checkIfUserAlreadyIn) {
+        if ($checkIfUserAlreadyIn) {
             abort(403, 'You\'re already in this event!');
         }
 
         $checkIfAlreadyExists = Notification::where([['id_user', $userToRequest->id], ['id_event', $event->id]])->first();
-        if($checkIfAlreadyExists) {
+        if ($checkIfAlreadyExists) {
             abort(403, 'You already requested to join this event!');
         }
 
@@ -78,15 +84,29 @@ class RequestToJoinController extends Controller
         return response()->json('Request to join sent successfully!', 200);
     }
 
-    public function cancelRequestToJoin(Request $request) {
+    public function cancelRequestToJoin(Request $request)
+    {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $requestToJoinNotification = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $request->id_event)
-        ->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
+            ->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
         RequestToJoin::findOrFail($requestToJoinNotification->id)->delete();
         Notification::findOrFail($requestToJoinNotification->id)->delete();
         return response()->json('Request to join cancelled successfully!', 200);
     }
 
-    public function acceptRequestToJoin(Request $request) {
+    public function acceptRequestToJoin(Request $request)
+    {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $requestToJoinNotification = Notification::findOrFail($request->id_requestToJoin);
         $event = $requestToJoinNotification->event;
         $requestToJoin = RequestToJoin::findOrFail($requestToJoinNotification->id);
@@ -109,7 +129,14 @@ class RequestToJoinController extends Controller
         return response()->json('You have successfully accepted the request to join!', 200);
     }
 
-    public function denyRequestToJoin(Request $request){
+    public function denyRequestToJoin(Request $request)
+    {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $requestToJoinNotification = Notification::findOrFail($request->id_requestToJoin);
         $requestToJoin = RequestToJoin::findOrFail($requestToJoinNotification->id);
         $event = $requestToJoinNotification->event;

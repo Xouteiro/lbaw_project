@@ -1,4 +1,4 @@
-@if (($event->public || Auth::check()) && !$event->hide_owner) 
+@if (($event->public || (Auth::check() && !Auth::user()->blocked)) && !$event->hide_owner) 
     <div id="event-{{ $event->id }}" class="event-card">
         <a href="{{ route('event.show', ['id' => $event->id]) }}">
             
@@ -14,7 +14,7 @@
                     $description = substr($description, 0, 67) . '...';
                 }
                 $eventdate = $event->eventdate;
-                $date = $eventdate[8] . $eventdate[9] . '/' . $eventdate[5] . $eventdate[6] . '/' . $eventdate[0] . $eventdate[1] . $eventdate[2] . $eventdate[3];
+                $date = $eventdate[8] . $eventdate[9] . '-' . $eventdate[5] . $eventdate[6] . '-' . $eventdate[0] . $eventdate[1] . $eventdate[2] . $eventdate[3];
                 $time = $eventdate[11] . $eventdate[12] . 'h' . $eventdate[14] . $eventdate[15];
             @endphp
             <div class="event-info">

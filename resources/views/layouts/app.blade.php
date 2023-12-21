@@ -51,11 +51,13 @@
             @else  
             <header>
                 <a class="small-logo" href={{url('/home')}}><img class="small-logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a> 
-            @endif               
-                <form class="searchBar" id="searchForm" action="{{ route('events.search') }}" method="GET">
-                    <input name="search" value="" placeholder="Search event" class="search-event"/>
-                    <button type="submit" id="searchButton"></button>
-                </form> 
+            @endif          
+            @if(Auth::check() || (!Auth::check() && url()->current() == url('/home')))     
+                <form class="searchBar" id="searchFormBar" action="{{ route('events.search') }}" method="GET">
+                    <input name="search" value="" placeholder="Search event" class="search-event">
+                    <button type="submit" id="searchButtonBar"></button>
+                </form>
+            @endif
                 @if (Auth::check())
                     @if(!Auth::user()->admin)
                         <img class="notifications-icon" src="{{url('icons/bell.png')}}" alt="Notifications Image">
@@ -98,7 +100,7 @@
                         </div>
                     @endif
                     <a class="user" href="{{ url('/user/' . Auth::user()->id) }}"><span>{{ Auth::user()->name }}</span></a>
-                    <a href="{{ url('/user/' . Auth::user()->id) }}"><img class="user" src="{{ Auth::user()->getProfileImage() }}"></a>
+                    <a href="{{ url('/user/' . Auth::user()->id) }}"><img class="user" src="{{ Auth::user()->getProfileImage() }}" alt="User profile picture"></a>
                 @elseif (request()->path() !== 'login')
                     <a class="button user" href="{{ url('/login') }}"> Login </a> 
                 @endif

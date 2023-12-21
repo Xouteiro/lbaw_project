@@ -33,7 +33,7 @@ function loadMoreEvents() {
                 const response = JSON.parse(xhr.responseText);
                 const events = response.events.data;
 
-                const eventsContainer = document.getElementById('eventsContainer');
+                const eventsContainer = document.getElementById('eventsContainer'); 
                 if (eventsContainer) {
                     events.forEach(event => {
                         const eventCard = document.createElement('div');
@@ -307,9 +307,9 @@ function removeParticipant() {
                     const participantsDiv = participant_card.parentElement;
                     participant_card.remove();
                     if (participantsDiv.childElementCount == 1 && participantsDiv.firstElementChild.id == 'owner') {
-                        const noRequestsToJoin = document.createElement("h4");
-                        noRequestsToJoin.textContent = "No participants yet";
-                        participantsDiv.appendChild(noRequestsToJoin);
+                        const noParticipants = document.createElement("h4");
+                        noParticipants.textContent = "No participants yet";
+                        participantsDiv.appendChild(noParticipants);
                     }
                     sendAjaxRequest('POST', `/event/${eventId}/participants/${participantId}/remove`, null, function () {});
                 });
@@ -369,10 +369,10 @@ function deleteEvent() {
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
                 var positions = deleteEventButton.getBoundingClientRect();
-                surebox.style.left = (positions.left + parseInt(window.scrollX) - 10).toString() + "px";
-                surebox.style.top = (positions.top + parseInt(window.scrollY) + 50).toString() + "px";
+                surebox.style.left = (positions.left + parseInt(window.scrollX)-80).toString() + "px";
+                surebox.style.top = (positions.top + parseInt(window.scrollY)+60).toString() + "px";
                 surebox.innerHTML = `
-                    <p>Are you sure ?</p>
+                    <p style="padding-left:5px">Are you sure ?</p>
                     <div class="surebox-buttons">
                         <a class="surebox button yes">Yes</a>
                         <a class="surebox button no">No</a>
@@ -424,14 +424,14 @@ function postComment(){
                     isUser = true;
                     smallElement = `
                     <div class="event-owner-message">
-                        <h3>${jsonData.username}</h3>
+                        <h4>${jsonData.username}</h3>
                         <p class="event-owner">Event Owner Message</p>
                     </div>
                     `;
                 }
                 else {
                     smallElement = `
-                    <h3>${jsonData.username}</h3>
+                    <h4>${jsonData.username}</h3>
                     `;
                 }
                 const commentElement = `
@@ -447,11 +447,11 @@ function postComment(){
                             </div>
                         </div>
                         <div class="comment-actions">
-                            <button class="fake button edit-comment" id="${jsonData.id}">
-                                Edit Comment
+                            <button class="fake button edit-comment no-button" id="${jsonData.id}">
+                            &#9998;
                             </button>
-                            <button class="fake button delete-comment" id="${jsonData.id}">
-                                Delete Comment
+                            <button class="fake button delete-comment no-button" id="${jsonData.id}">
+                            &#128465;
                             </button>
                         </div>
                     </div>
@@ -499,8 +499,8 @@ function deleteComment() {
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
                 var buttonPositions = deleteCommentButton.getBoundingClientRect();
-                surebox.style.left = (buttonPositions.left + parseInt(window.scrollX)).toString() + "px";
-                surebox.style.top = (buttonPositions.top + parseInt(window.scrollY) - 100).toString() + "px";
+                surebox.style.left = (buttonPositions.left + parseInt(window.scrollX) + 100).toString() + "px";
+                surebox.style.top = (buttonPositions.top + parseInt(window.scrollY) ).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -945,7 +945,7 @@ function createPoll() {
                     poll.innerHTML = `
                         <div class="poll-header">
                         <h3>${title}</h3>
-                        <button type="button" class="fake-poll-delete-button">&#10060;</button>
+                        <button type="button" class="fake-poll-delete-button no-button">&#128465;</button>
                         </div>
                         <ul class="poll-options">
                         </ul>
@@ -1042,7 +1042,7 @@ function deletePoll() {
         deletePollButton.addEventListener("click", () => {
             const poll = deletePollButton.parentElement.parentElement;
             const eventId = document.querySelector(".event_id_holder").id;
-            const title = deletePollButton.parentElement.querySelector("h3").textContent;
+            const title = deletePollButton.parentElement.querySelector("h4").textContent;
             poll.remove();
             sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
         });
@@ -1066,7 +1066,7 @@ function answerPoll() {
             pollOptionInput.addEventListener("click", (event) => {
                 event.stopPropagation();
                 const eventId = document.querySelector(".event_id_holder").id;
-                const title = poll.querySelector("h3").textContent;
+                const title = poll.querySelector("h4").textContent;
                 const option = pollOptionInput.parentElement.querySelector("p").textContent.substring(0, pollOptionInput.parentElement.querySelector("p").textContent.indexOf(" - "));
                 let votes = parseInt(pollOptionInput.parentElement.querySelector("p").textContent.split(" - ")[1]);
                 const beforeOption = checkedBefore ? checkedBefore.parentElement.querySelector("p").textContent.substring(0, checkedBefore.parentElement.querySelector("p").textContent.indexOf(" - ")) : null;
@@ -1123,11 +1123,13 @@ function closeNotifications() {
 
 function moveNotifications() {
     const notificationsIconDiv = document.querySelector(".notifications-icon");
-    const notifications = document.querySelector(".user-notifications-container");
-    if (notifications && notificationsIconDiv && notifications.style.display == "block") {
-        const position = notificationsIconDiv.getBoundingClientRect();
-        notifications.style.left = (position.left - 150).toString() + "px";
-        notifications.style.top = (position.top + 80).toString() + "px";
+    if(notificationsIconDiv){
+        const notifications = document.querySelector(".user-notifications-container");
+        if (notifications && notificationsIconDiv && notifications.style.display == "block") {
+            const position = notificationsIconDiv.getBoundingClientRect();
+            notifications.style.left = (position.left - 150).toString() + "px";
+            notifications.style.top = (position.top + 80).toString() + "px";
+        }
     }
 }
 
@@ -1151,6 +1153,59 @@ function openNotificaitons() {
     closeNotifications();
 }
 
+function banAccount() {
+    const banAccountButton = document.querySelector(".fake.button.ban-user");
+    const profileHeader = document.querySelector(".profile-header");
+    if (banAccountButton) {
+        banAccountButton.addEventListener("click", () => {
+            const accountId = banAccountButton.id;
+            const sureboxExists = banAccountButton.parentElement.querySelector(".surebox");
+
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                var position = banAccountButton.getBoundingClientRect();
+                surebox.style.left = (position.left + parseInt(window.scrollX) + 150).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) - 10).toString() + "px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+
+                banAccountButton.parentElement.appendChild(surebox);
+
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    if(banAccountButton.classList.contains("banned")){
+                        banAccountButton.classList.remove("banned");
+                        banAccountButton.textContent = "Ban User";
+                        profileHeader.querySelector(".banned-user").remove();
+                    }
+                    else {
+                        banAccountButton.classList.add("banned");
+                        banAccountButton.textContent = "Unban User";
+                        const bannedUserText = document.createElement("h3");
+                        bannedUserText.textContent = "Banned User";
+                        bannedUserText.classList.add("banned-user");
+                        profileHeader.appendChild(bannedUserText);
+                    }
+                    sendAjaxRequest('PUT', `/user/${accountId}/ban`, null, function () {});
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
 
 function createLocation()
 {
@@ -1277,21 +1332,160 @@ function deleteLocation(){
 
 function moveSureboxDeleteAccount() {
     const deleteAccountButton = document.querySelector(".fake.button.delete-account");
-    const surebox = document.querySelector(".surebox");
-    if(surebox){
-        var position = deleteAccountButton.getBoundingClientRect();
-        surebox.style.left = (position.left + parseInt(window.scrollX) + 200).toString() + "px";
-        surebox.style.top = (position.top + parseInt(window.scrollY) - 20).toString() + "px";
+    if(deleteAccountButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = deleteAccountButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 200).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) - 20).toString() + "px";
+        }
     }
 }
 
 function moveSureboxDeleteEvent() {
     const deleteEventButton = document.querySelector(".fake.button.delete-event");
-    const surebox = document.querySelector(".surebox");
-    if(surebox){
-        var position = deleteEventButton.getBoundingClientRect();
-        surebox.style.left = (position.left + parseInt(window.scrollX) - 10).toString() + "px";
-        surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+    if(deleteEventButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = deleteEventButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) - 80).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) + 60).toString() + "px";
+        }
+    }
+}
+
+function moveSureBoxDeleteComment() {
+    const deleteCommentButton = document.querySelector(".fake.button.delete-comment");
+    if(deleteCommentButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = deleteCommentButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 100).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) ).toString() + "px";
+        }
+    }
+}
+
+function moveSureBoxRequestAdmin() {
+    const requestAdminButton = document.querySelector(".request-admin");
+    if(requestAdminButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = requestAdminButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 320).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) - 10).toString() + "px";
+        }
+    }
+}
+
+function moveSureBoxAnswerAdminRequest() {
+    const answerRequestButton = document.querySelector(".answer-request-admin");
+    if(answerRequestButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = answerRequestButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 5).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+        }
+    }
+}
+
+function respondAdminRequest() {
+    const answerRequestButton = document.querySelector(".answer-request-admin");
+    if(answerRequestButton){
+        answerRequestButton.addEventListener("click", () => {
+            const userId = answerRequestButton.id;
+            const user_card = answerRequestButton.parentElement;
+            const sureboxExists = user_card.querySelector(".surebox");
+
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                var position = answerRequestButton.getBoundingClientRect();
+                surebox.style.left = (position.left + parseInt(window.scrollX) + 5).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+                surebox.innerHTML = `
+                    <p>Make this user Admin ?</p>
+                    <div class="surebox-buttons">
+                        <button type="button" class="surebox button yes">Yes</button>
+                        <button type="button" class="surebox button no">No</button>
+                    </div>
+                `;
+                answerRequestButton.parentElement.appendChild(surebox);
+
+                const noCandidates = document.createElement("h4");
+                noCandidates.textContent = "No candidates yet";
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    const requestsDiv = answerRequestButton.parentElement.parentElement;
+                    surebox.remove();
+                    answerRequestButton.parentElement.remove();
+                    if (requestsDiv.childElementCount == 0) {
+                        requestsDiv.appendChild(noCandidates);
+                    }
+                    sendAjaxRequest('PUT', `/adminCandidates/${userId}/refuse`, null, function () { });
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    const requestsDiv = answerRequestButton.parentElement.parentElement;
+                    surebox.remove();
+                    answerRequestButton.parentElement.remove();
+                    if (requestsDiv.childElementCount == 0) {
+                        requestsDiv.appendChild(noCandidates);
+                    }
+                    sendAjaxRequest('PUT', `/adminCandidates/${userId}/accept`, null, function () { });
+                });
+            }
+            closeSureOptions();
+        })
+    }
+}
+
+function requestAdmin() {
+    const requestAdminButton = document.querySelector(".request-admin");
+    if(requestAdminButton){
+        requestAdminButton.addEventListener("click", () => {
+            const userId = requestAdminButton.id;
+            if(requestAdminButton.classList.contains("sent")){
+                const sureboxExists = document.querySelector(".surebox");
+
+                if (!sureboxExists) {
+                    const surebox = document.createElement("div");
+                    surebox.classList.add("surebox");
+                    surebox.style.position = "absolute";
+                    var position = requestAdminButton.getBoundingClientRect();
+                    surebox.style.left = (position.left + parseInt(window.scrollX) + 320).toString() + "px";
+                    surebox.style.top = (position.top + parseInt(window.scrollY) - 10).toString() + "px";
+                    surebox.innerHTML = `
+                        <p>Cancel request admin ?</p>
+                        <div class="surebox-buttons">
+                            <button type="button" class="surebox button yes">Yes</button>
+                            <button type="button" class="surebox button no">No</button>
+                        </div>
+                    `;
+                    requestAdminButton.parentElement.appendChild(surebox);
+                    const noButton = surebox.querySelector(".surebox.button.no");
+                    noButton.addEventListener("click", () => {
+                        surebox.remove();
+                    });
+        
+                    const yesButton = surebox.querySelector(".surebox.button.yes");
+                    yesButton.addEventListener("click", () => {
+                        surebox.remove();
+                        requestAdminButton.classList.remove("sent");
+                        requestAdminButton.textContent = "Request Admin Permissions";
+                        sendAjaxRequest('PUT', `/user/${userId}/cancel-request-admin`, null, function () {});
+                    });
+                }
+                closeSureOptions();
+                return;
+            }
+            requestAdminButton.classList.add("sent");
+            requestAdminButton.textContent = "Request Admin Permissions Sent";
+            sendAjaxRequest('PUT', `/user/${userId}/request-admin`, null, function () { });
+        });
     }
 }
 
@@ -1312,15 +1506,21 @@ createPoll();
 deletePoll();
 answerPoll();
 openNotificaitons();
+banAccount();
 createLocation();
 deleteLocation();
 editEvent();
+respondAdminRequest();
+requestAdmin();
 postComment()
 
 function moves(){
     moveNotifications();
     moveSureboxDeleteAccount();
     moveSureboxDeleteEvent();
+    moveSureBoxDeleteComment();
+    moveSureBoxRequestAdmin();
+    moveSureBoxAnswerAdminRequest();
 }
 
 window.onresize = moves;

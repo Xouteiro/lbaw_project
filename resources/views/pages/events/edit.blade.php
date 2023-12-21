@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <h1 style="text-align: center">Edit Event</h1>
-            <div class="profile-picture">
+            <div class="event-picture">
                 <img src="{{ $event->getEventImage($event->id) }}">
                 <div class="profile-picture-buttons">
                     <form method="POST" action="{{ route('file.upload') }}" enctype="multipart/form-data">

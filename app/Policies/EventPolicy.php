@@ -26,7 +26,7 @@ class EventPolicy
     public function update(User $user, Event $event): bool
     {
         if (Auth::check()) {
-            if ($event->id_owner == $user->id || $user->admin) return true;
+            if (($event->id_owner == $user->id && !$user->blocked) || $user->admin) return true;
         }
         return false;
     }
@@ -34,7 +34,7 @@ class EventPolicy
     public function edit(User $user, Event $event): bool
     {
         if (Auth::check()) {
-            if ($event->id_owner == $user->id || $user->admin) return true;
+            if (($event->id_owner == $user->id && !$user->blocked) || $user->admin) return true;
         }
         return false;
     }
@@ -47,7 +47,7 @@ class EventPolicy
             if ($participant->id == $user->id) return true;
         }
         if (Auth::check()) {
-            if ($event->id_owner == $user->id || $user->admin) return true;
+            if (($event->id_owner == $user->id && !$user->blocked) || $user->admin) return true;
         }
         return false;
     }
@@ -55,7 +55,7 @@ class EventPolicy
     public function removeparticipant(User $user, Event $event): bool
     {
         if (Auth::check()) {
-            if ($event->id_owner == $user->id || $user->admin) return true;
+            if (($event->id_owner == $user->id && !$user->blocked) || $user->admin) return true;
         }
         return false;
     }
@@ -63,7 +63,7 @@ class EventPolicy
 
     public function delete(User $user, Event $event): bool
     {
-        if ($event->id_owner == $user->id || $user->admin) return true;
+        if (($event->id_owner == $user->id && !$user->blocked) || $user->admin) return true;
         return false;
     }
 
@@ -74,7 +74,7 @@ class EventPolicy
                 'invite.id_eventnotification', '=', 'event_notification.id')
                 ->get();
 
-        if ($event->public && $event->opentojoin) return true;
+        if ($event->public && $event->opentojoin && !$user->blocked) return true;
         else if ($user->admin) return false;
         else{
             if ($event->id_owner == $user->id) return true;

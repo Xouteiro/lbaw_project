@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Mail\Email;
 use Illuminate\Http\Request;
-
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -53,11 +52,23 @@ class LoginController extends Controller
 
     public function showForgetPassword()
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         return view('auth.forget-password');
     }
 
     public function sendEmail(Request $request)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $request->validate([
             'email' => 'required|email',
         ]);
@@ -93,22 +104,28 @@ class LoginController extends Controller
 
         Mail::to($user->email, $user->name)->send(new Email($data));
 
-        // Mail::send('partials.mail', $data, function ($message) use ($user) {
-        //     $message->subject('Recover your password!');
-        //     $message->from('invents@gmail.com', 'Invents Staff');
-        //     $message->to($user->email, $user->name);
-        // });
-
         return back()->with('success', "We have sent you an email with a link to reset your password.");
     }
 
     public function showPasswordRecover()
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         return view('auth.password-recover', ['token' => request()->route('token')]);
     }
 
     public function recoverPassword(Request $request)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $request->validate(
             [
                 'token' => 'required',

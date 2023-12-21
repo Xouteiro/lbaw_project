@@ -29,7 +29,7 @@
             @endforeach
             @endif
         </div>
-        @if (Auth::check() && Auth::user()->id == $event->id_owner && !Auth::user()->admin)
+        @if (Auth::check() && Auth::user()->id == $event->id_owner && !Auth::user()->admin && !Auth::user()->blocked)
                 <div class="invite-container">
                     <h3>Invite a user to this event</h3>
                     
