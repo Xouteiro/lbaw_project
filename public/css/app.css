@@ -674,7 +674,7 @@ input.search-event {
     padding: 0;
 }
 
-form.add-comment {
+div.add-comment {
     padding-bottom: 1em;
     border-bottom: 1px solid #eaeaea;
 }
@@ -1087,6 +1087,10 @@ form#searchForm div.input_field select {
 
 .participants a {
     padding-left: 10px;
+}
+
+.polls {
+    margin: 1em 0;
 }
 
 li.poll-option label {

@@ -178,19 +178,13 @@
         @endif
         </div>
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
-            <form class="general add-comment" action="{{ route('comment.store') }}" method="POST">
-                @csrf
+            <div class="general add-comment">
                 <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
                 <input type="hidden" name="id_event" value="{{ $event->id }}">
                 <label for="comment">Comment</label>
-                @if ($errors->has('comment'))
-                    <span class="error">
-                        {{ $errors->first('comment') }}
-                    </span>
-                @endif
                 <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
-                <button type="submit">Comment</button>
-            </form>
+                <button class="add-comment button" type="button">Comment</button>
+            </div>
         @endif
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div class="polls">

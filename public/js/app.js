@@ -396,6 +396,96 @@ function deleteEvent() {
     closeSureOptions()
 }
 
+function postComment(){
+    const commentButton = document.querySelector("button.add-comment");
+    if(commentButton){
+        commentButton.addEventListener("click", () => {
+            const inputs = commentButton.parentElement.querySelectorAll("input");
+            const commentTextArea = commentButton.parentElement.querySelector("textarea");
+            const comment = commentTextArea.value;
+            commentTextArea.value = "";
+
+            if(comment.length > 500){
+                const errorMessage = document.createElement('span');
+                errorMessage.textContent = 'Comment can not be that size.';
+                errorMessage.classList.add("error");
+                commentButton.parentElement.insertBefore(errorMessage, commentButton);
+                return;
+            }
+
+            sendAjaxRequest('POST', `/comment`, { comment: comment, id_user: inputs[0].value, id_event: inputs[1].value }, function (data) {
+                const jsonData = JSON.parse(data.target.response)
+                const comments = document.querySelector(".comments");
+
+                let smallElement;
+                let isUser = false;
+
+                if(jsonData.id_user == jsonData.owner){
+                    isUser = true;
+                    smallElement = `
+                    <div class="event-owner-message">
+                        <h3>${jsonData.username}</h3>
+                        <p class="event-owner">Event Owner Message</p>
+                    </div>
+                    `;
+                }
+                else {
+                    smallElement = `
+                    <h3>${jsonData.username}</h3>
+                    `;
+                }
+                const commentElement = `
+                <div id="${jsonData.id}" class="comment">
+                    <div class="comment-header">
+                        <div class="comment-header-title-likes">
+                            ${smallElement}
+                            <div class="likes-dislikes">
+                                <p class="comment-like-number">0</p>
+                                <img id="${jsonData.id_user}" class="comment-like" src="/icons/like.png" alt="like">
+                                <p class="comment-dislike-number">0</p>
+                                <img id="${jsonData.id_user}" class="comment-dislike" src="/icons/like.png" alt="dislike">
+                            </div>
+                        </div>
+                        <div class="comment-actions">
+                            <button class="fake button edit-comment" id="${jsonData.id}">
+                                Edit Comment
+                            </button>
+                            <button class="fake button delete-comment" id="${jsonData.id}">
+                                Delete Comment
+                            </button>
+                        </div>
+                    </div>
+                    <p class="comment-text">${jsonData.text}</p>
+                    <p class="comment-date">${jsonData.date}</p>
+                </div>
+                `;
+
+                if(comments.querySelector("h4")){
+                    comments.querySelector("h4").remove();
+                    const commentList = document.createElement("ul");
+                    commentList.classList.add("comments-list");
+                    const commentLi = document.createElement("li");
+                    commentLi.innerHTML = commentElement;
+                    commentList.appendChild(commentLi);
+                    comments.appendChild(commentList);
+                }
+                else {
+                    const commentLi = document.createElement("li");
+                    commentLi.innerHTML = commentElement;
+                    if(isUser){
+                        comments.querySelector("ul").prepend(commentLi);
+                    }
+                    else {
+                        comments.querySelector("ul").appendChild(commentLi);
+                    }
+                }
+                likeComment();
+                dislikeComment();
+            });
+        });
+    }
+}
+
 function deleteComment() {
     const deleteCommentButtons = document.querySelectorAll(".fake.button.delete-comment");
     deleteCommentButtons.forEach((deleteCommentButton) => {
@@ -426,11 +516,15 @@ function deleteComment() {
                 yesButton.addEventListener("click", () => {
                     const comments = document.querySelector(".comments");
                     surebox.remove();
-                    deleteCommentButton.parentElement.parentElement.parentElement.parentElement.parentElement.remove();
-                    if (comments.childElementCount == 1) {
-                        const noRequestsToJoin = document.createElement("h4");
-                        noRequestsToJoin.textContent = "No comments yet";
-                        comments.appendChild(noRequestsToJoin);
+                    const ul = comments.querySelector(".comment-list");
+                    if(ul.childElementCount == 1){
+                        ul.remove();
+                        const noComments = document.createElement("h4");
+                        noComments.textContent = "No comments yet";
+                        comments.appendChild(noComments);
+                    }
+                    else {
+                        deleteCommentButton.parentElement.parentElement.parentElement.parentElement.remove();
                     }
                     sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () { });
                 });
@@ -1219,6 +1313,7 @@ openNotificaitons();
 createLocation();
 deleteLocation();
 editEvent();
+postComment()
 
 function moves(){
     moveNotifications();
