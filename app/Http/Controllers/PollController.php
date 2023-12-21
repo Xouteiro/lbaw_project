@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Poll;
-use App\Models\Event;
 use App\Models\User;
 use App\Models\Option;
 use Illuminate\Http\Request;
@@ -11,10 +10,14 @@ use Illuminate\Support\Facades\Auth;
 
 class PollController extends Controller
 {
-
     public function store(Request $request)
     {
-
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $options = json_decode($request->input('options'));
         $request->validate([
             'title' => 'required|string|max:255',
@@ -54,11 +57,14 @@ class PollController extends Controller
         return response()->json(['message' => 'Poll creation successful'], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function delete(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $pollid = Poll::where('title', $request->input('title'))->where('id_event', $request->input('eventId'))->first()->id;
         $poll = Poll::findOrFail($pollid);
         $poll->options()->delete();
@@ -68,6 +74,12 @@ class PollController extends Controller
 
     public function vote(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
         $option = $request->input('option');
@@ -77,9 +89,14 @@ class PollController extends Controller
         return response()->json(['message' => 'Vote successful'], 200);
     }
 
-
     public function unvote(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $userId = Auth::user()->id;
         $user = User::findOrFail($userId);
         $option = $request->input('option');

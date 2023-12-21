@@ -4,15 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Location;
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LocationController extends Controller
 {
-
-
     public function store(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $name = $request->input('name');
         $address = $request->input('address');
 
@@ -27,13 +32,14 @@ class LocationController extends Controller
         return response()->json(['id' => $locationID ,'message' => 'Location created successfully'], 200);
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function delete(Request $request)
     {
-
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $locationID = $request->input('id_location');
         
         if($locationID == 79){

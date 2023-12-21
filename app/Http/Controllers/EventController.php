@@ -15,12 +15,24 @@ use Carbon\Carbon;
 class EventController extends Controller
 {
     public function index()
-    {        
+    {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         return view('pages.events.search');
     }
 
     public function indexAjax(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $datefilter = $request->has('date') ? $request->get('date') : null;
         $locationfilter = $request->has('id_location') ? $request->get('id_location') : null;
         $freefilter = $request->has('free') ? $request->get('free') : null;
@@ -110,6 +122,12 @@ class EventController extends Controller
 
     public function create()
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         if (!Auth::check()) {
             return redirect()->route('login');
         }
@@ -121,6 +139,13 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         $id = Auth::user()->id;
         User::findOrFail($id);
         $request->validate([
@@ -160,6 +185,13 @@ class EventController extends Controller
 
     public function show(Request $request, string $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         $event = Event::findOrFail($id);
 
         if ($request->id_invite) {
@@ -189,6 +221,13 @@ class EventController extends Controller
 
     public function edit(string $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         $event = Event::findOrFail($id);
         $this->authorize('edit', $event);
         return view('pages.events.edit', ['event' => $event]);
@@ -196,6 +235,13 @@ class EventController extends Controller
 
     public function update(Request $request, $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         $event = Event::find($id);
         $request->validate([
             'name' => 'required|max:100',
@@ -268,6 +314,13 @@ class EventController extends Controller
 
     public function participants(string $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         $event = Event::findOrFail($id);
         $this->authorize('participants', $event);
         return view('pages.events.participants', ['event' => $event]);
@@ -275,6 +328,13 @@ class EventController extends Controller
 
     public function removeparticipant(string $id, string $id_participant)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         $event = Event::findOrFail($id);
         $this->authorize('removeparticipant', $event);
         $event->participants()->detach($id_participant);
@@ -283,6 +343,13 @@ class EventController extends Controller
 
     public function delete(string $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         $event = Event::find($id);
         $this->authorize('delete', $event);
         $users = $event->participants()->get();
@@ -313,12 +380,26 @@ class EventController extends Controller
 
     public function eventsSearch(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         return view('pages.events.search', [$request]);
     }
 
 
     public function joinEvent(string $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         if(Auth::user()->is_admin){
             return redirect()->route('home');
         }
@@ -347,6 +428,13 @@ class EventController extends Controller
 
     public function leaveEvent(string $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
+
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id);
 
