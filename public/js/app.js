@@ -1293,6 +1293,49 @@ function moveSureboxDeleteEvent() {
     }
 }
 
+function removeParticipant() {
+    const fakebuttons = document.querySelectorAll(".fake.button.accept");
+    fakebuttons.forEach((fakebutton) => {
+        fakebutton.addEventListener("click", () => {
+            const userId = fakebutton.id;
+            const user_card = fakebutton.parentElement;
+            const sureboxExists = user_card.querySelector(".surebox");
+
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.marginLeft = "20px";
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <button type="button" class="surebox button yes">Yes</button>
+                        <button type="button" class="surebox button no">No</button>
+                    </div>
+                `;
+                fakebutton.parentElement.appendChild(surebox);
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    const usersDiv = user_card.parentElement;
+                    user_card.remove();
+                    if (usersDiv.childElementCount == 0) {
+                        const noCandidates = document.createElement("h4");
+                        noCandidates.textContent = "No candidates yet";
+                        usersDiv.appendChild(noCandidates);
+                    }
+                    sendAjaxRequest('PUT', `/adminCandidates/${userId}/accept`, null, function () { });
+                });
+            }
+        })
+    });
+    closeSureOptions()
+}
+
 addEventListeners();
 openOptions();
 closeOptions();

@@ -118,4 +118,10 @@ class UserController extends Controller
         return response()->json(['message' => 'Update successful'], 200);
     }
     
+    public function adminCandidates()
+    {
+        $this->authorize('adminCandidates');
+        $users = User::where('adminCandidate', true); //TODO ON DB
+        return view('pages.admin.acceptUser', ['users' => $users]);
+    }
 }
