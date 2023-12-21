@@ -1359,6 +1359,18 @@ function moveSureBoxDeleteComment() {
     }
 }
 
+function moveSureBoxRequestAdmin() {
+    const requestAdminButton = document.querySelector(".request-admin");
+    if(requestAdminButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = requestAdminButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 320).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) - 10).toString() + "px";
+        }
+    }
+}
+
 function respondAdminRequest() {
     const fakebuttons = document.querySelectorAll(".fake.button.accept");
     fakebuttons.forEach((fakebutton) => {
@@ -1408,18 +1420,50 @@ function respondAdminRequest() {
 }
 
 function requestAdmin() {
-    const fakebuttons = document.querySelectorAll(".fake.button.request-admin.not-candidate");
-    fakebuttons.forEach((fakebutton) => {
-        fakebutton.addEventListener("click", () => {
-            const userId = fakebutton.id;
-            console.log("Requested");
-            fakebutton.classList.remove("not-candidate");
-            fakebutton.classList.add("candidate");
+    const requestAdminButton = document.querySelector(".request-admin");
+    if(requestAdminButton){
+        requestAdminButton.addEventListener("click", () => {
+            const userId = requestAdminButton.id;
+            if(requestAdminButton.classList.contains("sent")){
+                const sureboxExists = document.querySelector(".surebox");
 
-            sendAjaxRequest('PUT', `/user/${userId}/requestAdmin`, null, function () { });
-        })
-    });
-    closeSureOptions()
+                if (!sureboxExists) {
+                    const surebox = document.createElement("div");
+                    surebox.classList.add("surebox");
+                    surebox.style.position = "absolute";
+                    var position = requestAdminButton.getBoundingClientRect();
+                    surebox.style.left = (position.left + parseInt(window.scrollX) + 320).toString() + "px";
+                    surebox.style.top = (position.top + parseInt(window.scrollY) - 10).toString() + "px";
+                    surebox.innerHTML = `
+                        <p>Cancel request admin ?</p>
+                        <div class="surebox-buttons">
+                            <button type="button" class="surebox button yes">Yes</button>
+                            <button type="button" class="surebox button no">No</button>
+                        </div>
+                    `;
+                    requestAdminButton.parentElement.appendChild(surebox);
+                    const noButton = surebox.querySelector(".surebox.button.no");
+                    noButton.addEventListener("click", () => {
+                        surebox.remove();
+                    });
+        
+                    const yesButton = surebox.querySelector(".surebox.button.yes");
+                    yesButton.addEventListener("click", () => {
+                        surebox.remove();
+                        requestAdminButton.classList.remove("sent");
+                        requestAdminButton.textContent = "Request Admin Permissions";
+                        sendAjaxRequest('PUT', `/user/${userId}/cancel-request-admin`, null, function () {});
+                    });
+                }
+                closeSureOptions();
+                return;
+            }
+            requestAdminButton.classList.add("sent");
+            requestAdminButton.textContent = "Request Admin Permissions Sent";
+            sendAjaxRequest('PUT', `/user/${userId}/request-admin`, null, function () { });
+        });
+    }
+    closeSureOptions();
 }
 
 addEventListeners();
@@ -1452,6 +1496,7 @@ function moves(){
     moveSureboxDeleteAccount();
     moveSureboxDeleteEvent();
     moveSureBoxDeleteComment();
+    moveSureBoxRequestAdmin();
 }
 
 window.onresize = moves;

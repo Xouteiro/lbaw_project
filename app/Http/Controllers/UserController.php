@@ -131,9 +131,19 @@ class UserController extends Controller
     public function requestAdmin(string $id)
     {
         $user = User::find($id);
-        $this->authorize('requestAdmin',$user);
+        //$this->authorize('requestAdmin', $user);
         $user->adminCandidate = true;
         $user->save();
+        return response()->json(['message' => 'Admin Permissions Requested'], 200);
+    }
+
+    public function cancelRequestAdmin(string $id)
+    {
+        $user = User::find($id);
+        //$this->authorize('cancelRequestAdmin', $user);
+        $user->adminCandidate = false;
+        $user->save();
+        return response()->json(['message' => 'Admin Permissions Request Canceled'], 200);
     }
 
     public function adminCandidates()
