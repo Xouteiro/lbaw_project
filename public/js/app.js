@@ -1293,7 +1293,7 @@ function moveSureboxDeleteEvent() {
     }
 }
 
-function removeParticipant() {
+function respondAdminRequest() {
     const fakebuttons = document.querySelectorAll(".fake.button.accept");
     fakebuttons.forEach((fakebutton) => {
         fakebutton.addEventListener("click", () => {
@@ -1306,16 +1306,22 @@ function removeParticipant() {
                 surebox.classList.add("surebox");
                 surebox.style.marginLeft = "20px";
                 surebox.innerHTML = `
-                    <p>Are you sure ?</p>
+                    <p>Make this user Admin ?</p>
                     <div class="surebox-buttons">
                         <button type="button" class="surebox button yes">Yes</button>
                         <button type="button" class="surebox button no">No</button>
                     </div>
                 `;
                 fakebutton.parentElement.appendChild(surebox);
+                const noCandidates = document.createElement("h4");
+                noCandidates.textContent = "No candidates";
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
                     surebox.remove();
+                    if (usersDiv.childElementCount == 0) {
+                        usersDiv.appendChild(noCandidates);
+                    }
+                    sendAjaxRequest('PUT', `/adminCandidates/${userId}/refuse`, null, function () { });
                 });
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
@@ -1324,13 +1330,27 @@ function removeParticipant() {
                     const usersDiv = user_card.parentElement;
                     user_card.remove();
                     if (usersDiv.childElementCount == 0) {
-                        const noCandidates = document.createElement("h4");
-                        noCandidates.textContent = "No candidates yet";
                         usersDiv.appendChild(noCandidates);
                     }
+                    console.log("Accepted");
                     sendAjaxRequest('PUT', `/adminCandidates/${userId}/accept`, null, function () { });
                 });
             }
+        })
+    });
+    closeSureOptions()
+}
+
+function requestAdmin() {
+    const fakebuttons = document.querySelectorAll(".fake.button.request-admin.not-candidate");
+    fakebuttons.forEach((fakebutton) => {
+        fakebutton.addEventListener("click", () => {
+            const userId = fakebutton.id;
+            console.log("Requested");
+            fakebutton.classList.remove("not-candidate");
+            fakebutton.classList.add("candidate");
+
+            sendAjaxRequest('PUT', `/user/${userId}/requestAdmin`, null, function () { });
         })
     });
     closeSureOptions()
@@ -1356,6 +1376,8 @@ openNotificaitons();
 createLocation();
 deleteLocation();
 editEvent();
+respondAdminRequest();
+requestAdmin();
 postComment()
 
 function moves(){
