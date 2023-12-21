@@ -463,7 +463,7 @@ function postComment(){
                 if(comments.querySelector("h4")){
                     comments.querySelector("h4").remove();
                     const commentList = document.createElement("ul");
-                    commentList.classList.add("comments-list");
+                    commentList.classList.add("comment-list");
                     const commentLi = document.createElement("li");
                     commentLi.innerHTML = commentElement;
                     commentList.appendChild(commentLi);
@@ -481,6 +481,8 @@ function postComment(){
                 }
                 likeComment();
                 dislikeComment();
+                deleteComment();
+                editComment();
             });
         });
     }
