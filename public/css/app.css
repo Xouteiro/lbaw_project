@@ -285,6 +285,23 @@ main>header span {
     padding-top: 180px;
 }
 
+#content .banned-page {
+    text-align: center;
+    margin: 0 auto 0em auto;
+    display: flex;
+    flex-direction: column;
+    max-width: fit-content;
+    padding-top: 180px;
+}
+
+#content .banned-page .banned-text {
+    display: flex;
+    flex-direction: column;
+    margin: 7em auto;
+    text-align: center;
+    align-self: center;
+}
+
 #content .container>form.general {
     margin: 0 auto;
     padding: 1em;
@@ -1281,17 +1298,24 @@ textarea {
     margin-bottom: 1em;
 }
 
-.profile-header img {
+.profile-header-image img {
     height: 200px;
     width: 200px;
     object-fit: contain;
     border-radius: 3%;
     min-width: 100px;
     min-height: 100px;
+    margin-top: 2em;
 }
 
 .profile-header {
     margin-top: 2em;
+    text-align: center;
+}
+
+h3.banned-user {
+    color: red;
+    font-weight: bold;
 }
 
 .profile-header:nth-child(2) {

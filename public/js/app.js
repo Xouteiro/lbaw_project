@@ -1155,7 +1155,7 @@ function openNotificaitons() {
 
 function banAccount() {
     const banAccountButton = document.querySelector(".fake.button.ban-user");
-    const username = document.querySelector(".profile-header h1");
+    const profileHeader = document.querySelector(".profile-header");
     if (banAccountButton) {
         banAccountButton.addEventListener("click", () => {
             const accountId = banAccountButton.id;
@@ -1164,6 +1164,10 @@ function banAccount() {
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
+                surebox.style.position = "absolute";
+                var position = banAccountButton.getBoundingClientRect();
+                surebox.style.left = (position.left + parseInt(window.scrollX) + 150).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) - 10).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -1171,11 +1175,9 @@ function banAccount() {
                         <a class="surebox button no">No</a>
                     </div>
                 `;
-                const buttonsDiv = banAccountButton.parentElement;
-                buttonsDiv.style.display = "flex";
-                buttonsDiv.style.flexDirection = "row";
-                buttonsDiv.appendChild(surebox);
-                surebox.style.marginLeft = "20px";
+
+                banAccountButton.parentElement.appendChild(surebox);
+
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
                     surebox.remove();
@@ -1184,15 +1186,20 @@ function banAccount() {
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
                     surebox.remove();
-                    if(banAccountButton.textContent == "Ban User"){
-                        banAccountButton.textContent = "Unban User";
-                        username.textContent.concat(" [BANNED]");
-                    } else {
+                    if(banAccountButton.classList.contains("banned")){
+                        banAccountButton.classList.remove("banned");
                         banAccountButton.textContent = "Ban User";
+                        profileHeader.querySelector(".banned-user").remove();
                     }
-                    sendAjaxRequest('PUT', `/user/${accountId}/ban`, null, function () {
-                        window.location.href = `/user/${accountId}`;
-                    });
+                    else {
+                        banAccountButton.classList.add("banned");
+                        banAccountButton.textContent = "Unban User";
+                        const bannedUserText = document.createElement("h3");
+                        bannedUserText.textContent = "Banned User";
+                        bannedUserText.classList.add("banned-user");
+                        profileHeader.appendChild(bannedUserText);
+                    }
+                    sendAjaxRequest('PUT', `/user/${accountId}/ban`, null, function () {});
                 });
             }
         });

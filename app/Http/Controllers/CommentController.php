@@ -5,11 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\LikesDislikes;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
     public function show(string $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $comment = Comment::findOrFail($id);
 
         return view('partials.comment', [
@@ -19,6 +27,12 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $comment = new Comment();
         $comment->id_event = $request->id_event;
         $comment->id_user = $request->id_user;
@@ -35,6 +49,12 @@ class CommentController extends Controller
 
     public function update(Request $request, $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $request->validate([
             'comment' => 'required|string|max:5000',
         ],
@@ -54,6 +74,12 @@ class CommentController extends Controller
 
     public function delete(string $id)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $comment = Comment::find($id);
 
         $this->authorize('delete', $comment);
@@ -64,6 +90,12 @@ class CommentController extends Controller
 
     public function likeComment(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $comment = Comment::find($request->id_comment);
         $likesDislikes = LikesDislikes::where('id_comment', $request->id_comment)->where('id_user', $request->id_user)->first();
         
@@ -91,6 +123,12 @@ class CommentController extends Controller
 
     public function dislikeComment(Request $request)
     {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $comment = Comment::find($request->id_comment);
         $likesDislikes = LikesDislikes::where('id_comment', $request->id_comment)->where('id_user', $request->id_user)->first();
 

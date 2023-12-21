@@ -3,17 +3,15 @@
 @section('content')
     <div class="container profile">
         <div class="profile-header-container">
-            <div class="profile-header">
+            <div class="profile-header-image">
                 <img src="{{ $user->getProfileImage() }}">
             </div>
             <div class='profile-header'>
-                <h1>
-                    {{ $user->username }}
-                    @if($user->blocked)
-                        [BANNED]
-                    @endif
-                </h1>
+                <h1>{{ $user->username }}</h1>
                 <p>{{ $user->description }}</p>
+                @if($user->blocked)
+                    <h3 class="banned-user">Banned User</h2>
+                @endif
             </div>
         </div>
             <div class="account-owner admin">
@@ -26,7 +24,7 @@
                         Delete Account
                     </div>
                     @if (!$user->admin && Auth::user()->admin)
-                        <div class="fake button ban-user" id="{{$user->id}}">
+                        <div class="fake button ban-user @if($user->blocked) banned @endif" id="{{$user->id}}">
                             @if($user->blocked)
                                 Unban User
                             @else
