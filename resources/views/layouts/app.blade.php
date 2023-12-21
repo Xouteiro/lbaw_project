@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="media-logo">
-                    <a class="image" href={{url('/home')}} ><img src="{{ url('icons/logo.png') }}" alt="Invents"></a>
+                    <a class="image" href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>
                     <div class = "social-copy">
                         <div class="social-media">
                             <img src="{{ url('icons/instagram.png') }}" alt="Instagram icon">
