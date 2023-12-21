@@ -27,7 +27,7 @@ use App\Models\Location;
 */
 
 // Home
-Route::redirect('/', '/login');
+Route::redirect('/', '/home');
 
 // User
 Route::controller(UserController::class)->group(function () {
