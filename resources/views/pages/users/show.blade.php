@@ -25,9 +25,13 @@
                     <div class="fake button delete-account" id="{{$user->id}}">
                         Delete Account
                     </div>
-                    @if (!$user->admin && Auth::user()->admin && !Auth::user()->blocked)
+                    @if (!$user->admin && Auth::user()->admin)
                         <div class="fake button ban-user" id="{{$user->id}}">
-                            Ban User
+                            @if($user->blocked)
+                                Unban User
+                            @else
+                                Ban User
+                            @endif
                         </div>
                     @endif
                 </div>

@@ -50,7 +50,7 @@ class UserPolicy
         return $auth->id == $user->id || $auth->admin;
     }
 
-    public function ban(User $auth, User $user)
+    public function toggleBan(User $auth, User $user)
     {
         return ($auth->admin && !$user->admin);
     }
