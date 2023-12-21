@@ -12,7 +12,7 @@
                     <h4>{{ $comment->user->username }}</h4>
                     @endif
                 @else
-                    <h3>Anonymous</h3>  
+                    <h4>Anonymous</h4>  
                 @endif
                 @if (Auth::check() && (Auth::user()->events->contains($comment->id_event) || Auth::user()->id == $event->id_owner))
                     <div class="likes-dislikes">
