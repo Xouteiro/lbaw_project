@@ -118,4 +118,39 @@ class UserController extends Controller
         return response()->json(['message' => 'Update successful'], 200);
     }
     
+    public function requestAdmin(string $id)
+    {
+        $user = User::find($id);
+        $this->authorize('requestAdmin',$user);
+        $user->adminCandidate = true;
+        $user->save();
+    }
+
+    public function adminCandidates()
+    {
+        #$this->authorize('adminCandidates');
+        $users = User::where('adminCandidate', true)->get();
+        return view('pages.admin.candidates', ['users' => $users]);
+    }
+
+    public function acceptAdmin(string $id)
+    {
+        #$this->authorize('respondAdminRequest');
+        $user = User::find($id);
+        $user->adminCandidate = false;
+        $user->admin = true;
+        $user->save();
+
+        return response()->json(['message' => 'New admin accepted'], 200);
+    }
+
+    public function refuseAdmin(string $id)
+    {
+        #$this->authorize('respondAdminRequest');
+        $user = User::find($id);
+        $user->adminCandidate = false;
+        $user->save();
+
+        return response()->json(['message' => 'New admin refused'], 200);
+    }
 }

@@ -1540,6 +1540,10 @@ footer a.image:hover {
         font-weight: 500;
     }
 
+    .profile .account-owner div.button.candidate{
+        background-color: grey;
+    }
+
     footer img.logo {
         width: 108px;
         object-fit: contain;

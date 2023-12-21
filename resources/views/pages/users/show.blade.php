@@ -25,6 +25,17 @@
         @if (AutH::check() && Auth::user()->id === $user->id)
             <div class="account-owner">
                 <a class="button" href="{{ url('/logout') }}"> Logout </a>
+                @if(!$user->admin)
+                    @if(!$user->adminCandidate)
+                        <div class="fake button request-admin not-candidate" id="{{$user->id}}">
+                            Request admin permissions
+                        </div>
+                    @else
+                    <div class="fake button request-admin candidate" id="{{$user->id}}">
+                        Request admin permissions
+                    </div>
+                    @endif
+                @endif
             </div>
         @endif
         @if(!Auth::user()->admin)
