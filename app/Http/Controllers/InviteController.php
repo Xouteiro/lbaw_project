@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\Mail;
 class InviteController extends Controller
 {
     public function sendInvite(Request $request) {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         $event = Event::findOrFail($request->id_event);
 
         if(Auth::user()->admin){
@@ -95,6 +101,12 @@ class InviteController extends Controller
     }
 
     public function acceptInvite(Request $request) {
+        if(Auth::check()){
+            $user = User::findOrFail(Auth::user()->id);
+            if($user->blocked){
+                return redirect()->route('home');
+            }
+        }
         if(Auth::user()->admin){
             return redirect()->route('user.show', ['id' => Auth::user()->id]);
         }
@@ -115,17 +127,5 @@ class InviteController extends Controller
             }
         }
         return $redirectResponse;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Invite $invite)
-    {
-        $temp = $invite->id_eventnotification;
-        $invite->delete();
-        Notification::findOrFail($temp)->delete();
-        return redirect()->route('event.show', ['id' => $invite->event->id])
-        ->withSuccess('You have successfully deleted your invite!');
     }
 }

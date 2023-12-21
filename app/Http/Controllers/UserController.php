@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Event;
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,6 +11,12 @@ class UserController extends Controller
 {
     public function show(string $id)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $user = User::findOrFail($id);
         $this->authorize('show', $user);
 
@@ -22,6 +27,12 @@ class UserController extends Controller
 
     public function edit(string $id)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $user = User::findOrFail($id);
 
         $this->authorize('edit', $user);
@@ -34,6 +45,12 @@ class UserController extends Controller
 
     public function update(Request $request, string $id)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $user = User::findOrFail($id);
 
         $this->authorize('update', $user);
@@ -68,6 +85,12 @@ class UserController extends Controller
 
     public function delete(string $id)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $user = User::findOrFail($id);
 
         $this->authorize('delete', $user);
@@ -79,6 +102,12 @@ class UserController extends Controller
 
     public function manageEvent(Request $request, string $id_event)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $user = User::find(Auth::user()->id);
         $event = Event::findOrFail($id_event);
 
@@ -120,6 +149,12 @@ class UserController extends Controller
 
     public function toggleBan(string $id)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $user = User::find($id);
         $this->authorize('toggleBan', $user);
         $user->blocked = !$user->blocked;
@@ -130,6 +165,12 @@ class UserController extends Controller
     
     public function requestAdmin(string $id)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $user = User::find($id);
         $this->authorize('requestAdmin', $user);
         $user->adminCandidate = true;
@@ -139,6 +180,12 @@ class UserController extends Controller
 
     public function cancelRequestAdmin(string $id)
     {
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $user = User::find($id);
         $user->adminCandidate = false;
         $user->save();
@@ -147,8 +194,16 @@ class UserController extends Controller
 
     public function adminCandidates()
     {
+
         $user = User::find(Auth::user()->id);
         $this->authorize('adminCandidates', $user);
+
+        if (Auth::check()) {
+            $user = User::findOrFail(Auth::user()->id);
+            if ($user->blocked) {
+                return redirect()->route('home');
+            }
+        }
         $users = User::where('adminCandidate', true)->get();
         return view('pages.admin.candidates', ['users' => $users]);
     }
