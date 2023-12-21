@@ -60,9 +60,9 @@ class UserPolicy
         return ($auth->id == $user->id && !$user->adminCandidate && !$user->blocked);
     }
 
-    public function adminCandidates(User $auth)
+    public function adminCandidates(User $auth, User $user)
     {
-        return $auth->admin;
+        return $user->admin;
     }
 
     public function respondAdminRequest(User $auth, User $user)

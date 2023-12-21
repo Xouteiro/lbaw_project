@@ -131,7 +131,7 @@ class UserController extends Controller
     public function requestAdmin(string $id)
     {
         $user = User::find($id);
-        //$this->authorize('requestAdmin', $user);
+        $this->authorize('requestAdmin', $user);
         $user->adminCandidate = true;
         $user->save();
         return response()->json(['message' => 'Admin Permissions Requested'], 200);
@@ -140,7 +140,6 @@ class UserController extends Controller
     public function cancelRequestAdmin(string $id)
     {
         $user = User::find($id);
-        //$this->authorize('cancelRequestAdmin', $user);
         $user->adminCandidate = false;
         $user->save();
         return response()->json(['message' => 'Admin Permissions Request Canceled'], 200);
@@ -148,15 +147,16 @@ class UserController extends Controller
 
     public function adminCandidates()
     {
-        //$this->authorize('adminCandidates');
+        $user = User::find(Auth::user()->id);
+        $this->authorize('adminCandidates', $user);
         $users = User::where('adminCandidate', true)->get();
         return view('pages.admin.candidates', ['users' => $users]);
     }
 
     public function acceptAdmin(string $id)
     {
-        //$this->authorize('respondAdminRequest');
         $user = User::find($id);
+        $this->authorize('respondAdminRequest', $user);
         $user->adminCandidate = false;
         $user->admin = true;
         $user->save();
@@ -166,8 +166,8 @@ class UserController extends Controller
 
     public function refuseAdmin(string $id)
     {
-        //$this->authorize('respondAdminRequest');
         $user = User::find($id);
+        $this->authorize('respondAdminRequest', $user );
         $user->adminCandidate = false;
         $user->save();
 
