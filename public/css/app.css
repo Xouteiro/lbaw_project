@@ -1843,6 +1843,34 @@ footer a.image:hover {
         color: white;
     }
 
+    div.event-creator {
+        height: 200px;
+        justify-content: space-evenly;
+    }
+
+    div.event-creator,
+    .event-header {
+        flex-direction: column;
+    }
+
+    div.event-info .event-page-image img {
+        display: none;
+    }
+
+    .event-container .event-header,
+    div.event-container div.event-header div.location-info p,
+    div.event-container div.event-header div.full-date,
+    div.event-container div.event-info h3,
+    div.event-container div.event-info p,
+    div.event-container div.event-info .participants {
+        padding: 0;
+    }
+
+    .event-container .comment-list,
+    div.event-creator {
+        margin: 0;
+    }
+
     .profile {
         padding: 0 25px;
     }
