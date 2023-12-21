@@ -7,12 +7,17 @@
                 <img src="{{ $user->getProfileImage() }}">
             </div>
             <div class='profile-header'>
-                <h1>{{ $user->username }}</h1>
+                <h1>
+                    {{ $user->username }}
+                    @if($user->blocked)
+                        [BANNED]
+                    @endif
+                </h1>
                 <p>{{ $user->description }}</p>
             </div>
         </div>
             <div class="account-owner admin">
-                @if(Auth::check() && (Auth::user()->id === $user->id && !Auth::user()->admin))
+                @if(Auth::check() && !Auth::user()->blocked && (Auth::user()->id === $user->id && !Auth::user()->admin))
                     <a class="button" href="{{ route('event.create') }}">Create Event</a>
                 @endif
                 @if (Auth::check() && (Auth::user()->id === $user->id || Auth::user()->admin))
@@ -20,11 +25,31 @@
                     <div class="fake button delete-account" id="{{$user->id}}">
                         Delete Account
                     </div>
+                    @if (!$user->admin && Auth::user()->admin)
+                        <div class="fake button ban-user" id="{{$user->id}}">
+                            @if($user->blocked)
+                                Unban User
+                            @else
+                                Ban User
+                            @endif
+                        </div>
+                    @endif
                 </div>
                 @endif
         @if (AutH::check() && Auth::user()->id === $user->id)
             <div class="account-owner">
                 <a class="button" href="{{ url('/logout') }}"> Logout </a>
+                @if(!$user->admin)
+                    @if(!$user->adminCandidate)
+                        <div class="fake button request-admin not-candidate" id="{{$user->id}}">
+                            Request admin permissions
+                        </div>
+                    @else
+                    <div class="fake button request-admin candidate" id="{{$user->id}}">
+                        Request admin permissions
+                    </div>
+                    @endif
+                @endif
             </div>
         @endif
         @if(!Auth::user()->admin)

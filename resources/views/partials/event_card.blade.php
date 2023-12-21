@@ -1,4 +1,4 @@
-@if (($event->public || Auth::check()) && !$event->hide_owner) 
+@if (($event->public || (Auth::check() && !Auth::user()->blocked)) && !$event->hide_owner) 
     <div id="event-{{ $event->id }}" class="event-card">
         <a href="{{ route('event.show', ['id' => $event->id]) }}">
             

@@ -481,6 +481,8 @@ function postComment(){
                 }
                 likeComment();
                 dislikeComment();
+                deleteComment();
+                editComment();
             });
         });
     }
@@ -1151,6 +1153,52 @@ function openNotificaitons() {
     closeNotifications();
 }
 
+function banAccount() {
+    const banAccountButton = document.querySelector(".fake.button.ban-user");
+    const username = document.querySelector(".profile-header h1");
+    if (banAccountButton) {
+        banAccountButton.addEventListener("click", () => {
+            const accountId = banAccountButton.id;
+            const sureboxExists = banAccountButton.parentElement.querySelector(".surebox");
+
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                const buttonsDiv = banAccountButton.parentElement;
+                buttonsDiv.style.display = "flex";
+                buttonsDiv.style.flexDirection = "row";
+                buttonsDiv.appendChild(surebox);
+                surebox.style.marginLeft = "20px";
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    if(banAccountButton.textContent == "Ban User"){
+                        banAccountButton.textContent = "Unban User";
+                        username.textContent.concat(" [BANNED]");
+                    } else {
+                        banAccountButton.textContent = "Ban User";
+                    }
+                    sendAjaxRequest('PUT', `/user/${accountId}/ban`, null, function () {
+                        window.location.href = `/user/${accountId}`;
+                    });
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
 
 function createLocation()
 {
@@ -1311,6 +1359,69 @@ function moveSureBoxDeleteComment() {
     }
 }
 
+function respondAdminRequest() {
+    const fakebuttons = document.querySelectorAll(".fake.button.accept");
+    fakebuttons.forEach((fakebutton) => {
+        fakebutton.addEventListener("click", () => {
+            const userId = fakebutton.id;
+            const user_card = fakebutton.parentElement;
+            const sureboxExists = user_card.querySelector(".surebox");
+
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.marginLeft = "20px";
+                surebox.innerHTML = `
+                    <p>Make this user Admin ?</p>
+                    <div class="surebox-buttons">
+                        <button type="button" class="surebox button yes">Yes</button>
+                        <button type="button" class="surebox button no">No</button>
+                    </div>
+                `;
+                fakebutton.parentElement.appendChild(surebox);
+                const noCandidates = document.createElement("h4");
+                noCandidates.textContent = "No candidates";
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                    if (usersDiv.childElementCount == 0) {
+                        usersDiv.appendChild(noCandidates);
+                    }
+                    sendAjaxRequest('PUT', `/adminCandidates/${userId}/refuse`, null, function () { });
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    const usersDiv = user_card.parentElement;
+                    user_card.remove();
+                    if (usersDiv.childElementCount == 0) {
+                        usersDiv.appendChild(noCandidates);
+                    }
+                    console.log("Accepted");
+                    sendAjaxRequest('PUT', `/adminCandidates/${userId}/accept`, null, function () { });
+                });
+            }
+        })
+    });
+    closeSureOptions()
+}
+
+function requestAdmin() {
+    const fakebuttons = document.querySelectorAll(".fake.button.request-admin.not-candidate");
+    fakebuttons.forEach((fakebutton) => {
+        fakebutton.addEventListener("click", () => {
+            const userId = fakebutton.id;
+            console.log("Requested");
+            fakebutton.classList.remove("not-candidate");
+            fakebutton.classList.add("candidate");
+
+            sendAjaxRequest('PUT', `/user/${userId}/requestAdmin`, null, function () { });
+        })
+    });
+    closeSureOptions()
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -1328,9 +1439,12 @@ createPoll();
 deletePoll();
 answerPoll();
 openNotificaitons();
+banAccount();
 createLocation();
 deleteLocation();
 editEvent();
+respondAdminRequest();
+requestAdmin();
 postComment()
 
 function moves(){

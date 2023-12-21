@@ -14,12 +14,12 @@ class UserPolicy
 
     public function edit(User $auth, User $user)
     {
-        return $auth->id == $user->id || $auth->admin;
+        return ($auth->id == $user->id && !$user->blocked) || $auth->admin;
     }
 
     public function update(User $auth, User $user)
     {
-        return $auth->id == $user->id || $auth->admin;
+        return ($auth->id == $user->id && !$user->blocked) || $auth->admin;
     }
 
 
@@ -27,7 +27,7 @@ class UserPolicy
     {
         if (!Auth::check()) {
             return false;
-        } else if ($auth->id == $user->id || $auth->admin) {
+        } else if (($auth->id == $user->id && !$user->blocked) || $auth->admin) {
             return true;
         } else {
             return false;
@@ -38,7 +38,7 @@ class UserPolicy
     {   
         if (!Auth::check()) {
             return false;
-        } else if ($auth->id == $user->id || $auth->admin) {
+        } else if (($auth->id == $user->id && !$user->blocked) || $auth->admin) {
             return true;
         } else {
             return false;
@@ -48,5 +48,25 @@ class UserPolicy
     public function delete(User $auth, User $user)
     {
         return $auth->id == $user->id || $auth->admin;
+    }
+
+    public function toggleBan(User $auth, User $user)
+    {
+        return ($auth->admin && !$user->admin);
+    }
+
+    public function requestAdmin(User $auth, User $user)
+    {
+        return ($auth->id == $user->id && !$user->adminCandidate && !$user->blocked);
+    }
+
+    public function adminCandidates(User $auth)
+    {
+        return $auth->admin;
+    }
+
+    public function respondAdminRequest(User $auth, User $user)
+    {
+        return $auth->admin && !$user->blocked;
     }
 }

@@ -40,7 +40,7 @@
                     </div>
                 @endif
             </div>
-            @if (Auth::check() && (Auth::user()->id === $comment->id_user || Auth::user()->admin))
+            @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->id === $comment->id_user || Auth::user()->admin))
                 <div class="comment-actions">
                     <button title="Edit Comment" class="fake button edit-comment no-button" id="{{ $comment->id }}">
                         &#9998;
