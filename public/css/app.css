@@ -870,6 +870,15 @@ div.event-container .event-creator form{
     margin-bottom: 0;
 }
 
+div.event-container .event-creator button.fake.button{
+    margin-left:40px;
+    margin-right: auto;
+}
+
+div.invite-decision form{
+    margin-left: 50px;
+}
+
 div.event-creator img{
     height: 60px;
     width: 60px;
