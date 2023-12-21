@@ -277,7 +277,17 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
         $this->authorize('removeparticipant', $event);
+        $user = User::findOrFail($id_participant);
         $event->participants()->detach($id_participant);
+
+        $data = array(
+            'type' => 'event-remove-participant',
+            'name' => $user->name,
+            'event' => $event->name
+        );
+
+        Mail::to($user->email, $user->name)->send(new Email($data));
+
         return response()->json(['message' => 'Participant removed'], 200);
     }
 
