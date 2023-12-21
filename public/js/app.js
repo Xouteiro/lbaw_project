@@ -45,8 +45,6 @@ function loadMoreEvents() {
                         const eventImage = event.event_image ? '/event/' + event.event_image : '/event/default.jpg';
                         if (eventDate < currentDate) {
                             eventStatus = 'Finished';
-                        } else if (eventDate.toDateString() === currentDate.toDateString()) {
-                            eventStatus = 'Today';
                         } else if (eventDate > currentDate) {
                             eventStatus = 'Upcoming';
                         }
@@ -54,15 +52,28 @@ function loadMoreEvents() {
                             if (description.length > 70){
                                 description = description.substring(0, 67) + '...';
                             }
+                        let eventdate = event.eventdate;
+                        let date = eventdate[8] + eventdate[9] + '/' + eventdate[5] + eventdate[6] + '/' + eventdate[0] + eventdate[1] + eventdate[2] + eventdate[3];
+                        let time = eventdate[11] + eventdate[12] + 'h' + eventdate[14] + eventdate[15];
+                        let today = new Date();
+                        let nextWeek = new Date();
+                        nextWeek.setDate(today.getDate() + 7);
+
+                        if(eventDate < today) {
+                            eventStatus = 'Finished';
+                        } else if(eventDate > today) {
+                            eventStatus = 'Upcoming';
+                        }
+
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
+                                <p class="status" id="${eventStatus}">${eventStatus}</p>
                                 <img src="${eventImage}" alt="Event Image" class="event-image">
                                 
                                 <div class="event-info">
                                     <h3>${event.name}</h3>
                                     <p>${description}</p>
-                                    <p>${event.eventdate}</p>
-                                    <p>${eventStatus}</p>
+                                    <p class=${eventStatus}> &#128197; ${date} &#128336; ${time}</p>
                                 </div>
                             </a>
                         `;
