@@ -307,9 +307,9 @@ function removeParticipant() {
                     const participantsDiv = participant_card.parentElement;
                     participant_card.remove();
                     if (participantsDiv.childElementCount == 1 && participantsDiv.firstElementChild.id == 'owner') {
-                        const noRequestsToJoin = document.createElement("h4");
-                        noRequestsToJoin.textContent = "No participants yet";
-                        participantsDiv.appendChild(noRequestsToJoin);
+                        const noParticipants = document.createElement("h4");
+                        noParticipants.textContent = "No participants yet";
+                        participantsDiv.appendChild(noParticipants);
                     }
                     sendAjaxRequest('POST', `/event/${eventId}/participants/${participantId}/remove`, null, function () {});
                 });
@@ -1359,18 +1359,45 @@ function moveSureBoxDeleteComment() {
     }
 }
 
+function moveSureBoxRequestAdmin() {
+    const requestAdminButton = document.querySelector(".request-admin");
+    if(requestAdminButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = requestAdminButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 320).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) - 10).toString() + "px";
+        }
+    }
+}
+
+function moveSureBoxAnswerAdminRequest() {
+    const answerRequestButton = document.querySelector(".answer-request-admin");
+    if(answerRequestButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = answerRequestButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 5).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+        }
+    }
+}
+
 function respondAdminRequest() {
-    const fakebuttons = document.querySelectorAll(".fake.button.accept");
-    fakebuttons.forEach((fakebutton) => {
-        fakebutton.addEventListener("click", () => {
-            const userId = fakebutton.id;
-            const user_card = fakebutton.parentElement;
+    const answerRequestButton = document.querySelector(".answer-request-admin");
+    if(answerRequestButton){
+        answerRequestButton.addEventListener("click", () => {
+            const userId = answerRequestButton.id;
+            const user_card = answerRequestButton.parentElement;
             const sureboxExists = user_card.querySelector(".surebox");
 
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
-                surebox.style.marginLeft = "20px";
+                surebox.style.position = "absolute";
+                var position = answerRequestButton.getBoundingClientRect();
+                surebox.style.left = (position.left + parseInt(window.scrollX) + 5).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
                 surebox.innerHTML = `
                     <p>Make this user Admin ?</p>
                     <div class="surebox-buttons">
@@ -1378,48 +1405,81 @@ function respondAdminRequest() {
                         <button type="button" class="surebox button no">No</button>
                     </div>
                 `;
-                fakebutton.parentElement.appendChild(surebox);
+                answerRequestButton.parentElement.appendChild(surebox);
+
                 const noCandidates = document.createElement("h4");
-                noCandidates.textContent = "No candidates";
+                noCandidates.textContent = "No candidates yet";
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
+                    const requestsDiv = answerRequestButton.parentElement.parentElement;
                     surebox.remove();
-                    if (usersDiv.childElementCount == 0) {
-                        usersDiv.appendChild(noCandidates);
+                    answerRequestButton.parentElement.remove();
+                    if (requestsDiv.childElementCount == 0) {
+                        requestsDiv.appendChild(noCandidates);
                     }
                     sendAjaxRequest('PUT', `/adminCandidates/${userId}/refuse`, null, function () { });
                 });
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
+                    const requestsDiv = answerRequestButton.parentElement.parentElement;
                     surebox.remove();
-                    const usersDiv = user_card.parentElement;
-                    user_card.remove();
-                    if (usersDiv.childElementCount == 0) {
-                        usersDiv.appendChild(noCandidates);
+                    answerRequestButton.parentElement.remove();
+                    if (requestsDiv.childElementCount == 0) {
+                        requestsDiv.appendChild(noCandidates);
                     }
-                    console.log("Accepted");
                     sendAjaxRequest('PUT', `/adminCandidates/${userId}/accept`, null, function () { });
                 });
             }
+            closeSureOptions();
         })
-    });
-    closeSureOptions()
+    }
 }
 
 function requestAdmin() {
-    const fakebuttons = document.querySelectorAll(".fake.button.request-admin.not-candidate");
-    fakebuttons.forEach((fakebutton) => {
-        fakebutton.addEventListener("click", () => {
-            const userId = fakebutton.id;
-            console.log("Requested");
-            fakebutton.classList.remove("not-candidate");
-            fakebutton.classList.add("candidate");
+    const requestAdminButton = document.querySelector(".request-admin");
+    if(requestAdminButton){
+        requestAdminButton.addEventListener("click", () => {
+            const userId = requestAdminButton.id;
+            if(requestAdminButton.classList.contains("sent")){
+                const sureboxExists = document.querySelector(".surebox");
 
-            sendAjaxRequest('PUT', `/user/${userId}/requestAdmin`, null, function () { });
-        })
-    });
-    closeSureOptions()
+                if (!sureboxExists) {
+                    const surebox = document.createElement("div");
+                    surebox.classList.add("surebox");
+                    surebox.style.position = "absolute";
+                    var position = requestAdminButton.getBoundingClientRect();
+                    surebox.style.left = (position.left + parseInt(window.scrollX) + 320).toString() + "px";
+                    surebox.style.top = (position.top + parseInt(window.scrollY) - 10).toString() + "px";
+                    surebox.innerHTML = `
+                        <p>Cancel request admin ?</p>
+                        <div class="surebox-buttons">
+                            <button type="button" class="surebox button yes">Yes</button>
+                            <button type="button" class="surebox button no">No</button>
+                        </div>
+                    `;
+                    requestAdminButton.parentElement.appendChild(surebox);
+                    const noButton = surebox.querySelector(".surebox.button.no");
+                    noButton.addEventListener("click", () => {
+                        surebox.remove();
+                    });
+        
+                    const yesButton = surebox.querySelector(".surebox.button.yes");
+                    yesButton.addEventListener("click", () => {
+                        surebox.remove();
+                        requestAdminButton.classList.remove("sent");
+                        requestAdminButton.textContent = "Request Admin Permissions";
+                        sendAjaxRequest('PUT', `/user/${userId}/cancel-request-admin`, null, function () {});
+                    });
+                }
+                closeSureOptions();
+                return;
+            }
+            requestAdminButton.classList.add("sent");
+            requestAdminButton.textContent = "Request Admin Permissions Sent";
+            sendAjaxRequest('PUT', `/user/${userId}/request-admin`, null, function () { });
+        });
+    }
 }
 
 addEventListeners();
@@ -1452,6 +1512,8 @@ function moves(){
     moveSureboxDeleteAccount();
     moveSureboxDeleteEvent();
     moveSureBoxDeleteComment();
+    moveSureBoxRequestAdmin();
+    moveSureBoxAnswerAdminRequest();
 }
 
 window.onresize = moves;

@@ -14,7 +14,7 @@
                             <h2><a href="{{ route('user.show', ['id' => $user->id]) }}">{{ $user->name }}</a></h2>
                             <h3><a href="{{ route('user.show', ['id' => $user->id]) }}">{{ $user->username }}</a></h3>
                         </div>
-                        <button type="button" class="fake button accept" id="{{ $user->id }}">
+                        <button style="margin-left: 20px;" type="button" class="fake button answer-request-admin" id="{{ $user->id }}">
                             Answer request
                         </button>
                     </div>
