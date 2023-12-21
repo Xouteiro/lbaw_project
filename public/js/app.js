@@ -33,7 +33,7 @@ function loadMoreEvents() {
                 const response = JSON.parse(xhr.responseText);
                 const events = response.events.data;
 
-                const eventsContainer = document.getElementById('eventsContainer');
+                const eventsContainer = document.getElementById('eventsContainer'); 
                 if (eventsContainer) {
                     events.forEach(event => {
                         const eventCard = document.createElement('div');
@@ -369,10 +369,10 @@ function deleteEvent() {
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
                 var positions = deleteEventButton.getBoundingClientRect();
-                surebox.style.left = (positions.left + parseInt(window.scrollX) - 10).toString() + "px";
-                surebox.style.top = (positions.top + parseInt(window.scrollY) + 50).toString() + "px";
+                surebox.style.left = (positions.left + parseInt(window.scrollX)-80).toString() + "px";
+                surebox.style.top = (positions.top + parseInt(window.scrollY)+60).toString() + "px";
                 surebox.innerHTML = `
-                    <p>Are you sure ?</p>
+                    <p style="padding-left:5px">Are you sure ?</p>
                     <div class="surebox-buttons">
                         <a class="surebox button yes">Yes</a>
                         <a class="surebox button no">No</a>
@@ -1348,8 +1348,8 @@ function moveSureboxDeleteEvent() {
         const surebox = document.querySelector(".surebox");
         if(surebox){
             var position = deleteEventButton.getBoundingClientRect();
-            surebox.style.left = (position.left + parseInt(window.scrollX) - 10).toString() + "px";
-            surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+            surebox.style.left = (position.left + parseInt(window.scrollX) - 80).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) + 60).toString() + "px";
         }
     }
 }

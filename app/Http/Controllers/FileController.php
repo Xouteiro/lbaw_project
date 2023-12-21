@@ -127,7 +127,11 @@ class FileController extends Controller
         }
 
         $file->storeAs($type, $fileName, self::$diskName);
-        return redirect()->back()->with('success', 'Success: upload completed!');
+        if($type == 'profile'){
+            return redirect()->route('user.show', ['id' => $request->id])->with('success', 'Success: upload completed!');
+        }else{
+            return redirect()->route('event.show', ['id' => $request->id])->with('success', 'Success: upload completed!');
+        }
     }
 
     static function get(String $type, int $userId) {

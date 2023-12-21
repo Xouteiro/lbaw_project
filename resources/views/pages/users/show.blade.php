@@ -4,7 +4,7 @@
     <div class="container profile">
         <div class="profile-header-container">
             <div class="profile-header-image">
-                <img src="{{ $user->getProfileImage() }}">
+                <img src="{{ $user->getProfileImage() }}" alt="User profile Picture">
             </div>
             <div class='profile-header'>
                 <h1>{{ $user->username }}</h1>

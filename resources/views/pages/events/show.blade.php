@@ -2,7 +2,7 @@
     use App\Models\Notification;
     use Illuminate\Support\Facades\Auth;
     // check if user already sent a request to join
-    if(Auth::check() && !Auth::user()->blocked){
+    if(Auth::check() ){
         $hasSent = Notification::where('request_to_join.id_user', Auth::user()->id)->where('id_event', $event->id)->join('request_to_join', 'event_notification.id', '=', 'request_to_join.id_eventnotification')->first();
     }
 
@@ -13,9 +13,10 @@
 
 @section('content')
     <div class="event-container">
-        <div class="event-info"> <div class="event-page-image">
-            <img src="{{ $event->getEventImage($event->id) }}" alt="Event Image" class="event-page-image">
-        </div>
+        <div class="event-info"> 
+            <div class="event-page-image">
+                <img src="{{ $event->getEventImage($event->id) }}" alt="Event Image" class="event-page-image">
+            </div>
         @php
             $eventdate = $event->eventdate;
             $date = $eventdate[8] . $eventdate[9] . '-' . $eventdate[5] . $eventdate[6] . '-' . $eventdate[0] . $eventdate[1] . $eventdate[2] . $eventdate[3];
@@ -33,7 +34,7 @@
                         <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif> &#128205; {{ $location}}</p>
                     </div>
                 </div>
-                @if (Auth::check() && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
+                @if (Auth::check() && ( !Auth::user()->blocked && Auth::user()->id == $event->id_owner || Auth::user()->admin))
                 <div class="manage-event">
                     <a title="Edit the event" class="button no-button" href="{{ route('event.edit', ['id' => $event->id]) }}">
                         &#9998;
@@ -61,13 +62,13 @@
                 </div>
             </div>
             @if ($event->capacity == 0)
-                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
+                @if(Auth::check() && !Auth::user()->blocked && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a><p>- {{ $event->participants->count() }} </p> </div>
                 @else
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p></div>
                 @endif
             @else
-                @if(Auth::check() && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
+                @if(Auth::check() && !Auth::user()->blocked &&  (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a><p @if(isset($whatChanged) && isset($whatChanged->capacity)) style="font-weight: bold;" @endif>- {{ $event->participants->count() }}/{{ $event->capacity }} participants</p></div>
                 @else
                     <div class="participants"><p @if(isset($whatChanged) && isset($whatChanged->capacity)) style="font-weight: bold;" @endif>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }} participants</p></div>
@@ -76,7 +77,7 @@
 
             <p @if(isset($whatChanged) && isset($whatChanged->price)) style="font-weight: bold;" @endif>Price: {{ $price }} </p>
             
-            @if (Auth::check())
+            @if (Auth::check() && !Auth::user()->blocked)
                 <div class="event-creator">
                     @if($event->eventdate > date('Y-m-d H:i:s'))
                     @if (
@@ -105,7 +106,7 @@
                             Request to join
                             @endif
                         </button>
-                    @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
+                    @elseif(Auth::check() && !Auth::user()->blocked && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin)
                     
                         <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
                             @csrf
@@ -144,7 +145,8 @@
                 </div>
             @endif
         </div>
-        @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user && !Auth::user()->admin && !Auth::user()->blocked)
+
+        @if (isset($invite) && Auth::check()&& !Auth::user()->blocked  && Auth::user()->id == $invite->id_user && !Auth::user()->admin)
             {{-- Form of invite decision (Accept/Deny) --}}
             <div class="invite-decision">
                 <h3>You have been invited for this event!</h3>
@@ -160,15 +162,7 @@
                 </form>
             </div>
         @endif
-            @if (Auth::check() && Auth::user()->id == $event->id_owner && !Auth::user()->admin)
-                <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
-                    @csrf
-                    <button class="button" type="submit">
-                        Leave Event
-                    </button>
-                </form>
-            @endif
-            @if (Auth::check() && Auth::user()->id == $event->id_owner && !Auth::user()->admin && !Auth::user()->blocked)
+            @if (Auth::check() && !Auth::user()->blocked && Auth::user()->id == $event->id_owner && !Auth::user()->admin)
                 <div class="invite-container">
                     <h3>Invite a user to this event</h3>
                     
@@ -217,7 +211,7 @@
                 </ul>
         @endif
         </div>
-        @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
+        @if ((Auth::check() &&  !Auth::user()->blocked &&  Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div class="general add-comment">
                 <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
                 <input type="hidden" name="id_event" value="{{ $event->id }}">
@@ -226,7 +220,7 @@
                 <button class="add-comment button" type="button">Comment</button>
             </div>
         @endif
-        @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
+        @if ((Auth::check() && !Auth::user()->blocked &&  Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div class="polls">
                 <div>
                 <h3 class="event_id_holder" id="{{$event->id}}">Polls</h3>
@@ -246,4 +240,5 @@
             </div>
         @endif
     </div>
+</div>
 @endsection
