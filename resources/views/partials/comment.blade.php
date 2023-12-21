@@ -14,7 +14,7 @@
                 @else
                     <h3>Anonymous</h3>  
                 @endif
-                @if (Auth::check() && Auth::user()->events->contains($comment->id_event))
+                @if (Auth::check() && (Auth::user()->events->contains($comment->id_event) || Auth::user()->id == $event->id_owner))
                     <div class="likes-dislikes">
                         <?php
                             $likeClass = "comment-like";

@@ -28,7 +28,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+        <link rel="icon" type="image/x-icon" href="/icons/logo.ico">
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -47,10 +47,10 @@
         <main>
             @if( url()->current() == url('/home') || url()->current() == url('/about') || url()->current() == url('/mainFeatures') )
             <header class="home">
-                <a href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>  
+                <a class="logo" href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>  
             @else  
             <header>
-                <a href={{url('/home')}}><img class="small-logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a> 
+                <a class="small-logo" href={{url('/home')}}><img class="small-logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a> 
             @endif               
                 <form class="searchBar" id="searchForm" action="{{ route('events.search') }}" method="GET">
                     <input name="search" value="" placeholder="Search event" class="search-event"/>
@@ -89,9 +89,9 @@
                                         <h4 class="notification">No Event Updates</h4>
                                     @endif
                                     @foreach($notifications[1] as $eventUpdate)
-                                    <div class="pending_event_update notification" id="{{ $eventUpdate->id_eventnotification }}">
-                                        <h4 class="notification" id="{{ $eventUpdate->id_event }}">- {{$eventUpdate->text}}</h4>
-                                    </div>
+                                        <div class="pending_event_update notification" id="{{ $eventUpdate->id_eventnotification }}">
+                                            <a href="{{ url($eventUpdate->link) . '?id_eventUpdate=' . $eventUpdate->id }}" class="notification" id="{{ $eventUpdate->id_event }}">- {{$eventUpdate->text}}</a>
+                                        </div>
                                     @endforeach
                                 </div>
                             </div>
@@ -115,9 +115,45 @@
                 @yield('content')
             </section>
             <footer>
-                <p>© 2023 Invents</p>
-                <p><a href="{{route('about')}}">About Us</a></p>
-                <p><a href="{{route('mainFeatures')}}">Main Features</a></p>
+                <div class="useful-links">
+                    <h3>Useful Links</h3>
+                    <a href="{{route('home')}}">- Home Page</a>
+                    <a href="{{route('events')}}">- All Events</a>
+                    @if(Auth::check())
+                        <a href="{{ url('/user/' . Auth::user()->id) }}">- Profile Page</a>
+                    @else
+                        <a href="{{route('login')}}">- Profile Page</a>
+                    @endif
+                    @if(Auth::check() && !Auth::user()->admin)
+                        <a href="{{route('event.create')}}">- Create an Event</a>
+                    @elseif(!Auth::check())
+                        <a href="{{route('login')}}">- Create an Event</a>
+                    @endif
+                    @if(Auth::check())
+                        <a href="{{route('logout')}}">- Logout</a>
+                    @endif
+
+                </div>
+
+                <div class="media-logo">
+                    <a class="image" href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>
+                    <div class = "social-copy">
+                        <div class="social-media">
+                            <img src="{{ url('icons/instagram.png') }}" alt="Instagram icon">
+                            <img src="{{ url('icons/facebook.png') }}" alt="Facebook icon">
+                            <img src="{{ url('icons/twitter.png') }}" alt="Twitter icon">
+                        </div>
+                        <p>© 2023 Invents</p>
+                    </div>
+                </div>
+
+                <div class="static-pages">
+                    <h3>Information</h3>
+                    <a href="{{route('mainFeatures')}}">- Main Features</a>
+                    <a href="{{route('about')}}"> - About Us</a>
+
+                </div>
+    
             </footer>
         </main>
     </body>

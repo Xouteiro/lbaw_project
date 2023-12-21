@@ -45,21 +45,35 @@ function loadMoreEvents() {
                         const eventImage = event.event_image ? '/event/' + event.event_image : '/event/default.jpg';
                         if (eventDate < currentDate) {
                             eventStatus = 'Finished';
-                        } else if (eventDate.toDateString() === currentDate.toDateString()) {
-                            eventStatus = 'Today';
                         } else if (eventDate > currentDate) {
+                            eventStatus = 'Upcoming';
+                        }
+                        let description = event.description;
+                            if (description.length > 70){
+                                description = description.substring(0, 67) + '...';
+                            }
+                        let eventdate = event.eventdate;
+                        let date = eventdate[8] + eventdate[9] + '/' + eventdate[5] + eventdate[6] + '/' + eventdate[0] + eventdate[1] + eventdate[2] + eventdate[3];
+                        let time = eventdate[11] + eventdate[12] + 'h' + eventdate[14] + eventdate[15];
+                        let today = new Date();
+                        let nextWeek = new Date();
+                        nextWeek.setDate(today.getDate() + 7);
+
+                        if(eventDate < today) {
+                            eventStatus = 'Finished';
+                        } else if(eventDate > today) {
                             eventStatus = 'Upcoming';
                         }
 
                         eventCard.innerHTML = `
                             <a href="/event/${event.id}">
+                                <p class="status" id="${eventStatus}">${eventStatus}</p>
                                 <img src="${eventImage}" alt="Event Image" class="event-image">
                                 
                                 <div class="event-info">
                                     <h3>${event.name}</h3>
-                                    <p>${event.description}</p>
-                                    <p>${event.eventdate}</p>
-                                    <p>${eventStatus}</p>
+                                    <p>${description}</p>
+                                    <p class=${eventStatus}> &#128197; ${date} &#128336; ${time}</p>
                                 </div>
                             </a>
                         `;
@@ -273,6 +287,7 @@ function removeParticipant() {
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
+                surebox.style.marginLeft = "20px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -316,8 +331,8 @@ function deleteAccount() {
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
                 var position = deleteAccountButton.getBoundingClientRect();
-                surebox.style.left = (position.left + parseInt(window.scrollX) - 150).toString() + "px";
-                surebox.style.top = (position.top + parseInt(window.scrollY) - 150).toString() + "px";
+                surebox.style.left = (position.left + parseInt(window.scrollX) + 200).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) - 20).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -381,6 +396,98 @@ function deleteEvent() {
     closeSureOptions()
 }
 
+function postComment(){
+    const commentButton = document.querySelector("button.add-comment");
+    if(commentButton){
+        commentButton.addEventListener("click", () => {
+            const inputs = commentButton.parentElement.querySelectorAll("input");
+            const commentTextArea = commentButton.parentElement.querySelector("textarea");
+            const comment = commentTextArea.value;
+            commentTextArea.value = "";
+
+            if(comment.length > 500){
+                const errorMessage = document.createElement('span');
+                errorMessage.textContent = 'Comment can not be that size.';
+                errorMessage.classList.add("error");
+                commentButton.parentElement.insertBefore(errorMessage, commentButton);
+                return;
+            }
+
+            sendAjaxRequest('POST', `/comment`, { comment: comment, id_user: inputs[0].value, id_event: inputs[1].value }, function (data) {
+                const jsonData = JSON.parse(data.target.response)
+                const comments = document.querySelector(".comments");
+
+                let smallElement;
+                let isUser = false;
+
+                if(jsonData.id_user == jsonData.owner){
+                    isUser = true;
+                    smallElement = `
+                    <div class="event-owner-message">
+                        <h3>${jsonData.username}</h3>
+                        <p class="event-owner">Event Owner Message</p>
+                    </div>
+                    `;
+                }
+                else {
+                    smallElement = `
+                    <h3>${jsonData.username}</h3>
+                    `;
+                }
+                const commentElement = `
+                <div id="${jsonData.id}" class="comment">
+                    <div class="comment-header">
+                        <div class="comment-header-title-likes">
+                            ${smallElement}
+                            <div class="likes-dislikes">
+                                <p class="comment-like-number">0</p>
+                                <img id="${jsonData.id_user}" class="comment-like" src="/icons/like.png" alt="like">
+                                <p class="comment-dislike-number">0</p>
+                                <img id="${jsonData.id_user}" class="comment-dislike" src="/icons/like.png" alt="dislike">
+                            </div>
+                        </div>
+                        <div class="comment-actions">
+                            <button class="fake button edit-comment" id="${jsonData.id}">
+                                Edit Comment
+                            </button>
+                            <button class="fake button delete-comment" id="${jsonData.id}">
+                                Delete Comment
+                            </button>
+                        </div>
+                    </div>
+                    <p class="comment-text">${jsonData.text}</p>
+                    <p class="comment-date">${jsonData.date}</p>
+                </div>
+                `;
+
+                if(comments.querySelector("h4")){
+                    comments.querySelector("h4").remove();
+                    const commentList = document.createElement("ul");
+                    commentList.classList.add("comment-list");
+                    const commentLi = document.createElement("li");
+                    commentLi.innerHTML = commentElement;
+                    commentList.appendChild(commentLi);
+                    comments.appendChild(commentList);
+                }
+                else {
+                    const commentLi = document.createElement("li");
+                    commentLi.innerHTML = commentElement;
+                    if(isUser){
+                        comments.querySelector("ul").prepend(commentLi);
+                    }
+                    else {
+                        comments.querySelector("ul").appendChild(commentLi);
+                    }
+                }
+                likeComment();
+                dislikeComment();
+                deleteComment();
+                editComment();
+            });
+        });
+    }
+}
+
 function deleteComment() {
     const deleteCommentButtons = document.querySelectorAll(".fake.button.delete-comment");
     deleteCommentButtons.forEach((deleteCommentButton) => {
@@ -409,9 +516,19 @@ function deleteComment() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
-                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () { });
+                    const comments = document.querySelector(".comments");
                     surebox.remove();
-                    deleteCommentButton.parentElement.parentElement.parentElement.remove();
+                    const ul = comments.querySelector(".comment-list");
+                    if(ul.childElementCount == 1){
+                        ul.remove();
+                        const noComments = document.createElement("h4");
+                        noComments.textContent = "No comments yet";
+                        comments.appendChild(noComments);
+                    }
+                    else {
+                        deleteCommentButton.parentElement.parentElement.parentElement.parentElement.remove();
+                    }
+                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () { });
                 });
             }
         });
@@ -561,6 +678,35 @@ function requestToJoinDecision() {
     closeDecisionBox();
 }
 
+function editEvent() {
+    const updateEventButton = document.querySelector(".btn.btn-primary");
+    if(updateEventButton){
+        updateEventButton.parentElement.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+
+            fetch(e.target.action, {
+                method: 'POST',
+                body: new URLSearchParams(formData),
+                keepalive: true
+            }).then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                setTimeout(() => {
+                    window.location.href = `/event/${updateEventButton.id}`;
+                }, 1000);
+                return response.json();
+            }).then((jsonData) => {
+                const jsonString = JSON.stringify(jsonData);
+                sendAjaxRequest('POST', '/api/send-event-update', { id_event: updateEventButton.id, whatChanged: jsonString }, function () {});
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    }
+}
 
 function eventUpdate() {
     const eventUpdates = document.querySelectorAll(".pending_event_update");
@@ -587,10 +733,6 @@ function eventUpdate() {
             }
         });
 
-        eventUpdate.firstElementChild.addEventListener("click", () => {
-            window.location.href = `/event/${eventUpdate.firstElementChild.id}`;
-        });
-
         eventUpdate.addEventListener("mouseleave", () => {
             const closeEventUpdateButton = eventUpdate.querySelector(".close_event_update");
             if (closeEventUpdateButton) {
@@ -602,6 +744,7 @@ function eventUpdate() {
 
 function likeComment() {
     const likes = document.querySelectorAll(".comment-like");
+    if(likes){
     likes.forEach((like) => {
         like.addEventListener("click", () => {
             const commentId = like.parentElement.parentElement.parentElement.parentElement.id;
@@ -630,6 +773,7 @@ function likeComment() {
             }
         });
     });
+    }
 }
 
 function dislikeComment() {
@@ -675,7 +819,6 @@ function createPoll() {
             
             createPollFake.addEventListener("click", () => {
                 let pollNumber = document.querySelectorAll(".poll").length;
-                console.log(pollNumber);
                 const errorMessages = document.querySelectorAll('div[style="color: red;"]');
                 errorMessages.forEach((errorMessage) => {
                     errorMessage.remove();
@@ -978,6 +1121,16 @@ function closeNotifications() {
     });
 }
 
+function moveNotifications() {
+    const notificationsIconDiv = document.querySelector(".notifications-icon");
+    const notifications = document.querySelector(".user-notifications-container");
+    if (notifications && notificationsIconDiv && notifications.style.display == "block") {
+        const position = notificationsIconDiv.getBoundingClientRect();
+        notifications.style.left = (position.left - 150).toString() + "px";
+        notifications.style.top = (position.top + 80).toString() + "px";
+    }
+}
+
 function openNotificaitons() {
     const notificationsIconDiv = document.querySelector(".notifications-icon");
     const notifications = document.querySelector(".user-notifications-container");
@@ -1092,7 +1245,7 @@ function createLocation()
                     createLocationForm.insertBefore(errorMessage, createLocationForm.querySelector(".create-location-buttons"));
                     return;
                 }
-                if (name.length > 50 || name.length < 10 || address.length > 50 || address.length < 10 || city.length > 50 || city.length < 2|| country.length > 50 || country.length < 2) {
+                if (name.length > 50 || name.length < 1 || address.length > 50 || address.length < 10 || city.length > 50 || city.length < 2|| country.length > 50 || country.length < 2) {
                     const errorMessage = document.createElement('div');
                     errorMessage.textContent = 'Fields can not be that size.';
                     errorMessage.style.color = 'red';
@@ -1101,10 +1254,9 @@ function createLocation()
                 }
                 const fullAddress = `${address}, ${city}, ${country}`;
                 let locationId;
-                sendAjaxRequest('POST', `/api/location/store`, { name: name, address: fullAddress }, function (data) { 
-                    locationId = JSON.parse(data.originalTarget.response).id;
+                sendAjaxRequest('POST', `/api/location/store`, { name: name, address: fullAddress }, function (data) {
+                    locationId = JSON.parse(data.target.response).id;
                     createLocationForm.remove();
-                    console.log(locationId);
                     const LocationSelect = document.querySelector(".location-select");
                     const option = document.createElement("option");
                     option.value = locationId;
@@ -1169,6 +1321,89 @@ function deleteLocation(){
     }
 }
 
+function moveSureboxDeleteAccount() {
+    const deleteAccountButton = document.querySelector(".fake.button.delete-account");
+    const surebox = document.querySelector(".surebox");
+    if(surebox){
+        var position = deleteAccountButton.getBoundingClientRect();
+        surebox.style.left = (position.left + parseInt(window.scrollX) + 200).toString() + "px";
+        surebox.style.top = (position.top + parseInt(window.scrollY) - 20).toString() + "px";
+    }
+}
+
+function moveSureboxDeleteEvent() {
+    const deleteEventButton = document.querySelector(".fake.button.delete-event");
+    const surebox = document.querySelector(".surebox");
+    if(surebox){
+        var position = deleteEventButton.getBoundingClientRect();
+        surebox.style.left = (position.left + parseInt(window.scrollX) - 10).toString() + "px";
+        surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+    }
+}
+
+function respondAdminRequest() {
+    const fakebuttons = document.querySelectorAll(".fake.button.accept");
+    fakebuttons.forEach((fakebutton) => {
+        fakebutton.addEventListener("click", () => {
+            const userId = fakebutton.id;
+            const user_card = fakebutton.parentElement;
+            const sureboxExists = user_card.querySelector(".surebox");
+
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.style.marginLeft = "20px";
+                surebox.innerHTML = `
+                    <p>Make this user Admin ?</p>
+                    <div class="surebox-buttons">
+                        <button type="button" class="surebox button yes">Yes</button>
+                        <button type="button" class="surebox button no">No</button>
+                    </div>
+                `;
+                fakebutton.parentElement.appendChild(surebox);
+                const noCandidates = document.createElement("h4");
+                noCandidates.textContent = "No candidates";
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                    if (usersDiv.childElementCount == 0) {
+                        usersDiv.appendChild(noCandidates);
+                    }
+                    sendAjaxRequest('PUT', `/adminCandidates/${userId}/refuse`, null, function () { });
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    const usersDiv = user_card.parentElement;
+                    user_card.remove();
+                    if (usersDiv.childElementCount == 0) {
+                        usersDiv.appendChild(noCandidates);
+                    }
+                    console.log("Accepted");
+                    sendAjaxRequest('PUT', `/adminCandidates/${userId}/accept`, null, function () { });
+                });
+            }
+        })
+    });
+    closeSureOptions()
+}
+
+function requestAdmin() {
+    const fakebuttons = document.querySelectorAll(".fake.button.request-admin.not-candidate");
+    fakebuttons.forEach((fakebutton) => {
+        fakebutton.addEventListener("click", () => {
+            const userId = fakebutton.id;
+            console.log("Requested");
+            fakebutton.classList.remove("not-candidate");
+            fakebutton.classList.add("candidate");
+
+            sendAjaxRequest('PUT', `/user/${userId}/requestAdmin`, null, function () { });
+        })
+    });
+    closeSureOptions()
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -1189,3 +1424,16 @@ openNotificaitons();
 banAccount();
 createLocation();
 deleteLocation();
+editEvent();
+respondAdminRequest();
+requestAdmin();
+postComment()
+
+function moves(){
+    moveNotifications();
+    moveSureboxDeleteAccount();
+    moveSureboxDeleteEvent();
+}
+
+window.onresize = moves;
+window.onscroll = moves;

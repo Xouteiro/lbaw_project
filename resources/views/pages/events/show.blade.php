@@ -14,7 +14,7 @@
     <div class="event-container">
         <div class="event-info">
             <div class="event-header">
-                <h1 class="event-name">{{ $event->name }}</h1>
+                <h1 class="event-name" @if(isset($whatChanged) && isset($whatChanged->name)) style="font-weight: bold;" @endif>{{ $event->name }}</h1>
                 @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <a class="button" href="{{ route('event.edit', ['id' => $event->id]) }}">
                         Edit Event
@@ -48,8 +48,8 @@
                     @endif
                 </p>
             @endif
-            <p>Description: {{ $event->description }}</p>
-            <p>Event date: {{ $event->eventdate }}</p>
+            <p @if(isset($whatChanged) && isset($whatChanged->description)) style="font-weight: bold;" @endif>Description: {{ $event->description }}</p>
+            <p @if(isset($whatChanged) && isset($whatChanged->eventdate)) style="font-weight: bold;" @endif>Event date: {{ $event->eventdate }}</p>
             @if ($event->capacity == 0)
                 @if(Auth::check() && !Auth::user()->blocked && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
                     <div class="participants"><p>Participants: {{ $event->participants->count() }} </p> <a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
@@ -58,24 +58,23 @@
                 @endif
             @else
                 @if(Auth::check() && !Auth::user()->blocked && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner || Auth::user()->admin))
-                    <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
+                    <div class="participants"><p @if(isset($whatChanged) && isset($whatChanged->capacity)) style="font-weight: bold;" @endif>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p><a href="{{route('event.participants', ['id' => $event->id])}}">View attendees list</a></div>
                 @else
-                    <div class="participants"><p>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
+                    <div class="participants"><p @if(isset($whatChanged) && isset($whatChanged->capacity)) style="font-weight: bold;" @endif>Capacity: {{ $event->participants->count() }}/{{ $event->capacity }}</p></div>
                 @endif
             @endif
             @if ($event->price == 0)
-                <p>Free Event</p>
+                <p @if(isset($whatChanged) && isset($whatChanged->price)) style="font-weight: bold;" @endif>Free Event</p>
             @else
-                <p>Price: {{ $event->price }} €</p>
+                <p @if(isset($whatChanged) && isset($whatChanged->price)) style="font-weight: bold;" @endif>Price: {{ $event->price }} €</p>
             @endif
-            <?php $isAdmin = Auth::user()->admin ? 'true' : 'false' ?>
+            <?php $isAdmin = (Auth::check() && Auth::user()->admin) ? 'true' : 'false' ?>
             <div id="{{$event->location->id}}" class="full-event-location" data-is-admin="{{$isAdmin}}" data-event-id="{{$event->id}}">
                 <div class=location-info>
-                    <p>Location: {{ $event->location->name }}</p>
-                    <p>Address: {{ $event->location->address }}</p>
+                    <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Location: {{ $event->location->name }}</p>
+                    <p @if(isset($whatChanged) && isset($whatChanged->id_location)) style="font-weight: bold;" @endif>Address: {{ $event->location->address }}</p>
                 </div>
             </div>
-
         </div>
         @if (isset($invite) && Auth::check() && Auth::user()->id == $invite->id_user && !Auth::user()->admin && !Auth::user()->blocked)
             {{-- Form of invite decision (Accept/Deny) --}}
@@ -121,6 +120,8 @@
                     @endif
                 </button>
             @elseif(Auth::check() && Auth::user()->id != $event->id_owner && Auth::user()->events->contains($event) && !Auth::user()->admin && !Auth::user()->blocked)
+            
+>>>>>>> resources/views/pages/events/show.blade.php
                 <form action="{{ route('event.leave', ['id' => $event->id]) }}" method="POST">
                     @csrf
                     <button class="button" type="submit">
@@ -156,7 +157,7 @@
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)
-                <p>No comments yet</p>
+                <h4>No comments yet</h4>
             @else
             @php
                 $ownerComments = $event->comments->filter(function ($comment) use ($event) {
@@ -178,20 +179,12 @@
         @endif
         </div>
         @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))
-            <div>
-                <form class="general" action="{{ route('comment.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
-                    <input type="hidden" name="id_event" value="{{ $event->id }}">
-                    <label for="comment">Comment</label>
-                    @if ($errors->has('comment'))
-                        <span class="error">
-                            {{ $errors->first('comment') }}
-                        </span>
-                    @endif
-                    <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
-                    <button type="submit">Comment</button>
-                </form>
+            <div class="general add-comment">
+                <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
+                <input type="hidden" name="id_event" value="{{ $event->id }}">
+                <label for="comment">Comment</label>
+                <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
+                <button class="add-comment button" type="button">Comment</button>
             </div>
         @endif
         @if (Auth::check() && !Auth::user()->blocked && (Auth::user()->events->contains($event) || Auth::user()->id == $event->id_owner))

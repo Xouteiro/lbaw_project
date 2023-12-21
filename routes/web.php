@@ -36,7 +36,11 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/user/{id}/edit', 'update')->name('user.update');
     Route::delete('/user/{id}/delete', 'delete')->name('user.delete');
     Route::put('/user/{id}/ban', 'toggleBan')->name('user.ban');
+    Route::put('/user/{id}/requestAdmin', 'requestAdmin')->name('user.requestAdmin');
     Route::put('/api/user/manage-event/{id_event}', 'manageEvent')->name('user.manage-event');
+    Route::get('/adminCandidates', 'adminCandidates')->name('admin.candidates');
+    Route::put('/adminCandidates/{id}/accept', 'acceptAdmin')->name('admin.acceptAdmin');
+    Route::put('/adminCandidates/{id}/refuse', 'refuseAdmin')->name('admin.refuseAdmin');
 });
 
 // Event
@@ -71,7 +75,7 @@ Route::controller(RegisterController::class)->group(function () {
     Route::post('/register', 'register');
 });
 
-// Event
+// Events
 Route::controller(EventController::class)->group(function () {
     Route::get('/events', 'index')->name('events');
     Route::get('/events/search', 'eventsSearch')->name('events.search');
