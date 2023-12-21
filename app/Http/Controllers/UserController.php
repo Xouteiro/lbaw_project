@@ -117,6 +117,16 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Update successful'], 200);
     }
+
+    public function toggleBan(string $id)
+    {
+        $user = User::find($id);
+        $this->authorize('toggleBan', $user);
+        $user->blocked = !$user->blocked;
+        $user->save();
+
+        return response()->json(['message' => 'Ban toggled'], 200);
+    }
     
     public function requestAdmin(string $id)
     {

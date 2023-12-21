@@ -1151,6 +1151,52 @@ function openNotificaitons() {
     closeNotifications();
 }
 
+function banAccount() {
+    const banAccountButton = document.querySelector(".fake.button.ban-user");
+    const username = document.querySelector(".profile-header h1");
+    if (banAccountButton) {
+        banAccountButton.addEventListener("click", () => {
+            const accountId = banAccountButton.id;
+            const sureboxExists = banAccountButton.parentElement.querySelector(".surebox");
+
+            if (!sureboxExists) {
+                const surebox = document.createElement("div");
+                surebox.classList.add("surebox");
+                surebox.innerHTML = `
+                    <p>Are you sure ?</p>
+                    <div class="surebox-buttons">
+                        <a class="surebox button yes">Yes</a>
+                        <a class="surebox button no">No</a>
+                    </div>
+                `;
+                const buttonsDiv = banAccountButton.parentElement;
+                buttonsDiv.style.display = "flex";
+                buttonsDiv.style.flexDirection = "row";
+                buttonsDiv.appendChild(surebox);
+                surebox.style.marginLeft = "20px";
+                const noButton = surebox.querySelector(".surebox.button.no");
+                noButton.addEventListener("click", () => {
+                    surebox.remove();
+                });
+
+                const yesButton = surebox.querySelector(".surebox.button.yes");
+                yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    if(banAccountButton.textContent == "Ban User"){
+                        banAccountButton.textContent = "Unban User";
+                        username.textContent.concat(" [BANNED]");
+                    } else {
+                        banAccountButton.textContent = "Ban User";
+                    }
+                    sendAjaxRequest('PUT', `/user/${accountId}/ban`, null, function () {
+                        window.location.href = `/user/${accountId}`;
+                    });
+                });
+            }
+        });
+    }
+    closeSureOptions()
+}
 
 function createLocation()
 {
@@ -1375,6 +1421,7 @@ createPoll();
 deletePoll();
 answerPoll();
 openNotificaitons();
+banAccount();
 createLocation();
 deleteLocation();
 editEvent();

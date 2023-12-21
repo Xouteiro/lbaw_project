@@ -9,7 +9,7 @@ class CommentPolicy
 {
     public function store(User $auth, Comment $comment)
     {
-        return $auth->id == $comment->id_user;
+        return $auth->id == $comment->id_user && !$auth->blocked;
     }
 
     /**
@@ -17,7 +17,7 @@ class CommentPolicy
      */
     public function update(User $user, Comment $comment): bool
     {
-        return $user->id === $comment->user->id || $user->admin;
+        return ($user->id === $comment->user->id && !$user->blocked) || $user->admin;
     }
 
     /**
@@ -25,6 +25,6 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment): bool
     {
-        return $user->id === $comment->user->id || $user->admin;
+        return ($user->id === $comment->user->id && !$user->blocked) || $user->admin;
     }
 }

@@ -35,6 +35,7 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/user/{id}/edit', 'edit')->name('user.edit');
     Route::post('/user/{id}/edit', 'update')->name('user.update');
     Route::delete('/user/{id}/delete', 'delete')->name('user.delete');
+    Route::put('/user/{id}/ban', 'toggleBan')->name('user.ban');
     Route::put('/user/{id}/requestAdmin', 'requestAdmin')->name('user.requestAdmin');
     Route::put('/api/user/manage-event/{id_event}', 'manageEvent')->name('user.manage-event');
     Route::get('/adminCandidates', 'adminCandidates')->name('admin.candidates');
