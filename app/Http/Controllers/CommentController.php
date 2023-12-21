@@ -19,14 +19,6 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        
-        $request->validate([
-            'comment' => 'required|string|max:5000',
-        ],
-        [
-            'comment.max' => 'Comment cannot be longer than 5000 characters!',
-        ]);
-
         $comment = new Comment();
         $comment->id_event = $request->id_event;
         $comment->id_user = $request->id_user;
@@ -35,8 +27,10 @@ class CommentController extends Controller
         $this->authorize('store', $comment);
         $comment->save();
 
-        
-        return redirect(url()->previous() . '#' . $comment->id);
+        $username = $comment->user->username;
+        $eventOwner = $comment->event->id_owner;
+
+        return response()->json(['id' => $comment->id, 'id_user' => $comment->id_user, 'text' => $comment->text, 'date' => $comment->date, 'username' => $username, 'owner' => $eventOwner, 'message' => 'Comment created successfully'], 200);;
     }
 
     public function update(Request $request, $id)
