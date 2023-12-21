@@ -13,9 +13,10 @@
 
 @section('content')
     <div class="event-container">
-        <div class="event-info"> <div class="event-page-image">
-            <img src="{{ $event->getEventImage($event->id) }}" alt="Event Image" class="event-page-image">
-        </div>
+        <div class="event-info"> 
+            <div class="event-page-image">
+                <img src="{{ $event->getEventImage($event->id) }}" alt="Event Image" class="event-page-image">
+            </div>
         @php
             $eventdate = $event->eventdate;
             $date = $eventdate[8] . $eventdate[9] . '-' . $eventdate[5] . $eventdate[6] . '-' . $eventdate[0] . $eventdate[1] . $eventdate[2] . $eventdate[3];
@@ -144,6 +145,7 @@
                 </div>
             @endif
         </div>
+
         @if (isset($invite) && Auth::check()&& !Auth::user()->blocked  && Auth::user()->id == $invite->id_user && !Auth::user()->admin)
             {{-- Form of invite decision (Accept/Deny) --}}
             <div class="invite-decision">
@@ -238,4 +240,5 @@
             </div>
         @endif
     </div>
+</div>
 @endsection

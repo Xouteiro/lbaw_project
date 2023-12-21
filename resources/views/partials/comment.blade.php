@@ -5,11 +5,11 @@
                 @if(isset($comment->user->username)) 
                     @if($comment->user->id == $event->id_owner)
                         <div class="event-owner-message">
-                            <h4>{{ $comment->user->username }}</h3>
+                            <h4>{{ $comment->user->username }}</h4>
                             <p class="event-owner">Event Owner Message</p>
                         </div>
                     @else
-                    <h4>{{ $comment->user->username }}</h3>
+                    <h4>{{ $comment->user->username }}</h4>
                     @endif
                 @else
                     <h3>Anonymous</h3>  

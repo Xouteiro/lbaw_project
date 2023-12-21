@@ -1195,7 +1195,7 @@ div.event-page-image{
     white-space: nowrap;
 }
 
-form.searchBar#searchForm {
+form.searchBar#searchFormBar {
     display: flex;
     flex-direction: row;
     min-width: 35%;
@@ -1215,7 +1215,7 @@ form.searchBar#searchForm {
 
 
 
-form.searchBar#searchForm input.search-event {
+form.searchBar#searchFormBar input.search-event {
     border: none;
     color: white;
     margin: 0;
@@ -1225,7 +1225,7 @@ form.searchBar#searchForm input.search-event {
     width: 88%;
 }
 
-form.searchBar#searchForm #searchButton {
+form.searchBar#searchFormBar #searchButtonBar {
     border: none;
     color: white;
     background-color: #00172b;
@@ -1265,11 +1265,21 @@ textarea {
     padding-right: 50px;
 }
 
-.profile-picture {
+.profile-picture, .event-picture {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 40px;
 }
+
+.event-picture img
+{
+    width: 80%;
+    height: 28em;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
 
 .profile-picture img {
     margin-bottom: 25px;
@@ -1291,12 +1301,12 @@ textarea {
 }
 
 .profile-header img {
-    height: 200px;
-    width: 200px;
     object-fit: contain;
     border-radius: 3%;
     min-width: 100px;
     min-height: 100px;
+    max-width: 300px;
+    max-height: 300px;
 }
 
 .profile-header {
@@ -1753,7 +1763,7 @@ footer a.image:hover {
         justify-content: space-evenly;
     }
 
-    header>form.searchBar#searchForm {
+    header>form.searchBar#searchFormBar {
         display: none;
     }
 
