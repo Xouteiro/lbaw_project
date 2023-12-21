@@ -202,7 +202,7 @@ class UserController extends Controller
             $user = User::findOrFail(Auth::user()->id);
             if ($user->blocked) {
                 return redirect()->route('home');
-            }
+            }   
         }
         $users = User::where('adminCandidate', true)->get();
         return view('pages.admin.candidates', ['users' => $users]);
