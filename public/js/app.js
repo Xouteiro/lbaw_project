@@ -1000,6 +1000,7 @@ function openNotificaitons() {
 
 function banAccount() {
     const banAccountButton = document.querySelector(".fake.button.ban-user");
+    const username = document.querySelector(".profile-header h1");
     if (banAccountButton) {
         banAccountButton.addEventListener("click", () => {
             const accountId = banAccountButton.id;
@@ -1027,6 +1028,13 @@ function banAccount() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
+                    surebox.remove();
+                    if(banAccountButton.textContent == "Ban User"){
+                        banAccountButton.textContent = "Unban User";
+                        username.textContent.concat(" [BANNED]");
+                    } else {
+                        banAccountButton.textContent = "Ban User";
+                    }
                     sendAjaxRequest('PUT', `/user/${accountId}/ban`, null, function () {
                         window.location.href = `/user/${accountId}`;
                     });
