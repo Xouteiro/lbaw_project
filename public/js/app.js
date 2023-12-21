@@ -307,9 +307,9 @@ function removeParticipant() {
                     const participantsDiv = participant_card.parentElement;
                     participant_card.remove();
                     if (participantsDiv.childElementCount == 1 && participantsDiv.firstElementChild.id == 'owner') {
-                        const noRequestsToJoin = document.createElement("h4");
-                        noRequestsToJoin.textContent = "No participants yet";
-                        participantsDiv.appendChild(noRequestsToJoin);
+                        const noParticipants = document.createElement("h4");
+                        noParticipants.textContent = "No participants yet";
+                        participantsDiv.appendChild(noParticipants);
                     }
                     sendAjaxRequest('POST', `/event/${eventId}/participants/${participantId}/remove`, null, function () {});
                 });
@@ -1371,18 +1371,33 @@ function moveSureBoxRequestAdmin() {
     }
 }
 
+function moveSureBoxAnswerAdminRequest() {
+    const answerRequestButton = document.querySelector(".answer-request-admin");
+    if(answerRequestButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = answerRequestButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 5).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+        }
+    }
+}
+
 function respondAdminRequest() {
-    const fakebuttons = document.querySelectorAll(".fake.button.accept");
-    fakebuttons.forEach((fakebutton) => {
-        fakebutton.addEventListener("click", () => {
-            const userId = fakebutton.id;
-            const user_card = fakebutton.parentElement;
+    const answerRequestButton = document.querySelector(".answer-request-admin");
+    if(answerRequestButton){
+        answerRequestButton.addEventListener("click", () => {
+            const userId = answerRequestButton.id;
+            const user_card = answerRequestButton.parentElement;
             const sureboxExists = user_card.querySelector(".surebox");
 
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
-                surebox.style.marginLeft = "20px";
+                surebox.style.position = "absolute";
+                var position = answerRequestButton.getBoundingClientRect();
+                surebox.style.left = (position.left + parseInt(window.scrollX) + 5).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
                 surebox.innerHTML = `
                     <p>Make this user Admin ?</p>
                     <div class="surebox-buttons">
@@ -1390,33 +1405,35 @@ function respondAdminRequest() {
                         <button type="button" class="surebox button no">No</button>
                     </div>
                 `;
-                fakebutton.parentElement.appendChild(surebox);
+                answerRequestButton.parentElement.appendChild(surebox);
+
                 const noCandidates = document.createElement("h4");
-                noCandidates.textContent = "No candidates";
+                noCandidates.textContent = "No candidates yet";
                 const noButton = surebox.querySelector(".surebox.button.no");
                 noButton.addEventListener("click", () => {
+                    const requestsDiv = answerRequestButton.parentElement.parentElement;
                     surebox.remove();
-                    if (usersDiv.childElementCount == 0) {
-                        usersDiv.appendChild(noCandidates);
+                    answerRequestButton.parentElement.remove();
+                    if (requestsDiv.childElementCount == 0) {
+                        requestsDiv.appendChild(noCandidates);
                     }
                     sendAjaxRequest('PUT', `/adminCandidates/${userId}/refuse`, null, function () { });
                 });
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
+                    const requestsDiv = answerRequestButton.parentElement.parentElement;
                     surebox.remove();
-                    const usersDiv = user_card.parentElement;
-                    user_card.remove();
-                    if (usersDiv.childElementCount == 0) {
-                        usersDiv.appendChild(noCandidates);
+                    answerRequestButton.parentElement.remove();
+                    if (requestsDiv.childElementCount == 0) {
+                        requestsDiv.appendChild(noCandidates);
                     }
-                    console.log("Accepted");
                     sendAjaxRequest('PUT', `/adminCandidates/${userId}/accept`, null, function () { });
                 });
             }
+            closeSureOptions();
         })
-    });
-    closeSureOptions()
+    }
 }
 
 function requestAdmin() {
@@ -1463,7 +1480,6 @@ function requestAdmin() {
             sendAjaxRequest('PUT', `/user/${userId}/request-admin`, null, function () { });
         });
     }
-    closeSureOptions();
 }
 
 addEventListeners();
@@ -1497,6 +1513,7 @@ function moves(){
     moveSureboxDeleteEvent();
     moveSureBoxDeleteComment();
     moveSureBoxRequestAdmin();
+    moveSureBoxAnswerAdminRequest();
 }
 
 window.onresize = moves;
