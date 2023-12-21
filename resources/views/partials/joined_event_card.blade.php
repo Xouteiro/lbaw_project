@@ -27,7 +27,7 @@
                 <h3>{{ $event->name }}</h3>
                 <p>{{ $description }}</p>
                 @if($event->eventdate < date('Y-m-d'))
-                    <p class="finished"> &#128197; {{ $date }} &#128336; {{$time}} </p>
+                    <p class="Finished"> &#128197; {{ $date }} &#128336; {{$time}} </p>
                 @else
                     <p> &#128197; {{ $date }} &#128336; {{$time}} </p>
                 @endif

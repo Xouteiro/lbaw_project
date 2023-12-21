@@ -1,9 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="back-button-container">
-{{-- <a class = 'back-button' href="{{ route('events') }}"><img class= 'back-button' src="{{ asset('icons/back.png') }}" alt="Back button"></a> --}}
-</div>
     <div class="search-container">
         <div class="form">
             <form id="searchForm" action="{{ route('events.search') }}" method="GET">

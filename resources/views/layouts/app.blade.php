@@ -47,10 +47,10 @@
         <main>
             @if( url()->current() == url('/home') || url()->current() == url('/about') || url()->current() == url('/mainFeatures') )
             <header class="home">
-                <a href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>  
+                <a class="logo" href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>  
             @else  
             <header>
-                <a href={{url('/home')}}><img class="small-logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a> 
+                <a class="small-logo" href={{url('/home')}}><img class="small-logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a> 
             @endif               
                 <form class="searchBar" id="searchForm" action="{{ route('events.search') }}" method="GET">
                     <input name="search" value="" placeholder="Search event" class="search-event"/>
@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="media-logo">
-                    <a class="image" href={{url('/home')}} ><img src="{{ url('icons/logo.png') }}" alt="Invents"></a>
+                    <a class="image" href={{url('/home')}}><img class="logo" src="{{ url('icons/logo.png') }}" alt="Invents"></a>
                     <div class = "social-copy">
                         <div class="social-media">
                             <img src="{{ url('icons/instagram.png') }}" alt="Instagram icon">
