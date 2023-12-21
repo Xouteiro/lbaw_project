@@ -424,9 +424,15 @@ function deleteComment() {
 
                 const yesButton = surebox.querySelector(".surebox.button.yes");
                 yesButton.addEventListener("click", () => {
-                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () { });
+                    const comments = document.querySelector(".comments");
                     surebox.remove();
-                    deleteCommentButton.parentElement.parentElement.parentElement.remove();
+                    deleteCommentButton.parentElement.parentElement.parentElement.parentElement.parentElement.remove();
+                    if (comments.childElementCount == 1) {
+                        const noRequestsToJoin = document.createElement("h4");
+                        noRequestsToJoin.textContent = "No comments yet";
+                        comments.appendChild(noRequestsToJoin);
+                    }
+                    sendAjaxRequest('DELETE', `/comment/${commentId}/delete`, null, function () { });
                 });
             }
         });

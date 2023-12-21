@@ -636,7 +636,9 @@ input.search-event {
 }
 
 .invite-container {
-    margin: 2em 0;
+    margin: 1em 0;
+    padding-bottom: 1em;
+    border-bottom: 1px solid #eaeaea;
 }
 
 .pending_request_to_join {
@@ -670,6 +672,11 @@ input.search-event {
     list-style: none;
     margin: 0;
     padding: 0;
+}
+
+form.add-comment {
+    padding-bottom: 1em;
+    border-bottom: 1px solid #eaeaea;
 }
 
 div.event-owner-message h3 {
@@ -816,10 +823,6 @@ form#searchForm {
 
 .event-container .button:hover {
     background-color: #0056b3;
-}
-
-.event-container .comments {
-    margin-top: 20px;
 }
 
 .event-container .comment-list {
@@ -979,7 +982,7 @@ form.searchBar#searchForm input.search-event {
     padding: 20px;
     border-radius: 2rem;
     outline: none;
-    width: 80%;
+    width: 88%;
 }
 
 form.searchBar#searchForm #searchButton {
@@ -991,7 +994,7 @@ form.searchBar#searchForm #searchButton {
     background-repeat: no-repeat;
     background-size: 15px;
     border-radius: 2rem;
-    width: 20%;
+    width: 12%;
 }
 
 .check-all {

@@ -156,7 +156,7 @@
         <div class="comments">
             <h3>Comments</h3>
             @if($event->comments->count() == 0)
-                <p>No comments yet</p>
+                <h4>No comments yet</h4>
             @else
             @php
                 $ownerComments = $event->comments->filter(function ($comment) use ($event) {
@@ -178,21 +178,19 @@
         @endif
         </div>
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
-            <div>
-                <form class="general" action="{{ route('comment.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
-                    <input type="hidden" name="id_event" value="{{ $event->id }}">
-                    <label for="comment">Comment</label>
-                    @if ($errors->has('comment'))
-                        <span class="error">
-                            {{ $errors->first('comment') }}
-                        </span>
-                    @endif
-                    <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
-                    <button type="submit">Comment</button>
-                </form>
-            </div>
+            <form class="general add-comment" action="{{ route('comment.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="id_user" value="{{ Auth::user()->id }}">
+                <input type="hidden" name="id_event" value="{{ $event->id }}">
+                <label for="comment">Comment</label>
+                @if ($errors->has('comment'))
+                    <span class="error">
+                        {{ $errors->first('comment') }}
+                    </span>
+                @endif
+                <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
+                <button type="submit">Comment</button>
+            </form>
         @endif
         @if ((Auth::check() && Auth::user()->events->contains($event)) || Auth::check() && Auth::user()->id == $event->id_owner)
             <div class="polls">
