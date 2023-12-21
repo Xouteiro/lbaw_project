@@ -276,6 +276,7 @@ function removeParticipant() {
             if (!sureboxExists) {
                 const surebox = document.createElement("div");
                 surebox.classList.add("surebox");
+                surebox.style.marginLeft = "20px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -319,8 +320,8 @@ function deleteAccount() {
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
                 var position = deleteAccountButton.getBoundingClientRect();
-                surebox.style.left = (position.left + parseInt(window.scrollX) - 150).toString() + "px";
-                surebox.style.top = (position.top + parseInt(window.scrollY) - 150).toString() + "px";
+                surebox.style.left = (position.left + parseInt(window.scrollX) + 200).toString() + "px";
+                surebox.style.top = (position.top + parseInt(window.scrollY) - 20).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -705,7 +706,6 @@ function createPoll() {
             
             createPollFake.addEventListener("click", () => {
                 let pollNumber = document.querySelectorAll(".poll").length;
-                console.log(pollNumber);
                 const errorMessages = document.querySelectorAll('div[style="color: red;"]');
                 errorMessages.forEach((errorMessage) => {
                     errorMessage.remove();
@@ -1086,7 +1086,7 @@ function createLocation()
                     createLocationForm.insertBefore(errorMessage, createLocationForm.querySelector(".create-location-buttons"));
                     return;
                 }
-                if (name.length > 50 || name.length < 10 || address.length > 50 || address.length < 10 || city.length > 50 || city.length < 2|| country.length > 50 || country.length < 2) {
+                if (name.length > 50 || name.length < 1 || address.length > 50 || address.length < 10 || city.length > 50 || city.length < 2|| country.length > 50 || country.length < 2) {
                     const errorMessage = document.createElement('div');
                     errorMessage.textContent = 'Fields can not be that size.';
                     errorMessage.style.color = 'red';
@@ -1095,10 +1095,9 @@ function createLocation()
                 }
                 const fullAddress = `${address}, ${city}, ${country}`;
                 let locationId;
-                sendAjaxRequest('POST', `/api/location/store`, { name: name, address: fullAddress }, function (data) { 
-                    locationId = JSON.parse(data.originalTarget.response).id;
+                sendAjaxRequest('POST', `/api/location/store`, { name: name, address: fullAddress }, function (data) {
+                    locationId = JSON.parse(data.target.response).id;
                     createLocationForm.remove();
-                    console.log(locationId);
                     const LocationSelect = document.querySelector(".location-select");
                     const option = document.createElement("option");
                     option.value = locationId;
@@ -1163,6 +1162,26 @@ function deleteLocation(){
     }
 }
 
+function moveSureboxDeleteAccount() {
+    const deleteAccountButton = document.querySelector(".fake.button.delete-account");
+    const surebox = document.querySelector(".surebox");
+    if(surebox){
+        var position = deleteAccountButton.getBoundingClientRect();
+        surebox.style.left = (position.left + parseInt(window.scrollX) + 200).toString() + "px";
+        surebox.style.top = (position.top + parseInt(window.scrollY) - 20).toString() + "px";
+    }
+}
+
+function moveSureboxDeleteEvent() {
+    const deleteEventButton = document.querySelector(".fake.button.delete-event");
+    const surebox = document.querySelector(".surebox");
+    if(surebox){
+        var position = deleteEventButton.getBoundingClientRect();
+        surebox.style.left = (position.left + parseInt(window.scrollX) - 10).toString() + "px";
+        surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+    }
+}
+
 addEventListeners();
 openOptions();
 closeOptions();
@@ -1183,4 +1202,12 @@ openNotificaitons();
 createLocation();
 deleteLocation();
 editEvent();
-window.onresize = moveNotifications;
+
+function moves(){
+    moveNotifications();
+    moveSureboxDeleteAccount();
+    moveSureboxDeleteEvent();
+}
+
+window.onresize = moves;
+window.onscroll = moves;
