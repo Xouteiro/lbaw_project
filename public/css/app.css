@@ -1469,7 +1469,6 @@ ul.names {
 }
 
 .about-card p {
-    height: 100%;
     font-size: 1.2em;
 }
 
@@ -1562,8 +1561,6 @@ ul.names {
     justify-content: space-evenly;
 }
 
-
-
 .about-card {
     position: relative;
     background-color: #fff;
@@ -1571,9 +1568,13 @@ ul.names {
     padding: 2rem;
     margin-bottom: 2rem;
     margin-top: 2rem;
-    width: 21em;
+    width: 23em;
+    height: 23em;
     scale: 0.95;
     transition: scale 0.9s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .call-to-action a {
@@ -1696,21 +1697,6 @@ footer div.static-pages{
     margin-bottom: 35px;
 }
 
-.about-card {
-    position: relative;
-    background-color: #fff;
-    border-radius: 5%;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    margin-top: 2rem;
-    width: 26em;
-    height: 23em;
-    scale: 0.95;
-    transition: scale 0.9s;
-    display: flex;
-    flex-direction: column;
-}
-
 .call-to-action {
     margin: auto;
     max-width: 75%;
@@ -1779,8 +1765,18 @@ footer a.image:hover {
         width: 100px;
     }
 
-    section#content.home {
+    section#content.home,
+    section#content.about,
+    section#content.mainFeatures {
         background-color: #00172b;
+    }
+
+    .about-card {
+        width: 18em;
+    }
+
+    .about-card p {
+        min-height: fit-content;
     }
 
     main>header{
@@ -1864,6 +1860,19 @@ footer a.image:hover {
     div.event-container div.event-info p,
     div.event-container div.event-info .participants {
         padding: 0;
+    }
+
+    .about-page .background-image .overlay-text h4{
+        white-space: initial;
+    }
+
+    .about-page h2,
+    .about-page h4 {
+        color: white;
+    }
+
+    .call-to-action a {
+        color: white;
     }
 
     .event-container .comment-list,
