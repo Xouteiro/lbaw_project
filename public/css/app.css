@@ -454,7 +454,40 @@ div.form {
     display: block;
 }
 
+div.event-info p.Finished{
+    text-decoration-line: line-through;
+    text-decoration-style: dashed;
+}
 
+div.event-info p.Finished:hover{
+    text-decoration-line: none;
+    text-decoration-style: none;
+}
+
+div.event-card p.status{
+    position:absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: right;
+    color: white;
+    border-radius: 0 15% 0 15%;
+    padding: 5px;
+    z-index: 2;
+    font-size: 1em;
+    font-weight: 800;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+div.event-card p.status#Finished{
+    background-color: rgb(206, 31, 31);
+}
+
+div.event-card p.status#Upcoming{
+    background-color: rgb(5, 118, 5);
+}
 
 
 
