@@ -424,14 +424,14 @@ function postComment(){
                     isUser = true;
                     smallElement = `
                     <div class="event-owner-message">
-                        <h3>${jsonData.username}</h3>
+                        <h4>${jsonData.username}</h3>
                         <p class="event-owner">Event Owner Message</p>
                     </div>
                     `;
                 }
                 else {
                     smallElement = `
-                    <h3>${jsonData.username}</h3>
+                    <h4>${jsonData.username}</h3>
                     `;
                 }
                 const commentElement = `
@@ -447,11 +447,11 @@ function postComment(){
                             </div>
                         </div>
                         <div class="comment-actions">
-                            <button class="fake button edit-comment" id="${jsonData.id}">
-                                Edit Comment
+                            <button class="fake button edit-comment no-button" id="${jsonData.id}">
+                            &#9998;
                             </button>
-                            <button class="fake button delete-comment" id="${jsonData.id}">
-                                Delete Comment
+                            <button class="fake button delete-comment no-button" id="${jsonData.id}">
+                            &#128465;
                             </button>
                         </div>
                     </div>
@@ -463,7 +463,7 @@ function postComment(){
                 if(comments.querySelector("h4")){
                     comments.querySelector("h4").remove();
                     const commentList = document.createElement("ul");
-                    commentList.classList.add("comments-list");
+                    commentList.classList.add("comment-list");
                     const commentLi = document.createElement("li");
                     commentLi.innerHTML = commentElement;
                     commentList.appendChild(commentLi);
@@ -497,8 +497,8 @@ function deleteComment() {
                 surebox.classList.add("surebox");
                 surebox.style.position = "absolute";
                 var buttonPositions = deleteCommentButton.getBoundingClientRect();
-                surebox.style.left = (buttonPositions.left + parseInt(window.scrollX)).toString() + "px";
-                surebox.style.top = (buttonPositions.top + parseInt(window.scrollY) - 100).toString() + "px";
+                surebox.style.left = (buttonPositions.left + parseInt(window.scrollX) + 100).toString() + "px";
+                surebox.style.top = (buttonPositions.top + parseInt(window.scrollY) ).toString() + "px";
                 surebox.innerHTML = `
                     <p>Are you sure ?</p>
                     <div class="surebox-buttons">
@@ -943,7 +943,7 @@ function createPoll() {
                     poll.innerHTML = `
                         <div class="poll-header">
                         <h3>${title}</h3>
-                        <button type="button" class="fake-poll-delete-button">&#10060;</button>
+                        <button type="button" class="fake-poll-delete-button no-button">&#128465;</button>
                         </div>
                         <ul class="poll-options">
                         </ul>
@@ -1040,7 +1040,7 @@ function deletePoll() {
         deletePollButton.addEventListener("click", () => {
             const poll = deletePollButton.parentElement.parentElement;
             const eventId = document.querySelector(".event_id_holder").id;
-            const title = deletePollButton.parentElement.querySelector("h3").textContent;
+            const title = deletePollButton.parentElement.querySelector("h4").textContent;
             poll.remove();
             sendAjaxRequest('DELETE', `/api/poll/delete`, { eventId: eventId, title: title }, function () { });
         });
@@ -1064,7 +1064,7 @@ function answerPoll() {
             pollOptionInput.addEventListener("click", (event) => {
                 event.stopPropagation();
                 const eventId = document.querySelector(".event_id_holder").id;
-                const title = poll.querySelector("h3").textContent;
+                const title = poll.querySelector("h4").textContent;
                 const option = pollOptionInput.parentElement.querySelector("p").textContent.substring(0, pollOptionInput.parentElement.querySelector("p").textContent.indexOf(" - "));
                 let votes = parseInt(pollOptionInput.parentElement.querySelector("p").textContent.split(" - ")[1]);
                 const beforeOption = checkedBefore ? checkedBefore.parentElement.querySelector("p").textContent.substring(0, checkedBefore.parentElement.querySelector("p").textContent.indexOf(" - ")) : null;
@@ -1121,11 +1121,13 @@ function closeNotifications() {
 
 function moveNotifications() {
     const notificationsIconDiv = document.querySelector(".notifications-icon");
-    const notifications = document.querySelector(".user-notifications-container");
-    if (notifications && notificationsIconDiv && notifications.style.display == "block") {
-        const position = notificationsIconDiv.getBoundingClientRect();
-        notifications.style.left = (position.left - 150).toString() + "px";
-        notifications.style.top = (position.top + 80).toString() + "px";
+    if(notificationsIconDiv){
+        const notifications = document.querySelector(".user-notifications-container");
+        if (notifications && notificationsIconDiv && notifications.style.display == "block") {
+            const position = notificationsIconDiv.getBoundingClientRect();
+            notifications.style.left = (position.left - 150).toString() + "px";
+            notifications.style.top = (position.top + 80).toString() + "px";
+        }
     }
 }
 
@@ -1275,21 +1277,37 @@ function deleteLocation(){
 
 function moveSureboxDeleteAccount() {
     const deleteAccountButton = document.querySelector(".fake.button.delete-account");
-    const surebox = document.querySelector(".surebox");
-    if(surebox){
-        var position = deleteAccountButton.getBoundingClientRect();
-        surebox.style.left = (position.left + parseInt(window.scrollX) + 200).toString() + "px";
-        surebox.style.top = (position.top + parseInt(window.scrollY) - 20).toString() + "px";
+    if(deleteAccountButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = deleteAccountButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 200).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) - 20).toString() + "px";
+        }
     }
 }
 
 function moveSureboxDeleteEvent() {
     const deleteEventButton = document.querySelector(".fake.button.delete-event");
-    const surebox = document.querySelector(".surebox");
-    if(surebox){
-        var position = deleteEventButton.getBoundingClientRect();
-        surebox.style.left = (position.left + parseInt(window.scrollX) - 10).toString() + "px";
-        surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+    if(deleteEventButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = deleteEventButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) - 10).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) + 50).toString() + "px";
+        }
+    }
+}
+
+function moveSureBoxDeleteComment() {
+    const deleteCommentButton = document.querySelector(".fake.button.delete-comment");
+    if(deleteCommentButton){
+        const surebox = document.querySelector(".surebox");
+        if(surebox){
+            var position = deleteCommentButton.getBoundingClientRect();
+            surebox.style.left = (position.left + parseInt(window.scrollX) + 100).toString() + "px";
+            surebox.style.top = (position.top + parseInt(window.scrollY) ).toString() + "px";
+        }
     }
 }
 
@@ -1319,6 +1337,7 @@ function moves(){
     moveNotifications();
     moveSureboxDeleteAccount();
     moveSureboxDeleteEvent();
+    moveSureBoxDeleteComment();
 }
 
 window.onresize = moves;
